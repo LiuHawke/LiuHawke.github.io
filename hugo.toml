@@ -1,0 +1,8 @@
+baseURL = "https://liuhawke.github.io/"
+languageCode = "zh-cn"
+title = "LiuYingbo"
+theme = "PaperMod"
+
+[params]
+  ShowReadingTime = true
+  ShowShareButtons = true
