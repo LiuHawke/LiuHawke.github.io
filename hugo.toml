@@ -1,8 +1,13 @@
-baseURL = "https://liuhawke.github.io/"
+baseURL = "https://LiuHawke.github.io/"
 languageCode = "zh-cn"
-title = "LiuYingbo"
+title = "LiuHawke Blog"
 theme = "PaperMod"
 
+[author]
+  name = "LiuHawke"
+
 [params]
+  author = "LiuHawke"
   ShowReadingTime = true
   ShowShareButtons = true
+  ShowPostNavLinks = true
