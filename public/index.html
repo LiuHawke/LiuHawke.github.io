@@ -172,109 +172,255 @@
 
 <article class="post-entry"> 
 <figure class="entry-cover">
-        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211162350352.png" alt="">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191917907.png" alt="">
 </figure>
   <header class="entry-header">
-    <h2 class="entry-hint-parent">GitHub&#43;Hexo 搭建个人博客（四）：SEO 优化及站点被搜索引擎收录设置
+    <h2 class="entry-hint-parent">C# LINQ
     </h2>
   </header>
   <div class="entry-content">
-    <p>前言 我们必须把我们的网站推送到搜索引擎那， 不然别人除了输入我们的域名或者搜索文章，是没法发现我们的博文。
-如何查看我的网站是否被收录：
-site:你的网站 比如我的：site:liuyingbo.com
-站点地图 站点地图即 sitemap， 是一个页面，上面放置了网站上需要搜索引擎抓取的所有页面的链接。站点地图可以告诉搜索引擎网站上有哪些可供抓取的网页，以便搜索引擎可以更加智能地抓取网站。所以我们首先需要生成一个站点地图
-安装百度和 Google 的站点地图生成插件：
-npm install hexo-generator-baidu-sitemap --save npm install hexo-generator-sitemap --save 然后来到站点目录配置文件_config.yml，在下面添加：
-# 站点地图 sitemap: path: sitemap.xml baidusitemap: path: baidusitemap.xml 然后重新推送到服务器，在访问如下 URL:
-https://你的域名/sitemap.xml https://你的域名/baidusitemap.xml 看看有没有出现代码。有的话就成功。
-给你的 hexo 网站添加蜘蛛协议 robots.txt, 把 robots.txt 放在你的 hexo 站点的 source 文件下即可。
-# hexo robots.txt User-agent: * Allow: / Sitemap: https://liuyyingbo.com/sitemap.xml Sitemap: https://liuyingbo.com/baidusitemap.xml 百度收录 提交网站 通过百度站长平台进行链接提交，增加网站的索引量。先去注册并登录：百度站长平台
-然后需要验证网站，我选择的是https://，这根据你前面是否添加 SSL 证书来选择。并且我使用的是不带 www 的，看个人。然后到第三步，我使用的 HTML 标签验证。你也可以选择自己喜欢的方式
+    <p>LINQ 是 Language INtegrated Query 单词的首字母缩写，翻译过来是语言集成查询。它为查询跨各种数据源和格式的数据提供了一致的模型，所以叫集成查询。由于这种查询并没有制造新的语言而只是在现有的语言基础上来实现，所以叫语言集成查询。
+基础 在 C# 中，从功能上 LINQ 可分为两类：LINQ to Object 和 LINQ to XML；从语法上 LINQ 可以分为 LINQ to Object 和 LINQ 扩展方法
+纠正：
+从功能上 LINQ 可分为两类：
+LINQ to Object，查询内存集合，直接把查询编译成 .NET 代码执行。 LINQ to Provider，查询自定义数据源，由开发者提供相应数据源的 Provider 并翻译和执行自定义查询，如 XML、JSON 等都可以作为 Provider 对应的数据源，数据源对应的 LINQ 查询叫 LINQ to &lt;数据源&gt;，比如：LINQ to XML。 从语法上 LINQ 可以分为：
+SQL风格：语法和 SQL 相似，部分复杂查询用 SQL 风格语义会更清晰明了，比如 SelectMany 和 Join 查询。SQL 风格的可读性有绝对优势，但不支持全部标准 LINQ 函数，不支持自定义函数。纯粹的语法糖。 函数风格：以 C# 扩展方法的方式实现，扩展方法即可以是标准库提供的也可以是自己实现的，完全的原生编程风格，编译后的代码都是函数调用。支持全部标准 LINQ 函数和任何自定义函数。随着查询复杂度的提高，可读性不如 SQL 风格。 感谢 @coredx 的纠正。
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2021-11-30 23:36:13 +0800 CST'>November 30, 2021</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
-  <a class="entry-link" aria-label="post link to GitHub&#43;Hexo 搭建个人博客（四）：SEO 优化及站点被搜索引擎收录设置" href="http://localhost:1313/posts/hexo/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E5%9B%9B/"></a>
+  <footer class="entry-footer"><span title='2022-11-24 22:49:16 +0000 UTC'>November 24, 2022</span>&nbsp;·&nbsp;<span>12 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to C# LINQ" href="http://localhost:1313/posts/%E8%AF%AD%E6%B3%95/c-linq/"></a>
 </article>
 
 <article class="post-entry"> 
 <figure class="entry-cover">
-        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211162350352.png" alt="">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191917907.png" alt="">
 </figure>
   <header class="entry-header">
-    <h2 class="entry-hint-parent">GitHub&#43;Hexo 搭建个人博客（三）：使用 GitHub Actions 实现 Hexo 博客自动部署
+    <h2 class="entry-hint-parent">C#数据结构与算法
     </h2>
   </header>
   <div class="entry-content">
-    <p>Hexo 相关知识点 静态博客简单，但是发布博文时稍显麻烦，一般需要下面两步：
-hexo clean hexo g -d // 相当于 hexo g &#43; hexo d 如果考虑到同步源文件，还需要每次更改后，将源文件 push 到指定仓库：
-git push origin main 我们可以将 Hexo 文件分为两类，一类是源文件，即下面这些文件：
-.├── _config.yml├── package.json├── scaffolds├── source| ├── _drafts| └── _posts└── themes 一类是 public 文件，即网站文件：
-public├── 2020├── categories├── tags.... 发布博文的这三个操作代表：
-hexo clean：删除网站（public）文件 hexo g：生成网站（public）文件 hexo d：将本地网站（public）文件同步到指定仓库（如：yourname.github.io）中 我使用一个私有仓库存放 Hexo 源文件，在 deppwang/deppwang.github.io 中存放网站文件。所以每次发布或者更新博文时，需要使用 push 操作更新源文件，再执行 hexo clean、hexo g -d 更新博客，比较麻烦,而且github在国内经常登录不上。
+    <p>数据结构与算法 什么是数据结构与算法？ 在学习数据结构与算法的时候，常常会思考一个问题：什么是数据结构与算法？
+这里比较找到了一个比较好的答案。
+从宏观来讲：
+数据结构是一组数据的存储结构。 算法就是操作数据的方法。 数据结构为算法服务，算法要作用在特定的数据结构中。 从狭义上来讲，就是数据结构与算法这门学科就是去学习比较经典的数据结构和算法。
+有点像学习设计模式一样，学习 23 种设计模式。
+如何学习数据结构与算法？ 说到设计模式，学习数据结构与算法与学习设计模式非常相似的。
+我们知道设计模式有 23 种，而一般一个开发者学习设计模式的时候，往往会对 23 个设计模式都从头到尾学一遍，但是学完之后发现除了记了个名字之外没啥卵用，就连名字也不一定记得住。
+那么是以为 23 种设计模式的核心并不是设计模式本身，而是 23 种设计模式所遵循的 SOLID 原则，即六大设计原则，而开发者一开始最应该掌握的是六大设计原则，而不是设计模式，六大设计原则是核心，而 23 种设计模式算是 23 种对于六大设计原则的案例一样，一定要先搞清楚这一点。否则学习就会事倍功半，当然如果有一定的编码经验再去学设计模式更好一些。
+学习数据结构与算法也是一样的，数据结构与算法的核心是时间复杂度和空间复杂度，就像对于设计模式中的六大设计原则一样，掌握了时间复杂度和空间复杂度的评估，那么剩下的经典的常用的数据结构和算法就是一个个案例而已，而不用死记硬背，当然有一定的编码经验再去学习会更好一些。
+这就是数据结构与算法的学习思路。
+为什么要学习数据结构与算法？ 国内大厂的面试比较爱考，但是考得不是很难 Google、Facebook、微软等更爱考，而且非常难。 可以评估代码性能，写出高性能的代码 开发时选择合适的数据结构 比较有名的基础框架，都柔和了很多基础数据解耦股和算法的设计思想 阅读源码的时候可以减少阻碍（比如遇到一些算法的实现） 提高编程能力 思维提升 简历上可以写一个精通数据结构与算法 数据结构与算法是不是高智商开发者的专属？ 当然不是，数据结构与算法的常用的知识点不多，而且也不需要高智商。重点还是熟能生巧。
+数据结构与算法学科的解决问题重点是什么？ 更省更快地存储和处理数据的问题 时间复杂度 时间复杂度的定义很简单：
+算法的执行时间与数据规模之间的增长关系 时间复杂度的全称其实叫做：渐进时间复杂度，我们就叫时间复杂度即可。
+时间复杂度的定义难得的清晰，不像一些设计模式这样的定义非常抽象。
+OK，既然时间复杂度的定义这么简单，那么我们也顺便说一下空间复杂度吧，空间复杂度的定义如下：
+算法的存储空间与数据规模之间的增长关系。 空间复杂度的定义也非常直白。
+List 的遍历，代码如下：
+var list = new List&lt;string&gt;(){&#34;a&#34;,&#34;b&#34;,&#34;c&#34;}; foreach (var s in list) { Debug.Log(s); } 代码中的 list 的数据规模是 3，其实就是数据量，那么这一段代码所执行的时间就是， Debug.Log(s) 所执行的时间 x 3。
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2021-11-30 23:35:16 +0800 CST'>November 30, 2021</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
-  <a class="entry-link" aria-label="post link to GitHub&#43;Hexo 搭建个人博客（三）：使用 GitHub Actions 实现 Hexo 博客自动部署" href="http://localhost:1313/posts/hexo/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E4%B8%89/"></a>
+  <footer class="entry-footer"><span title='2022-02-10 22:17:46 +0000 UTC'>February 10, 2022</span>&nbsp;·&nbsp;<span>6 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to C#数据结构与算法" href="http://localhost:1313/posts/%E8%AF%AD%E6%B3%95/c-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/"></a>
 </article>
 
 <article class="post-entry"> 
 <figure class="entry-cover">
-        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211162350352.png" alt="">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191859764.jpg" alt="">
 </figure>
   <header class="entry-header">
-    <h2 class="entry-hint-parent">GitHub&#43;Hexo 搭建个人博客（二）：使用GitHub PicGod搭建图床
+    <h2 class="entry-hint-parent">IOC
     </h2>
   </header>
   <div class="entry-content">
-    <p>图床 图床这是个老生常谈的问题了，流行过不少的图床但是基本都凉凉了。
-背景 图床是个啥东西就不用过多介绍了，先来对比一下各路图床：
-微博图床：以前用的人比较多，从2019年4月开始开启了防盗链，凉凉 SM.MS：运营四年多了，也变得越来越慢了，到了晚上直接打不开图片，速度堪忧 其他小众图床：随时有挂掉的风险 Imgur等国外图床：国内访问速度太慢，随时有被墙的风险 语雀图床，语雀用的oss本来挺好用，也开启防盗链了 大厂储存服务：例如七牛云、又拍云、腾讯云COS、阿里云OSS等，容量限制，操作繁琐，又是实名认证又是域名备案的，麻烦，而且还要花钱（有钱又不怕麻烦的当我没说） Github图床 Gitee 图床 如果舍得花钱可以选择大厂存储服务，定期交流量费即可。略过第2步直接往下看，如果喜欢稳定且免费的图床可以继续往下看gitee 就是github在国内的一个翻版，操作基本一致，github有时候访问会有抽风现象，原因你懂的 毕竟方校长的GFW不是吃素的。
-因此，GitHub 图床是个不错的选择，利用 jsDelivr CDN 加速访问（jsDelivr 是一个免费开源的 CDN 解决方案），PicGo 工具一键上传，操作简单高效，GitHub 和 jsDelivr 都是大厂，不用担心跑路问题，不用担心速度和容量问题，而且完全免费，可以说是目前免费图床的最佳解决方案！
-搭建github仓库图床 登录/注册GitHub，新建一个仓库，填写好仓库名，仓库描述，根据需求选择是否为仓库初始化一个README.md描述文件
-生成Token 在主页依次选择【Settings】-【Developer settings】-【Personal access tokens】-【Generate new token】，填写好描述，勾选【repo】，然后点击【Generate token】生成一个Token，注意这个Token只会显示一次，自己先保存下来，或者等后面配置好PicGo后再关闭此网页
-配置PicGo 前往下载PicGo，安装好后开始配置图床
-设定仓库名：按照【用户名/图床仓库名】的格式填写
-设定分支名：【main】
-设定Token：粘贴之前生成的【Token】
-指定存储路径：填写想要储存的路径，如【ITRHX-PIC/】，这样就会在仓库下创建一个名为 ITRHX-PIC 的文件夹，图片将会储存在此文件夹中
-设定自定义域名：它的作用是，在图片上传后，PicGo 会按照【自定义域名&#43;储存路径&#43;上传的图片名】的方式生成访问链接，并放到粘贴板上，因为我们要使用 jsDelivr 加速访问，所以可以设置为【https://cdn.jsdelivr.net/gh/用户名/图床仓库名 】，上传完毕后，我们就可以通过【https://cdn.jsdelivr.net/gh/用户名/图床仓库名/图片路径 】加速访问我们的图片了，比如上图的图片链接为：https://cdn.jsdelivr.net/gh/TRHX/ImageHosting/ITRHX-PIC/A27/08.jpg
-参考上面创建了一个仓库如下图
-至此免费图床搭建完成。可以使用PicGo 工具 愉快的上传图片了，直接粘贴在markdown博客编写工具中就可以了。
-图片不能重复上传，因为都会在同一个目录下，重复上传会有重名错误。
-进行图片上传 配置好PicGo后，我们就可以进行高效创作了，将图片拖拽到上传区，将会自动上传并复制访问链接，将链接粘贴到博文中就行了，访问速度杠杠的，此外PicGo还有相册功能，可以对已上传的图片进行删除，修改链接等快捷操作，PicGo还可以生成不同格式的链接、支持批量上传、快捷键上传、自定义链接格式、上传前重命名等，更多功能自己去探索吧！
-</p>
+    <p>简介 IOC简介 IOC全称为Invertuon Of Control，也就是控制反转。 控制反转是一种设计思想。而不是具体的技术。 IOC这种设计思想有很多方式实现，最常见的实现方式就是DI。
+DI简介 DI的全称是Dependency Injection，也就是依赖注入，是IOC思想的一种实现。
+依赖 什么是依赖？看下面这段代码：
+public class A{public B b = new B();} 上述代码中就是A依赖B。 我再这里理解为，A对象里面持有B对象，如果B对象不存在，那么A就无法成立，所以是A对象依赖B。
+注入 什么是注入呢？看下面这段代码：
+public class A{public B b = null;}public class B {}void Main(){var a = new A();var b = new B();a.b = b;} 从上面可以看出总共有两个对象，分别是a和b。可以看出现在的A对象是依赖B对象的。 **a.b=b;**这句代码就是将b对象注入到a对象的b成员中。 有时候可以把注入就理解成设置值。 依赖注入也就是吧某个对象依赖的对象进行赋值。
+DI QF中的IOC QF是一种框架，是作者最近正在学习的一种框架，这个框架不要求会，我们就拿QF中的DI来进行详细的了解一下DI。 我们在使用DI方案的时候一般都离不开DI容器这个概念。育德时候DI容易也叫做IOC容器。就是：DIContainer 和 IOCContainer。 下面我们来看看QF中是如何使用IOC的。
+using System.Collections;using System.Collections.Generic;using UnityEngine;namespace QF.Master.Example{ public class ServiceA{public void Say(){Debug.Log(&#34;I am ServiceA:&#34; &#43; this.GetHashCode());}}public class IOCExample : MonoBehaviour {// 声明为需要注入的对象[Inject] public ServiceA A {get;set;}void Start () {// 创建实例容器var container = new QFrameworkContainer();// 注册类型container.Register&lt;ServiceA&gt;();// 注入对象（会自动查找 Inject Atrributet的对象)container.Inject(this);// 注入之后，就可以直接使用 A 对象了A.Say(); }}} 上面是完整的案例，我们只要仔细看下面的代码：
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2021-11-30 23:32:59 +0800 CST'>November 30, 2021</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
-  <a class="entry-link" aria-label="post link to GitHub&#43;Hexo 搭建个人博客（二）：使用GitHub PicGod搭建图床" href="http://localhost:1313/posts/hexo/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E4%BA%8C/"></a>
+  <footer class="entry-footer"><span title='2022-01-15 16:09:32 +0000 UTC'>January 15, 2022</span>&nbsp;·&nbsp;<span>4 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to IOC" href="http://localhost:1313/posts/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/ioc/"></a>
 </article>
 
 <article class="post-entry"> 
 <figure class="entry-cover">
-        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211162350352.png" alt="">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191859764.jpg" alt="">
 </figure>
   <header class="entry-header">
-    <h2 class="entry-hint-parent">GitHub&#43;Hexo 搭建个人博客（一）
+    <h2 class="entry-hint-parent">设计模式
     </h2>
   </header>
   <div class="entry-content">
-    <p>什么是Hexo ? Hexo是一款基于Node.js的静态博客框架，依赖少易于安装使用，可以方便的生成静态网页托管在GitHub和Heroku上，是搭建博客的首选框架。这里我们选用的是GitHub，你没看错，全球最大的同性恋交友网站（逃……）。Hexo同时也是GitHub上的开源项目，参见：hexojs/hexo 如果想要更加全面的了解Hexo，可以到其官网 Hexo 了解更多的细节，因为Hexo的创建者是台湾人，对中文的支持很友好，可以选择中文进行查看。这里，默认各位猿/媛儿都知道GitHub就不再赘述。
-这是我的个人博客效果: 刘英博 · Hawk
-下面正式从零开始搭建年轻人的第一个网站。
-环境准备 获得个人网站域名 域名是网站的入口，也是网站的第一印象，比如饿了么的官网的域名是：https://www.ele.me/ ，很是巧妙。常见的有com,cn,net,org等后缀，也有小众的xyz,me,io等后缀，根据你自己的喜好，选择不同的后缀，比如我选择就是常见的com后缀。很多小众奇特的后缀在大陆是没办法备案的，网站也就无法上线。然而使用GitHub托管我们的网站，完全不需要备案，因为托管我们的网站内容的服务器在美国，而且在国内备案流程也比较繁杂，时间需要一周左右。
-申请域名的地方有很多，这里推荐阿里云：阿里云-为了无法计算的价值 申请入口：域名注册 购买域名这也是我们整个搭建过程中惟一一个需要花钱的地方。如果你已经有了空闲域名就无需购买，直接使用即可。
-GitHub创建个人仓库 登录到GitHub,如果没有GitHub帐号，使用你的邮箱注册GitHub帐号：Build software better, together 点击GitHub中的New repository创建新仓库，仓库名应该为：用户名.http://github.io 这个用户名使用你的GitHub帐号名称代替，这是固定写法
-安装Git 什么是Git ?简单来说Git是开源的分布式版本控制系统，用于敏捷高效地处理项目。我们网站在本地搭建好了，需要使用Git同步到GitHub上。如果想要了解Git的细节，参看廖雪峰老师的Git教程：Git教程 从Git官网下载：Git - Downloading Package 现在的机子基本都是64位的，选择64位的安装包，下载后安装，在命令行里输入git --version测试是否安装成功，若安装失败，参看其他详细的Git安装教程。安装成功后，将你的Git与GitHub帐号绑定。
-liuyingbo@liuyingbodeMacBook-Pro ~ % git --version git version 2.32.0 (Apple Git-132) 在命令行里，设置user.name和user.email配置信息：
-git config --global user.name &#34;你的GitHub用户名&#34; git config --global user.email &#34;你的GitHub注册邮箱&#34; 生成ssh密钥文件：
-ssh-keygen -t 然后直接三个回车即可，默认不需要设置密码 然后找到生成的.ssh的文件夹中的id_rsa.pub密钥，将内容全部复，Mac打开隐藏文件显示Shift&#43;Command&#43;.，windows应该在C盘。
-打开GitHub_Settings_keys 页面，新建new SSH Key
-Title为标题，任意填即可，将刚刚复制的id_rsa.pub内容粘贴进去，最后点击Add SSH key。 在Git Bash中检测GitHub公钥设置是否成功，输入ssh git@github.com
-liuyingbo@liuyingbodeMacBook-Pro ~ % ssh git@github.com PTY allocation request failed on channel 0 Hi liuyingbor! You&#39;ve successfully authenticated, but GitHub does not provide shell access. Connection to github.com closed. 如上则说明成功。这里之所以设置GitHub密钥原因是，通过非对称加密的公钥与私钥来完成加密，公钥放置在GitHub上，私钥放置在自己的电脑里。GitHub要求每次推送代码都是合法用户，所以每次推送都需要输入账号密码验证推送用户是否是合法用户，为了省去每次输入密码的步骤，采用了ssh，当你推送的时候，git就会匹配你的私钥跟GitHub上面的公钥是否是配对的，若是匹配就认为你是合法用户，则允许推送。这样可以保证每次的推送都是正确合法的。
+    <p>如何正确使用设计模式？ 设计模式要活学活用，不要生搬硬套。想要游刃有余地使用设计模式，需要打下牢固的程序设计语言基础、夯实自己的编程思想、积累大量的时间经验、提高开发能力。目的都是让程序低耦合，高复用，高内聚，易扩展，易维护。
+1. 需求驱动 不仅仅是功能性需求，需求驱动还包括性能和运行时的需求，如软件的可维护性和可复用性等方面。设计模式是针对软件设计的，而软件设计是针对需求的，一定不要为了使用设计模式而使用设计模式，否则可能会使设计变得复杂，使软件难以调试和维护。
+2. 分析成功的模式应用项目 对现有的应用实例进行分析是一个很好的学习途径，应当注意学习已有的项目，而不仅是学习设计模式如何实现，更重要的是注意在什么场合使用设计模式。
+3. 充分了解所使用的开发平台 设计模式大部分都是针对面向对象的软件设计，因此在理论上适合任何面向对象的语言，但随着技术的发展和编程环境的改善，设计模式的实现方式会有很大的差别。在一些平台下，某些设计模式是自然实现的。
+不仅指编程语言，平台还包括平台引入的技术。例如，Java EE 引入了反射机制和依赖注入，这些技术的使用使设计模式的实现方式产生了改变。
+4. 在编程中领悟模式 软件开发是一项实践工作，最直接的方法就是编程。没有从来不下棋却熟悉定式的围棋高手，也没有不会编程就能成为架构设计师的先例。掌握设计模式是水到渠成的事情，除了理论只是和实践积累，可能会“渐悟”或者“顿悟”。
+5.避免设计过度 设计模式解决的是设计不足的问题，但同时也要避免设计过度。一定要牢记简洁原则，要知道设计模式是为了使设计简单，而不是更复杂。如果引入设计模式使得设计变得复杂，只能说我们把简单问题复杂化了，问题本身不需要设计模式。
+开闭原则 开闭原则（Open Closed Principle，OCP）由勃兰特·梅耶（Bertrand Meyer）提出，他在 1988 年的著作《面向对象软件构造》（Object Oriented Software Construction）中提出：软件实体应当对扩展开放，对修改关闭（Software entities should be open for extension，but closed for modification），这就是开闭原则的经典定义。
+这里的软件实体包括以下几个部分：
+项目中划分出的模块 类与接口 方法 开闭原则的含义是：当应用的需求改变时，在不修改软件实体的源代码或者二进制代码的前提下，可以扩展模块的功能，使其满足新的需求。
+开闭原则的作用 开闭原则是面向对象程序设计的终极目标，它使软件实体拥有一定的适应性和灵活性的同时具备稳定性和延续性。具体来说，其作用如下。
+1. 对软件测试的影响 软件遵守开闭原则的话，软件测试时只需要对扩展的代码进行测试就可以了，因为原有的测试代码仍然能够正常运行。
+2. 可以提高代码的可复用性 粒度越小，被复用的可能性就越大；在面向对象的程序设计中，根据原子和抽象编程可以提高代码的可复用性。
+3. 可以提高软件的可维护性 遵守开闭原则的软件，其稳定性高和延续性强，从而易于扩展和维护。
+开闭原则的实现方法 可以通过“抽象约束、封装变化”来实现开闭原则，即通过接口或者抽象类为软件实体定义一个相对稳定的抽象层，而将相同的可变因素封装在相同的具体实现类中。
+因为抽象灵活性好，适应性广，只要抽象的合理，可以基本保持软件架构的稳定。而软件中易变的细节可以从抽象派生来的实现类来进行扩展，当软件需要发生变化时，只需要根据需求重新派生一个实现类来扩展就可以了。
+里氏替换原则 里氏替换原则（Liskov Substitution Principle，LSP）由麻省理工学院计算机科学实验室的里斯科夫（Liskov）女士在 1987 年的“面向对象技术的高峰会议”（OOPSLA）上发表的一篇文章《数据抽象和层次》（Data Abstraction and Hierarchy）里提出来的，她提出：继承必须确保超类所拥有的性质在子类中仍然成立（Inheritance should ensure that any property proved about supertype objects also holds for subtype objects）。
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2021-11-11 22:12:57 +0800 CST'>November 11, 2021</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
-  <a class="entry-link" aria-label="post link to GitHub&#43;Hexo 搭建个人博客（一）" href="http://localhost:1313/posts/hexo/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E4%B8%80/"></a>
+  <footer class="entry-footer"><span title='2022-01-10 22:17:46 +0000 UTC'>January 10, 2022</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to 设计模式" href="http://localhost:1313/posts/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"></a>
 </article>
+
+<article class="post-entry"> 
+<figure class="entry-cover">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191917907.png" alt="">
+</figure>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">c# async/await
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Talk is cheap, Show you the code first！
+private void button1_Click(object sender, EventArgs e) { Console.WriteLine(&#34;111 balabala. My Thread ID is :&#34; &#43; Thread.CurrentThread.ManagedThreadId); AsyncMethod(); Console.WriteLine(&#34;222 balabala. My Thread ID is :&#34; &#43; Thread.CurrentThread.ManagedThreadId); } private async Task AsyncMethod() { var ResultFromTimeConsumingMethod = TimeConsumingMethod(); string Result = await ResultFromTimeConsumingMethod &#43; &#34; &#43; AsyncMethod. My Thread ID is :&#34; &#43; Thread.CurrentThread.ManagedThreadId; Console.WriteLine(Result); //返回值是Task的函数可以不用return } //这个函数就是一个耗时函数，可能是IO操作，也可能是cpu密集型工作。 private Task&lt;string&gt; TimeConsumingMethod() { var task = Task.Run(()=&gt; { Console.WriteLine(&#34;Helo I am TimeConsumingMethod. My Thread ID is :&#34; &#43; Thread.CurrentThread.ManagedThreadId); Thread.Sleep(5000); Console.WriteLine(&#34;Helo I am TimeConsumingMethod after Sleep(5000). My Thread ID is :&#34; &#43; Thread.CurrentThread.ManagedThreadId); return &#34;Hello I am TimeConsumingMethod&#34;; }); return task; } 异步方法的结构 上面是一个的使用async/await的例子（为了方便解说原理我才写的这样复杂的）。 使用async/await能非常简单的创建异步方法，防止耗时操作阻塞当前线程。 使用async/await来构建的异步方法，逻辑上主要有下面三个结构：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2021-12-05 21:29:02 +0000 UTC'>December 5, 2021</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to c# async/await" href="http://localhost:1313/posts/%E8%AF%AD%E6%B3%95/c%23%E5%AD%A6%E4%B9%A0-async-await/"></a>
+</article>
+
+<article class="post-entry"> 
+<figure class="entry-cover">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191917907.png" alt="">
+</figure>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">C#反射机制
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>C#反射机制 资料转载自知乎:https://zhuanlan.zhihu.com/p/41282759
+何为反射? 首先我们通过两个实例来说明反射的大体概念。
+B超:大家体检的时候大概都做过B超,B超可以透过肚皮探测到你内脏的生理情况。这是如何做到的呢?B超是B型超声波,它可以透过肚皮通过向你体内发射B型超声波,当超声波遇到内脏壁的时候就会产生一定的“回音”反射,然后把“回音”进行处理就可以显示出内脏的情况了。
+地球内部结构:地球的内部结构大体可以分为三层:地壳、地幔和地核。如何在地球表面不用深入地球内部就知道其内部的构造呢?我们可以向地球发射“地震波”,“地震波”分两种一种是“横波”,另一种是“纵波”。“横波”只能穿透固体,而“纵波”既可穿透固体又可以穿透液体。通过在地面对纵波和横波的反回情况,我们就可以大体断定地球内部的构造了。
+大家注意到这两个例子的共同特点,就是从一个对象的外部去了解对象内部的构造,而且都是利用了波的反射功能。在.NET中的反射也可以实现从对象的外部来了解对象(或程序集)内部结构的功能,哪怕你不知道这个对象(或程序集)是个什么东西,另外.NET中的反射还可以运态创建出对象并执行它其中的方法。
+反射是.NET中的重要机制,通过反射,可以在运行时获得程序或程序集中每一个类型(包括类、结构、委托、接口和枚举等)的成员和成员的信息。有了反射,即可对每一个类型了如指掌。另外我还可以直接创建对象,即使这个对象的类型在编译时还不知道。
+为什么使用反射,而不直接引用它的dll或者类型呢?
+例如你有个main.exe,需要使用say.dll,draw.dll,突然客户说我们要添加一个跑的功能,那么只需要按照我们约定的规则做一个run的dll,之前的main.exe不需要做任何修改(就是不需要再去导入run.dll,其中需要其他的设计来规范),在main.exe中就能直接使用run.dll了。
+其实,我们已经在不自觉地使用它了,举个最简单的例子,当你在VS的设计器里拖入一个控件后,设计器会通过反射获取这个控件的属性,并提供你进行设置。那么,问题来了,为什么要用反射呢?因为设计器在做的时候,根本不可能预知将来有什么控件会被你拖入进去。
+反射的用途简要介绍 反射的用途大体总结如下,我们会在下面详细的进行介绍。 (1)使用Assembly定义和加载程序集,加载在程序集清单中列出模块,以及从此程序集中查找类型并创建该类型的实例。 (2)使用Module了解包含模块的程序集以及模块中的类等,还可以获取在模块上定义的所有全局方法或其他特定的非全局方法。 (3)使用ConstructorInfo了解构造函数的名称、参数、访问修饰符(如pulic 或private)和实现详细信息(如abstract或virtual)等。 (4)使用MethodInfo了解方法的名称、返回类型、参数、访问修饰符(如pulic 或private)和实现详细信息(如abstract或virtual)等。 (5)使用FiedInfo了解字段的名称、访问修饰符(如public或private)和实现详细信息(如static)等,并获取或设置字段值。 (6)使用EventInfo了解事件的名称、事件处理程序数据类型、自定义属性、声明类型和反射类型等,添加或移除事件处理程序 (7)使用PropertyInfo了解属性的名称、数据类型、声明类型、反射类型和只读或可写状态等,获取或设置属性值。 (8)使用ParameterInfo了解参数的名称、数据类型、是输入参数还是输出参数,以及参数在方法签名中的位置等。
+反射用到的主要类:
+System.Type 类–通过这个类可以访问任何给定数据类型的信息。 System.Reflection.Assembly类–它可以用于访问给定程序集的信息,或者把这个程序集加载到程序中。 System.Type类:System.Type 类对于反射起着核心的作用。但它是一个抽象的基类,Type有与每种数据类型对应的派生类,我们使用这个派生类的对象的方法、字段、属性来查找有关该类型的所有信息。获取给定类型的Type引用有3种常用方式:
+Type类的属性: Name 数据类型名
+FullName 数据类型的完全限定名(包括命名空间名) Namespace 定义数据类型的命名空间名 IsAbstract 指示该类型是否是抽象类型
+IsArray 指示该类型是否是数组
+IsClass 指示该类型是否是类 IsEnum 指示该类型是否是枚举 IsInterface 指示该类型是否是接口 IsPublic 指示该类型是否是公有的 IsSealed 指示该类型是否是密封类 IsValueType 指示该类型是否是值类型
+Type类的方法: GetConstructor(), GetConstructors():返回 ConstructorInfo类型,用于取得该类的构造函数的信息 GetEvent(), GetEvents():返回EventInfo类型,用于取得该类的事件的信息 GetField(), GetFields():返回FieldInfo类型,用于取得该类的字段(成员变量)的信息 GetInterface(), GetInterfaces():返回InterfaceInfo类型,用于取得该类实现的接口的信息 GetMember(), GetMembers():返回MemberInfo类型,用于取得该类的所有成员的信息 GetMethod(), GetMethods():返回MethodInfo类型,用于取得该类的方法的信息 GetProperty(), GetProperties():返回PropertyInfo类型,用于取得该类的属性的信息可以调用这些成员,其方式是调用Type的InvokeMember()方法,或者调用MethodInfo, PropertyInfo和其他类的Invoke()方法。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2021-12-05 21:26:10 +0000 UTC'>December 5, 2021</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to C#反射机制" href="http://localhost:1313/posts/%E8%AF%AD%E6%B3%95/c%23-%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/"></a>
+</article>
+
+<article class="post-entry"> 
+<figure class="entry-cover">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191917907.png" alt="">
+</figure>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">C#学习-C# 3.0
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>C# 3.0 版本 C# 3.0 新增的语法特性，如下:
+自动实现的属性 匿名类型 查询表达式（LINQ） 表达式 表达式树 扩展方法 隐式类型本地变量 分部方法 对象和集合初始值设定项 自动实现属性 这个特性非常简单，代码如下:
+public class PropertyExample { // C# 3.0之前 private string mNickName; public string NickName { get { return mNickName; } set { mNickName = value; } } // C# 3.0 public string Name { get; set; } } 非常简单，看代码就懂了。
+匿名类型 代码也很简单，如下:
+var person = new {Title = &#34;Name&#34;}; Debug.Log(person.Title); lambda 表达式 lambda 表达式非常简单，就是匿名方法的一种表现，如下:
+using System; public class LambdaExpressionExample { void Func() { } void Main() { // C# 1.0 Action action1 = new Action(Func); // C# 2.0 Action actionB = delegate { }; // C# 3.0 Action acionC = () =&gt; { }; } } 表达式树 表达式树实际上是 Expression 这个 API 的使用，先看下代码，如下:
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2021-12-05 21:01:21 +0000 UTC'>December 5, 2021</span>&nbsp;·&nbsp;<span>6 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to C#学习-C# 3.0" href="http://localhost:1313/posts/%E8%AF%AD%E6%B3%95/c%23%E5%AD%A6%E4%B9%A0-c%23-3.0/"></a>
+</article>
+
+<article class="post-entry"> 
+<figure class="entry-cover">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191917907.png" alt="">
+</figure>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">C#学习-C# 2.0
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>C# 2.0 版本 在 C# 2.0 版本提供的特性如下:
+泛型 分部类型（partial） 匿名方法 可以为 null 的值类型 迭代器 协变和逆变 getter/setter 单独可访问性 方法组转换（委托） 静态类 委托推断 泛型 最常用的 List 就是泛型的一个应用。
+C# 文档地址：泛型
+泛型 API 的设计 要设计一个泛型 的 API 非常简单，看以下代码中的 GetTypeName 方法。
+using UnityEngine; namespace QFramework.Master { public class ReflectionExample : MonoBehaviour { string GetTypeName&lt;T&gt;() { var type = typeof(T); return type.Name; } private void Awake() { Debug.Log(GetTypeName&lt;string&gt;()); } } } // 输出结果: // String 泛型可以把一个类或者一个方法，当做一个模板，而这个模板所需要填充的内容则是定义的各种类型，所以泛型可以最大限度地实现代码的复用。
+C# 什么要实现泛型？ C# 实现泛型这个特性，肯定是为了解决开发者遇到的实际问题的，要想知道泛型具体解决了什么问题，那么就要回过头看看没实现泛型之前的 C# 语言有什么样的问题？
+在 C# 实现泛型之前，我们只能使用 ArrayList 来充当不定长的数组。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2021-12-05 20:27:45 +0000 UTC'>December 5, 2021</span>&nbsp;·&nbsp;<span>9 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to C#学习-C# 2.0" href="http://localhost:1313/posts/%E8%AF%AD%E6%B3%95/c%23%E5%AD%A6%E4%B9%A0-c%23-2.0/"></a>
+</article>
+
+<article class="post-entry"> 
+<figure class="entry-cover">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191917907.png" alt="">
+</figure>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">C#学习-C# 1.0
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>C# 1.0 我们先罗列一下 C# 1.0 发布时所包含的语法特性，如下：
+类（class） 结构（struct） 接口（interface） 事件（event） 属性（property） 委托（delegates） 表达式 语句 特性（有时候也叫属性）（Attribute） C# 1.0 的特性只有以上这些。
+基本上它涵盖了 C# 中最常用、最核心、最基础部分的内容。C# 使用进阶，一些非常基础的东西就不记录了。
+类 单纯从功能上来说，类可以：
+包含变量（属性） 包含方法（行为） 继承 用来创建对象 面向对象与面向过程 有了类我们比较容易地进行面向对象编程，没有类当然也可以面向对象编程，只不过会不那么容易做到。
+那么什么是面向对象编程呢？
+我的理解只有两个字，建模。
+建模就是对需要实现的功能或者需要解决的问题建立业务模型。
+比如要实现购买商品功能，就需要我们创建商品对象，还要把购买商品的行为归属到另一个对象中，这个对象有可能是顾客对象，也有可能是平台对象。
+这就是非常典型的面向对象建模案例。
+那么如果是面向过程中的购买商品会是什么样的呢？
+我们也许这样考虑，购买商品先创建一个购买商品函数，然后函数可能需要调用数据库，那就再写一个调用数据库的函数交媾购买商品函数调用，依次类推。
+其实要区分面向对象编程与面向过程编程非常容易。
+面向对象编程是以对象为基础进行思考的，而面向过程是以功能（函数）为基础进行思考的。
+这就是两者的差别。
+面向对象与面向过程是对立的吗？ 不是对立的，面向对象更擅设计，而面向过程更擅长实现。
+在使用 C# 的时候，两种编程思维都是会用到的。
+没有类如何面向对象编程？ 面向对象编程，当然要有对象了，如果没有类的话，其实也可以实现面向对象编程。
+c 语言虽然不支持类，但是也可以通过宏或者一些模拟的手段支持类和对象的。
+Lua 语言也没有提供类功能，但是通过元表也是能够模拟类和对象的。
+OK，到此，面向对象这个话题可能与我们的专栏话题不太对题，但是一想到类，就不自觉地扯到面向对象这个话题了。
+总是面向对象编程的核心就是两个字：建模。
+引用类型和值类型 几乎在每一本编程语言书籍上都会谈到引用类型和值类型这两个概念。
+具体的引用类型和值类型相关的细节，大家在网上找各种文章就可以了。
+引用类型，是用类创建的类型就是引用类型。
+值类型包含基础类型和结构体（struct）创建出来的类型。
+如下： 就是这么简单。
+定义 值类型直接存储其值，而引用类型存储对其值的引用
+值类型 和 引用类型 是非常重要且非常基础的话题，所以想深入研究，网上能够找到一大堆文章。
+类是引用类型 记住这句话就行。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2021-12-01 22:32:41 +0000 UTC'>December 1, 2021</span>&nbsp;·&nbsp;<span>7 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to C#学习-C# 1.0" href="http://localhost:1313/posts/%E8%AF%AD%E6%B3%95/c%23%E5%AD%A6%E4%B9%A0-c%23-1.0/"></a>
+</article>
+<footer class="page-footer">
+  <nav class="pagination">
+    <a class="next" href="http://localhost:1313/page/2/">Next&nbsp;&nbsp;»
+    </a>
+  </nav>
+</footer>
     </main>
     
 <footer class="footer">

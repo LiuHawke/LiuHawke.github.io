@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>IOC | LiuYingbo Blog</title>
+<meta name="keywords" content="IOC, 设计模式">
+<meta name="description" content="简介
+IOC简介
+IOC全称为Invertuon Of Control，也就是控制反转。
+控制反转是一种设计思想。而不是具体的技术。
+IOC这种设计思想有很多方式实现，最常见的实现方式就是DI。
+DI简介
+DI的全称是Dependency Injection，也就是依赖注入，是IOC思想的一种实现。
+依赖
+什么是依赖？看下面这段代码：
+public class A
+{
+  public B b = new B();
+}
+上述代码中就是A依赖B。
+我再这里理解为，A对象里面持有B对象，如果B对象不存在，那么A就无法成立，所以是A对象依赖B。
+注入
+什么是注入呢？看下面这段代码：
+public class A
+{
+  public B b = null;
+}
+
+public class B {}
+
+void Main()
+{
+  var a = new A();
+  var b = new B();
+
+  a.b = b;
+}
+从上面可以看出总共有两个对象，分别是a和b。可以看出现在的A对象是依赖B对象的。
+**a.b=b;**这句代码就是将b对象注入到a对象的b成员中。
+有时候可以把注入就理解成设置值。
+依赖注入也就是吧某个对象依赖的对象进行赋值。
+DI
+QF中的IOC
+QF是一种框架，是作者最近正在学习的一种框架，这个框架不要求会，我们就拿QF中的DI来进行详细的了解一下DI。
+我们在使用DI方案的时候一般都离不开DI容器这个概念。育德时候DI容易也叫做IOC容器。就是：DIContainer 和 IOCContainer。
+下面我们来看看QF中是如何使用IOC的。
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace QF.Master.Example
+{    
+
+    public class ServiceA
+    {
+        public void Say()
+        {
+            Debug.Log(&#34;I am ServiceA:&#34; &#43; this.GetHashCode());
+        }
+    }
+
+    public class IOCExample : MonoBehaviour 
+    {
+        // 声明为需要注入的对象
+        [Inject] 
+        public ServiceA A {get;set;}
+
+        void Start () 
+        {
+            // 创建实例容器
+            var container = new QFrameworkContainer();
+
+            // 注册类型
+            container.Register&lt;ServiceA&gt;();
+
+            // 注入对象（会自动查找 Inject Atrributet的对象)
+            container.Inject(this);
+
+            // 注入之后，就可以直接使用 A 对象了
+            A.Say();        
+        }
+    }
+}
+上面是完整的案例，我们只要仔细看下面的代码：">
+<meta name="author" content="LiuYingbo">
+<link rel="canonical" href="http://localhost:1313/posts/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/ioc/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.a29c24210eb31d9ce56f669c66a35c9c51b17376b7764e336a49af7dec914cf0.css" integrity="sha256-opwkIQ6zHZzlb2acZqNcnFGxc3a3dk4zakmvfeyRTPA=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/ioc/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="LiuYingbo Blog (Alt + H)">LiuYingbo Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/categories/" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives/" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">Home</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      IOC
+    </h1>
+    <div class="post-meta"><span title='2022-01-15 16:09:32 +0000 UTC'>January 15, 2022</span>&nbsp;·&nbsp;<span>4 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span>
+
+</div>
+  </header> 
+<figure class="entry-cover">
+        <img loading="eager" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191859764.jpg" alt="">
+        
+</figure><div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e7%ae%80%e4%bb%8b" aria-label="简介">简介</a><ul>
+                        
+                <li>
+                    <a href="#ioc%e7%ae%80%e4%bb%8b" aria-label="IOC简介">IOC简介</a></li>
+                <li>
+                    <a href="#di%e7%ae%80%e4%bb%8b" aria-label="DI简介">DI简介</a><ul>
+                        
+                <li>
+                    <a href="#%e4%be%9d%e8%b5%96" aria-label="依赖">依赖</a></li>
+                <li>
+                    <a href="#%e6%b3%a8%e5%85%a5" aria-label="注入">注入</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#di" aria-label="DI">DI</a><ul>
+                        
+                <li>
+                    <a href="#qf%e4%b8%ad%e7%9a%84ioc" aria-label="QF中的IOC">QF中的IOC</a></li>
+                <li>
+                    <a href="#di%e5%ae%b9%e5%99%a8%e7%9a%84%e5%bc%ba%e5%a4%a7%e4%b9%8b%e5%a4%84" aria-label="DI容器的强大之处">DI容器的强大之处</a><ul>
+                        
+                <li>
+                    <a href="#%e8%81%8c%e8%b4%a3" aria-label="职责">职责</a></li>
+                <li>
+                    <a href="#%e5%bc%ba%e5%a4%a7%e4%b9%8b%e5%a4%84" aria-label="强大之处">强大之处</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%be%9d%e8%b5%96%e7%ae%a1%e7%90%86" aria-label="依赖管理">依赖管理</a><ul>
+                        
+                <li>
+                    <a href="#%e5%9c%a8modulea%e5%86%85%e9%83%a8%e5%88%9b%e5%bb%ba" aria-label="在ModuleA内部创建">在ModuleA内部创建</a></li>
+                <li>
+                    <a href="#%e5%9c%a8modulea%e5%a4%96%e9%83%a8%e5%88%9b%e5%bb%ba" aria-label="在ModuleA外部创建">在ModuleA外部创建</a></li>
+                <li>
+                    <a href="#%e4%bd%bf%e7%94%a8-di-container-%e7%ae%a1%e7%90%86%e4%be%9d%e8%b5%96" aria-label="使用 DI Container 管理依赖">使用 DI Container 管理依赖</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%9f%9f" aria-label="域">域</a><ul>
+                        
+                <li>
+                    <a href="#%e7%ae%80%e4%bb%8b-1" aria-label="简介">简介</a></li>
+                <li>
+                    <a href="#dicontainer%e4%b8%ad%e7%9a%84%e5%9f%9f" aria-label="DIContainer中的域">DIContainer中的域</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%be%9d%e8%b5%96%e5%80%92%e7%bd%ae%e5%8e%9f%e5%88%99" aria-label="依赖倒置原则">依赖倒置原则</a><ul>
+                        
+                <li>
+                    <a href="#%e9%ab%98%e5%b1%82%e6%a8%a1%e5%9d%97%e4%b8%8d%e5%ba%94%e8%af%a5%e4%be%9d%e8%b5%96%e4%ba%8e%e4%bd%8e%e5%b1%82%e6%a8%a1%e5%9d%97%e4%b8%a4%e8%80%85%e9%83%bd%e5%ba%94%e8%af%a5%e4%be%9d%e8%b5%96%e4%ba%8e%e6%8a%bd%e8%b1%a1%e6%a6%82%e5%bf%b5" aria-label="高层模块不应该依赖于低层模块，两者都应该依赖于抽象概念">高层模块不应该依赖于低层模块，两者都应该依赖于抽象概念</a></li>
+                <li>
+                    <a href="#%e6%8a%bd%e8%b1%a1%e6%8e%a5%e5%8f%a3%e4%b8%8d%e5%ba%94%e8%af%a5%e4%be%9d%e8%b5%96%e4%ba%8e%e5%ae%9e%e7%8e%b0%e8%80%8c%e5%ae%9e%e7%8e%b0%e4%be%9d%e8%b5%96%e4%ba%8e%e6%8a%bd%e8%b1%a1%e6%8e%a5%e5%8f%a3" aria-label="抽象接口不应该依赖于实现，而实现依赖于抽象接口">抽象接口不应该依赖于实现，而实现依赖于抽象接口</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e9%80%9a%e8%bf%87dicontainer%e5%ae%9e%e7%8e%b0dip" aria-label="通过DIContainer实现DIP">通过DIContainer实现DIP</a><ul>
+                        
+                <li>
+                    <a href="#dicontainer-%e4%b8%ad%e7%9a%84%e6%8e%a5%e5%8f%a3%e4%be%9d%e8%b5%96%e7%ae%a1%e7%90%86qf" aria-label="DIContainer 中的接口依赖管理（QF）">DIContainer 中的接口依赖管理（QF）</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%8e%a7%e5%88%b6%e5%8f%8d%e8%bd%ac" aria-label="控制反转">控制反转</a><ul>
+                        
+                <li>
+                    <a href="#%e6%8e%a7%e5%88%b6%e6%ad%a3%e8%bd%ac" aria-label="控制正转">控制正转</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%be%9d%e8%b5%96%e6%b3%a8%e5%85%a5%e4%b8%8e%e6%8e%a7%e5%88%b6%e5%8f%8d%e8%bd%ac" aria-label="依赖注入与控制反转">依赖注入与控制反转</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h1 id="简介">简介<a hidden class="anchor" aria-hidden="true" href="#简介">#</a></h1>
+<h2 id="ioc简介">IOC简介<a hidden class="anchor" aria-hidden="true" href="#ioc简介">#</a></h2>
+<p>IOC全称为Invertuon Of Control，也就是控制反转。
+控制反转是一种设计思想。而不是具体的技术。
+IOC这种设计思想有很多方式实现，最常见的实现方式就是DI。</p>
+<h2 id="di简介">DI简介<a hidden class="anchor" aria-hidden="true" href="#di简介">#</a></h2>
+<p>DI的全称是Dependency Injection，也就是依赖注入，是IOC思想的一种实现。</p>
+<h3 id="依赖">依赖<a hidden class="anchor" aria-hidden="true" href="#依赖">#</a></h3>
+<p>什么是依赖？看下面这段代码：</p>
+<pre tabindex="0"><code>public class A
+{
+  public B b = new B();
+}
+</code></pre><p>上述代码中就是A依赖B。
+我再这里理解为，A对象里面持有B对象，如果B对象不存在，那么A就无法成立，所以是A对象依赖B。</p>
+<h3 id="注入">注入<a hidden class="anchor" aria-hidden="true" href="#注入">#</a></h3>
+<p>什么是注入呢？看下面这段代码：</p>
+<pre tabindex="0"><code>public class A
+{
+  public B b = null;
+}
+
+public class B {}
+
+void Main()
+{
+  var a = new A();
+  var b = new B();
+
+  a.b = b;
+}
+</code></pre><p>从上面可以看出总共有两个对象，分别是a和b。可以看出现在的A对象是依赖B对象的。
+**a.b=b;**这句代码就是将b对象注入到a对象的b成员中。
+有时候可以把注入就理解成设置值。
+依赖注入也就是吧某个对象依赖的对象进行赋值。</p>
+<h1 id="di">DI<a hidden class="anchor" aria-hidden="true" href="#di">#</a></h1>
+<h2 id="qf中的ioc">QF中的IOC<a hidden class="anchor" aria-hidden="true" href="#qf中的ioc">#</a></h2>
+<p>QF是一种框架，是作者最近正在学习的一种框架，这个框架不要求会，我们就拿QF中的DI来进行详细的了解一下DI。
+我们在使用DI方案的时候一般都离不开DI容器这个概念。育德时候DI容易也叫做IOC容器。就是：DIContainer 和 IOCContainer。
+下面我们来看看QF中是如何使用IOC的。</p>
+<pre tabindex="0"><code>using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace QF.Master.Example
+{    
+
+    public class ServiceA
+    {
+        public void Say()
+        {
+            Debug.Log(&#34;I am ServiceA:&#34; + this.GetHashCode());
+        }
+    }
+
+    public class IOCExample : MonoBehaviour 
+    {
+        // 声明为需要注入的对象
+        [Inject] 
+        public ServiceA A {get;set;}
+
+        void Start () 
+        {
+            // 创建实例容器
+            var container = new QFrameworkContainer();
+
+            // 注册类型
+            container.Register&lt;ServiceA&gt;();
+
+            // 注入对象（会自动查找 Inject Atrributet的对象)
+            container.Inject(this);
+
+            // 注入之后，就可以直接使用 A 对象了
+            A.Say();        
+        }
+    }
+}
+</code></pre><p>上面是完整的案例，我们只要仔细看下面的代码：</p>
+<pre tabindex="0"><code>// 创建实例容器
+var container = new QFrameworkContainer();
+
+// 注册类型
+container.Register&lt;ServiceA&gt;();
+
+// 注入对象（会自动查找 Inject Atrributet的对象)
+container.Inject(this);
+
+// 注入之后，就可以直接使用 A 对象了
+A.Say();
+</code></pre><p>首先我们创建了一个容器，并且在容器里注册了一个ServiceA对象。这些其实都是可以自己写一个脚本进行封装的。
+接下来我们来看注入：**container.Inject(this);**这句就是注入对象，注入的就是刚才注册的对象。
+接下来我们就可以使用this对象里的ServiceA对象了，为啥注入到A对象了，这里是框架给设计好了，只要在对应的对象上面添加[Inject]就代表是需要注入的对象。注入的时候就会对其进行赋值。
+我们可以看下面的图进行理解：</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191902943.png"></p>
+<p>这是QF框架中的使用方法，我们不用会这种方法，因为只是针对QF框架的，我们学习的是IOC的这种思想。</p>
+<h2 id="di容器的强大之处">DI容器的强大之处<a hidden class="anchor" aria-hidden="true" href="#di容器的强大之处">#</a></h2>
+<h3 id="职责">职责<a hidden class="anchor" aria-hidden="true" href="#职责">#</a></h3>
+<p>一般情况下DI容器会提供如下的API：</p>
+<pre tabindex="0"><code>注册类型：Register&lt;TSource,TTarget&gt;
+注入:Inject(object obj)
+解析:Resolve&lt;T&gt;()
+123
+</code></pre><p>注册和注入在刚才代码中已经有体现了。
+在 DI Container 中，Resolve 实际上是根据类型返回实例。
+DI容器的职责很简单，就是管理依赖和注入依赖。
+DI容器中的容器代表的就是存储依赖的容器，容器里面装的就是依赖。
+一般的DI容器利用的其实就是Dictonary&lt;Type,object&gt;来作为核心数据结构。
+根据Type就可以得到依赖的对象，然后通过Inject注入到对象中。</p>
+<h3 id="强大之处">强大之处<a hidden class="anchor" aria-hidden="true" href="#强大之处">#</a></h3>
+<p>有了单例这个工具，当我们需要写一个独立模块的时候，很容易用单例就实现了。而且通过单例（或静态类）实现的独立模块，与其他模块之间的交互会变得非常容易。
+这种结构好于直接撸的结构，毕竟它有一定的扩展性（只需实现单例），维护性上也还可以（模块独立），但是它很容易达到瓶颈，尤其是当单例的数量逐渐随着项目变多的时候。
+因为单例的获取是没有限制的，任何层级的代码都可以获取到任何层级的单例，如下图示：</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191902488.png"></p>
+<p>虽然我们在预定上分了很多层，但是当我们的模块数量超过一定数量时，约定就很难遵循，因为我们访问模块的时候就需要去看一遍层级的示意图：</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191902548.png"></p>
+<p>这就造成项目达到一定规模，约定就变成了限制，让我们很难遵循。
+从约定上，来说，我们怎么约定都可以，而约定的图示，就是上边的图。那些分层都是一些抽象的概念，比如游戏流程、主逻辑层、业务模块、框架层、底层，这些都是约定的结构。一般都是存在于文档上，并不会通过技术手段表达。
+而从技术限制这个角度来说，单例的访问是没有限制的，就算是用最佳实践，也是没有限制的。而且单例难以表达约定上的分层的那些概念，因为只要一个模块变成单例了，那么这个模块就在技术上失去了层次关系。
+如下图：</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191902306.png"></p>
+<p>如图所示，在使用单例的时候蓝牙和商店模块就在同一层级了，就失去了层级的约定。
+使用单例时，项目结构的设计非常依赖于约定（文档等等）。
+在项目规模比较少的时候，是没问题的，因为模块数量也比较少，但是一旦项目规模变大，模块数量变多，那么约定就会越来越难以遵循，就会非常容易导致项目结构的崩溃。
+这个时候，有一种很简单的解决方式，就是最顶层模块都用单例，然后一些底层的模块，作为顶层的成员变量，从而达到逻辑层无法直接访问底层模块，而是必须通过顶层模块间接地使用底层模块服务。
+如下图：</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191902290.png"></p>
+<p>这样就解决了单例结构无法表达层级的问题，但是同时也失去了单例带来的种种好处，比如易扩展，维护性（模块独立）。
+现在不容易扩展模块了，因为要扩展模块需要考虑依赖关系，也不容易维护了，因为模块不独立了。
+而这里不容易维护指的是各个模块不容易单独维护了，但是整体项目会更容易维护。
+接下来就体现DI Container 的作用了，它的出现可以让各个模块容易维护，也容易扩展，同时让整个项目也同样容易维护，而且可以通过技术限制来分担一部分约定。</p>
+<h2 id="依赖管理">依赖管理<a hidden class="anchor" aria-hidden="true" href="#依赖管理">#</a></h2>
+<p>从上面解决单例问题的图我们可以看到，有大量的依赖关系，这个依赖关系我们可以理解成对象的持有或者变量。
+就是因为这些依赖关系，造成了此结构的维护性和扩展性降低了。因为模块本身也是对象，对象就有声明周期，那么对象和是去new就很重要。
+我们来看看下面的代码：</p>
+<pre tabindex="0"><code>public  class ModuleA
+{
+  public ModuleB ModuleB;
+}
+
+public class ModuleB
+{
+
+}
+</code></pre><p>从代码中我们可以知道ModuleA是依赖ModuleB，这样我们在使用ModuleA的时候要考虑A中ModuleB是不是有值。
+创建ModuleB我们可以考虑在ModuleA内部创建和外部创建两种情况：</p>
+<h3 id="在modulea内部创建">在ModuleA内部创建<a hidden class="anchor" aria-hidden="true" href="#在modulea内部创建">#</a></h3>
+<p>看下列代码：</p>
+<pre tabindex="0"><code>public  class ModuleA
+{
+  public ModuleB ModuleB = new ModuleB();
+}
+</code></pre><p>这种方式也很简单，创建ModuleA的时候ModuleB一定被创建了，但是此时的ModuleB是比较难共用的。</p>
+<h3 id="在modulea外部创建">在ModuleA外部创建<a hidden class="anchor" aria-hidden="true" href="#在modulea外部创建">#</a></h3>
+<p>看下列代码：</p>
+<pre tabindex="0"><code>void main()
+{
+  var moduleA = new ModuleA();
+  moduleA.ModuleB = new ModuleB();
+}
+</code></pre><p>这样看起来没问题，因为在外部创建过程中，我们非常清晰地知道，moduleA.ModuleB 是有实例的。 但是我们看下在 ModuleA 内部使用 ModuleB 时的情况，代码如下:</p>
+<pre tabindex="0"><code>public class ModuleA
+{
+  public ModuleB ModuleB;
+
+  ...
+
+  void XXX()
+  {
+    ModuleB. // 在这里会想 ModuleB 到底有没有值？在哪里设置的值？
+  }
+}
+</code></pre><p>接下来我们看看单例的解决方案：</p>
+<pre tabindex="0"><code>public class ModuleA
+{
+  void XXX()
+  {
+    ModuleB.Instance.DoSomething();
+  }
+}
+</code></pre><p>这样就不用考虑ModuleB的创建过程。
+现在这种结构就是有大量的依赖，不易维护不易扩展也都出现在这个依赖上，因为依赖要考虑依赖对象的创建过程。</p>
+<h3 id="使用-di-container-管理依赖">使用 DI Container 管理依赖<a hidden class="anchor" aria-hidden="true" href="#使用-di-container-管理依赖">#</a></h3>
+<p>利用DI代码就变成下面的方式了：</p>
+<pre tabindex="0"><code>public class ModuleA
+{
+  [Inject]
+  public ModuleB ModuleB {get;set;}
+
+  void XXX()
+  {
+    ModuleB.DoSomeThing(); // 放心用，因为不用考虑依赖的创建过程。
+  }
+}
+</code></pre><p>我们只需要在启动程序的时候进行注册：</p>
+<pre tabindex="0"><code>public static QFrameworkContainer Container {get;private set;}
+
+void Main()
+{
+  Container = new Contaner();
+
+  Container.Register&lt;ModuleB&gt;();
+}
+</code></pre><p>但是我们在创建ModuleA的时候需要注入对象：</p>
+<pre tabindex="0"><code>void MethodA()
+{
+  App.Container.Inject(new ModuleA());
+}
+</code></pre><p>使用 DIContainer之后我们的结构就变成了下图所示：</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191902598.png"></p>
+<p>我们只需要，在模块内部声明模块作为变量，而不需要考虑创建过程，这样就导致每个模块都是可独立测试的（易维护），而扩展一个模块，不需要用单例实现，而是注册到类型容器即可，扩展性比单例还容易。这就是 DI Container 的最核心的优势。</p>
+<h1 id="域">域<a hidden class="anchor" aria-hidden="true" href="#域">#</a></h1>
+<p>我们来了解DIContainer 的一个基础知识：域</p>
+<h2 id="简介-1">简介<a hidden class="anchor" aria-hidden="true" href="#简介-1">#</a></h2>
+<p>域这个概念我们在学习C#的时候接触过，域的俗称就是代码块：</p>
+<pre tabindex="0"><code>public class A
+// 类范围内的域
+{
+  public void Main()
+  // 方法范围内的域
+  {
+
+  }
+}
+</code></pre><p>从上面代码的注释就可以看出，代码块其实就是域
+C# 的域的特性就是内部的域中的代码可以调用外部域中的变量。</p>
+<h2 id="dicontainer中的域">DIContainer中的域<a hidden class="anchor" aria-hidden="true" href="#dicontainer中的域">#</a></h2>
+<p>首先我们要考虑一个问题，每次DIContainer在注入实例的时候，注入的是新的还是返回的同一个实例呢？
+而这个问题所描述的行为指的是 DIContainer 的域。
+我们来看看QF中是如何注入：</p>
+<pre tabindex="0"><code>当注册依赖时，使用 Register&lt;Type&gt;() 方法时，每次注入都会创建新的实例。
+当注册依赖时，使用 RegisterInstance(object obj) 方法时，每次注入都会使用 obj 实例。
+</code></pre><p>我们来看看演示的代码：</p>
+<pre tabindex="0"><code>using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace QF.Master.Example
+{
+    public class SomeService 
+    {
+        public void Description()
+        {
+            Debug.Log(&#34;SomeService:&#34; + this.GetHashCode());
+        }
+    }
+
+    public class SomeObject
+    {
+        public void Description()
+        {
+            Debug.Log(&#34;SomeObject:&#34; + this.GetHashCode());
+        }
+    }
+
+    public class IOCScopeExample : MonoBehaviour {
+
+        [Inject]
+        public SomeObject ObjA {get;set;}
+
+        [Inject]
+        public SomeObject ObjB {get;set;}
+
+        [Inject]
+        public SomeObject ObjC {get;set;}
+
+
+        [Inject]
+        public SomeService ServiceA {get;set;}
+
+        [Inject]
+        public SomeService ServiceB {get;set;}
+
+        void Start () 
+        {
+            var container = new QFrameworkContainer();
+
+            // 每次注入都创建新的实例
+            container.Register&lt;SomeObject&gt;();
+
+            // 每次注入都使用同一个实例
+            container.RegisterInstance(new SomeService());
+
+            // 注入
+            container.Inject(this);
+
+            ObjA.Description();
+            ObjB.Description();
+            ObjC.Description();
+            ServiceA.Description();
+            ServiceB.Description();
+        }
+    }
+}
+</code></pre><p>接下来我们看看运行的结果：</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191903164.png"></p>
+<p>我们不难看到过 Register</p>
+<p>() 注册的依赖，每次注入时创建新的实例，而通过 RegisterInstance(object obj) 注册的依赖，每次注入都返回同一个 obj 实例。
+总结如下：</p>
+<pre tabindex="0"><code>Register&lt;T&gt;，每次注入时创建新的实例。
+RegisterInstance(object obj)，每次注入时，返回同一个 obj 对象。
+</code></pre><h1 id="依赖倒置原则">依赖倒置原则<a hidden class="anchor" aria-hidden="true" href="#依赖倒置原则">#</a></h1>
+<p>依赖倒置原则，即：Dependency Inversion Principle，很多时候缩写成 DIP。
+这个原则包含了两个主题：</p>
+<pre tabindex="0"><code>高层模块不应该依赖于低层模块，两者都应该依赖于抽象概念。
+抽象接口不应该依赖于实现，而实现依赖于抽象接口
+12
+</code></pre><h2 id="高层模块不应该依赖于低层模块两者都应该依赖于抽象概念">高层模块不应该依赖于低层模块，两者都应该依赖于抽象概念<a hidden class="anchor" aria-hidden="true" href="#高层模块不应该依赖于低层模块两者都应该依赖于抽象概念">#</a></h2>
+<p>我们来拿一个司机开车的例子，代码如下：</p>
+<pre tabindex="0"><code>public class Driver
+{
+  // 司机的职责是开车
+  public void Drive(Benz benz)
+  {
+    benz.Run();
+  }
+}
+
+public class Benz
+{
+  public void Run()
+  {
+    Debug.Log(&#34;奔驰汽车开始运行&#34;)
+  }
+}
+
+void Main()
+{
+  var lucas = new Driver();
+  var benz = new Benz();
+
+  lucas.Drive(benz);
+}
+</code></pre><p>目前A同学负责开发Driver类，B同学负责开发Benz类。这时候突然多了一个需求，那就是有一个同学的车换成了宝马，那我们需要重新创建一个BMW类。
+然而因为A同学和B同学开发的类耦合性太强了，所以都需要重新改一下代码，这时候看看这句话：高层模块不应该依赖于低层模块，两者都应该依赖于抽象概念。这样我们把车和司机都依赖于抽象，更改后的代码是：</p>
+<pre tabindex="0"><code>public class Driver
+{
+  // 司机的职责是开车
+  public void Drive(ICar car)
+  {
+    car.Run();
+  }
+}
+
+public interface ICar
+{
+  void Run();
+}
+
+//public class Benz : ICar
+//{
+//  public void Run()
+//  {
+//    Debug.Log(&#34;奔驰汽车开始运行&#34;)
+//  }
+//}
+
+public class BMW : ICar
+{
+  public void Run()
+  {
+    Debug.Log(&#34;宝马汽车开始运行&#34;)
+  }
+}
+
+void Main()
+{
+  var lucas = new Driver();
+  var bmw = new BMW();
+
+  lucas.Drive(bmw);
+}
+</code></pre><p>从上面代码可以看出，当更换车的时候，不需要修改高层的代码，只需要把车的类更换掉就行了。
+实际上，要完全实现”高层模块不应该依赖于低层模块，两者都应该依赖于抽象概念“这一个主题的话，Driver 类也应该抽象出来一个 IDriver，不过对于目前的结构来说没有必要。</p>
+<h2 id="抽象接口不应该依赖于实现而实现依赖于抽象接口">抽象接口不应该依赖于实现，而实现依赖于抽象接口<a hidden class="anchor" aria-hidden="true" href="#抽象接口不应该依赖于实现而实现依赖于抽象接口">#</a></h2>
+<p>我们直接上代码：</p>
+<pre tabindex="0"><code>var lucas = new Driver();
+ICar car = new BMW();
+
+lucas.Drive(car);
+</code></pre><p>其中的 ICar car = new BMW() 就实现了“实现依赖于抽象接口”这一主题。
+依赖这个概念需要再次更新了，上文中说到司机需要车才能当好司机，所以司机依赖车，那么现在 BMW 需要实现 ICar 接口，才能正常使用，那么 BMW 类依赖 ICar 接口，（实现依赖抽象接口)。
+实际上依赖倒置原则的两个主题都在说一件事情，两个类之间的交互通过抽象（接口、抽象类）来完成。
+而通过一个抽象，可以将两个类的变化隔离。即 A 类修改或扩展甚至是替换都不影响 B，反过来也是如此。
+通过依赖倒置原则可以提高整个系统的灵活性和扩展性还有维护性。</p>
+<h1 id="通过dicontainer实现dip">通过DIContainer实现DIP<a hidden class="anchor" aria-hidden="true" href="#通过dicontainer实现dip">#</a></h1>
+<p>我们这时候来想想，其实依赖也就等于需求了。
+而 QF 中的 DIContainer 支持前两种依赖管理，而市面上有个 IOC 容器，叫做 Zenject，支持以上全部的依赖关系。</p>
+<h2 id="dicontainer-中的接口依赖管理qf">DIContainer 中的接口依赖管理（QF）<a hidden class="anchor" aria-hidden="true" href="#dicontainer-中的接口依赖管理qf">#</a></h2>
+<p>在上文中，我们说过QF中的依赖注入的时候DIContainer提供了两个API，分别是Register 与 RegisterInstance，分别是注入的时候是新的还是说同一个。
+实际上这两者都有一些重载，即支持接口依赖的注册。
+多说无用，放出来代码大家来体会一下：</p>
+<pre tabindex="0"><code>using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace QF.Master.Example
+{
+    public interface ILoginService
+    {
+        void Login();
+    }
+
+    public class LoginService : ILoginService
+    {
+        public void Login()
+        {
+            Debug.Log(&#34;登录成功&#34;);
+        }
+    }
+
+    public class IOCInterfaceExample : MonoBehaviour 
+    {
+        [Inject]
+        public ILoginService LoginService {get;set;}
+
+        void Start () 
+        {
+            var container = new QFrameworkContainer();
+
+            container.RegisterInstance&lt;ILoginService&gt;(new LoginService());
+
+            // Register 也支持注册接口依赖
+            //container.Register&lt;ILoginService,LoginService&gt;();
+
+            container.Inject(this);
+
+            LoginService.Login();
+        }
+    }
+}
+</code></pre><p>代码很简单，代码中可以根据接口注入具体的实例，使脚本可以依赖 ILoginService 接口而不依赖于 LoginService 类。</p>
+<h1 id="控制反转">控制反转<a hidden class="anchor" aria-hidden="true" href="#控制反转">#</a></h1>
+<p>在上文我们已经了解了依赖倒置原则和依赖注入的方案。了解了上面两个概念。这样会让我们更容易了解控制反转。</p>
+<h2 id="控制正转">控制正转<a hidden class="anchor" aria-hidden="true" href="#控制正转">#</a></h2>
+<p>有反转就有正转，我们先来看看正转的代码：</p>
+<pre tabindex="0"><code>public class ModuleA
+{
+  public ModuleB B = new ModuleB();
+}
+
+public class ModuleB
+{
+
+}
+</code></pre><p>这个就是正转，就是依赖的对象在内部进行创建，其实这不叫正转，这是正常的控制过程。
+控制的意思其实就是依赖的对象创建的过程。也就是上述代码中的B的创建控制过程。
+正转的过程就是被依赖对象B的创建是由依赖对象A控制，谁依赖谁创建。
+控制反转就好理解了，就是被依赖对象B的创建是由外部控制了，就不需要依赖对象A进行控制创建了。
+控制反转代码如下：</p>
+<pre tabindex="0"><code>public class ModuleA
+{
+  public ModuleB B;
+}
+
+public class ModuleB
+{
+
+}
+
+void Main()
+{
+  var moduleA = new ModuleA();
+  // 对象创建过程由外部控制
+  moduleA.B = new ModuleB();
+}
+</code></pre><p><strong>控制反转意思是类依赖对象创建的过程由外部控制，而不是在类内部控制。</strong></p>
+<h1 id="依赖注入与控制反转">依赖注入与控制反转<a hidden class="anchor" aria-hidden="true" href="#依赖注入与控制反转">#</a></h1>
+<pre tabindex="0"><code>控制反转：依赖对象的创建过程交给外部控制。 
+依赖注入：依赖对象在外部进行设置。
+</code></pre><p>控制反转是设计原则，或者说是设计模式，而依赖注入是控制反转的具体实现。
+控制反转的具体实现除了有常用的依赖注入还有一种方案叫依赖查找，这里我们不介绍。
+控制反转和依赖注入有一些细微的差别，控制反转的重点在于依赖对象创建过程的控制，而依赖注入的重点在于依赖对象如何设置，实际上这两个概念都在说，依赖对象的创建和设置都在外边搞，不要在类内部搞。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/ioc/">IOC</a></li>
+      <li><a href="http://localhost:1313/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/%E8%AF%AD%E6%B3%95/c-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>C#数据结构与算法</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">
+    <span class="title">Next »</span>
+    <br>
+    <span>设计模式</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share IOC on x"
+            href="https://x.com/intent/tweet/?text=IOC&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AE%25BE%25E8%25AE%25A1%25E6%25A8%25A1%25E5%25BC%258F%2fioc%2f&amp;hashtags=IOC%2c%e8%ae%be%e8%ae%a1%e6%a8%a1%e5%bc%8f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share IOC on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AE%25BE%25E8%25AE%25A1%25E6%25A8%25A1%25E5%25BC%258F%2fioc%2f&amp;title=IOC&amp;summary=IOC&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AE%25BE%25E8%25AE%25A1%25E6%25A8%25A1%25E5%25BC%258F%2fioc%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share IOC on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AE%25BE%25E8%25AE%25A1%25E6%25A8%25A1%25E5%25BC%258F%2fioc%2f&title=IOC">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share IOC on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AE%25BE%25E8%25AE%25A1%25E6%25A8%25A1%25E5%25BC%258F%2fioc%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share IOC on whatsapp"
+            href="https://api.whatsapp.com/send?text=IOC%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AE%25BE%25E8%25AE%25A1%25E6%25A8%25A1%25E5%25BC%258F%2fioc%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share IOC on telegram"
+            href="https://telegram.me/share/url?text=IOC&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AE%25BE%25E8%25AE%25A1%25E6%25A8%25A1%25E5%25BC%258F%2fioc%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share IOC on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=IOC&u=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AE%25BE%25E8%25AE%25A1%25E6%25A8%25A1%25E5%25BC%258F%2fioc%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">LiuYingbo Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>C#数据结构与算法 | LiuYingbo Blog</title>
+<meta name="keywords" content="C#, 语法">
+<meta name="description" content="数据结构与算法
+什么是数据结构与算法？
+在学习数据结构与算法的时候，常常会思考一个问题：什么是数据结构与算法？
+这里比较找到了一个比较好的答案。
+从宏观来讲：
+
+数据结构是一组数据的存储结构。
+算法就是操作数据的方法。
+数据结构为算法服务，算法要作用在特定的数据结构中。
+
+从狭义上来讲，就是数据结构与算法这门学科就是去学习比较经典的数据结构和算法。
+有点像学习设计模式一样，学习 23 种设计模式。
+如何学习数据结构与算法？
+说到设计模式，学习数据结构与算法与学习设计模式非常相似的。
+我们知道设计模式有 23 种，而一般一个开发者学习设计模式的时候，往往会对 23 个设计模式都从头到尾学一遍，但是学完之后发现除了记了个名字之外没啥卵用，就连名字也不一定记得住。
+那么是以为 23 种设计模式的核心并不是设计模式本身，而是 23 种设计模式所遵循的 SOLID 原则，即六大设计原则，而开发者一开始最应该掌握的是六大设计原则，而不是设计模式，六大设计原则是核心，而 23 种设计模式算是 23 种对于六大设计原则的案例一样，一定要先搞清楚这一点。否则学习就会事倍功半，当然如果有一定的编码经验再去学设计模式更好一些。
+学习数据结构与算法也是一样的，数据结构与算法的核心是时间复杂度和空间复杂度，就像对于设计模式中的六大设计原则一样，掌握了时间复杂度和空间复杂度的评估，那么剩下的经典的常用的数据结构和算法就是一个个案例而已，而不用死记硬背，当然有一定的编码经验再去学习会更好一些。
+这就是数据结构与算法的学习思路。
+为什么要学习数据结构与算法？
+
+国内大厂的面试比较爱考，但是考得不是很难
+Google、Facebook、微软等更爱考，而且非常难。
+可以评估代码性能，写出高性能的代码
+开发时选择合适的数据结构
+比较有名的基础框架，都柔和了很多基础数据解耦股和算法的设计思想
+阅读源码的时候可以减少阻碍（比如遇到一些算法的实现）
+提高编程能力
+思维提升
+简历上可以写一个精通数据结构与算法
+
+数据结构与算法是不是高智商开发者的专属？
+当然不是，数据结构与算法的常用的知识点不多，而且也不需要高智商。重点还是熟能生巧。
+数据结构与算法学科的解决问题重点是什么？
+
+更省更快地存储和处理数据的问题
+
+
+时间复杂度
+时间复杂度的定义很简单：
+
+算法的执行时间与数据规模之间的增长关系
+
+时间复杂度的全称其实叫做：渐进时间复杂度，我们就叫时间复杂度即可。
+时间复杂度的定义难得的清晰，不像一些设计模式这样的定义非常抽象。
+OK，既然时间复杂度的定义这么简单，那么我们也顺便说一下空间复杂度吧，空间复杂度的定义如下：
+
+算法的存储空间与数据规模之间的增长关系。
+
+空间复杂度的定义也非常直白。
+List 的遍历，代码如下：
+var list = new List&lt;string&gt;(){&#34;a&#34;,&#34;b&#34;,&#34;c&#34;};
+		
+foreach (var s in list)
+{
+    Debug.Log(s);
+}
+代码中的 list 的数据规模是 3，其实就是数据量，那么这一段代码所执行的时间就是， Debug.Log(s) 所执行的时间 x 3。">
+<meta name="author" content="LiuYingbo">
+<link rel="canonical" href="http://localhost:1313/posts/%E8%AF%AD%E6%B3%95/c-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.a29c24210eb31d9ce56f669c66a35c9c51b17376b7764e336a49af7dec914cf0.css" integrity="sha256-opwkIQ6zHZzlb2acZqNcnFGxc3a3dk4zakmvfeyRTPA=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/%E8%AF%AD%E6%B3%95/c-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="LiuYingbo Blog (Alt + H)">LiuYingbo Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/categories/" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives/" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">Home</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      C#数据结构与算法
+    </h1>
+    <div class="post-meta"><span title='2022-02-10 22:17:46 +0000 UTC'>February 10, 2022</span>&nbsp;·&nbsp;<span>6 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span>
+
+</div>
+  </header> 
+<figure class="entry-cover">
+        <img loading="eager" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191917907.png" alt="">
+        
+</figure><div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84%e4%b8%8e%e7%ae%97%e6%b3%95" aria-label="数据结构与算法">数据结构与算法</a><ul>
+                        
+                <li>
+                    <a href="#%e4%bb%80%e4%b9%88%e6%98%af%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84%e4%b8%8e%e7%ae%97%e6%b3%95" aria-label="什么是数据结构与算法？">什么是数据结构与算法？</a></li>
+                <li>
+                    <a href="#%e5%a6%82%e4%bd%95%e5%ad%a6%e4%b9%a0%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84%e4%b8%8e%e7%ae%97%e6%b3%95" aria-label="如何学习数据结构与算法？">如何学习数据结构与算法？</a></li>
+                <li>
+                    <a href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e8%a6%81%e5%ad%a6%e4%b9%a0%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84%e4%b8%8e%e7%ae%97%e6%b3%95" aria-label="为什么要学习数据结构与算法？">为什么要学习数据结构与算法？</a></li>
+                <li>
+                    <a href="#%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84%e4%b8%8e%e7%ae%97%e6%b3%95%e6%98%af%e4%b8%8d%e6%98%af%e9%ab%98%e6%99%ba%e5%95%86%e5%bc%80%e5%8f%91%e8%80%85%e7%9a%84%e4%b8%93%e5%b1%9e" aria-label="数据结构与算法是不是高智商开发者的专属？">数据结构与算法是不是高智商开发者的专属？</a></li>
+                <li>
+                    <a href="#%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84%e4%b8%8e%e7%ae%97%e6%b3%95%e5%ad%a6%e7%a7%91%e7%9a%84%e8%a7%a3%e5%86%b3%e9%97%ae%e9%a2%98%e9%87%8d%e7%82%b9%e6%98%af%e4%bb%80%e4%b9%88" aria-label="数据结构与算法学科的解决问题重点是什么？">数据结构与算法学科的解决问题重点是什么？</a></li>
+                <li>
+                    <a href="#%e6%97%b6%e9%97%b4%e5%a4%8d%e6%9d%82%e5%ba%a6" aria-label="时间复杂度">时间复杂度</a></li></ul>
+                </li>
+                <li>
+                    <a href="#list" aria-label="List">List</a><ul>
+                        
+                <li>
+                    <a href="#list-%e4%b8%ad%e7%9a%84%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84%e6%a6%82%e5%bf%b5" aria-label="List 中的数据结构概念">List 中的数据结构概念</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e7%ba%bf%e6%80%a7%e8%a1%a8-%e4%b8%8e-%e9%9d%9e%e7%ba%bf%e6%80%a7%e8%a1%a8" aria-label="线性表 与 非线性表">线性表 与 非线性表</a></li>
+                <li>
+                    <a href="#dictionary" aria-label="Dictionary">Dictionary</a><ul>
+                        
+                <li>
+                    <a href="#%e5%ad%97%e5%85%b8%e7%ae%80%e4%bb%8b" aria-label="字典简介">字典简介</a></li></ul>
+                </li>
+                <li>
+                    <a href="#stack" aria-label="Stack">Stack</a><ul>
+                        
+                <li>
+                    <a href="#stack-%e7%ae%80%e4%bb%8b" aria-label="Stack 简介">Stack 简介</a></li></ul>
+                </li>
+                <li>
+                    <a href="#queue" aria-label="Queue">Queue</a><ul>
+                        
+                <li>
+                    <a href="#queue-%e7%ae%80%e4%bb%8b" aria-label="Queue 简介">Queue 简介</a></li></ul>
+                </li>
+                <li>
+                    <a href="#hashset" aria-label="HashSet">HashSet</a><ul>
+                        
+                <li>
+                    <a href="#hashset-%e5%9f%ba%e6%9c%ac%e4%bd%bf%e7%94%a8" aria-label="HashSet 基本使用">HashSet 基本使用</a></li></ul>
+                </li>
+                <li>
+                    <a href="#linkedlist" aria-label="LinkedList">LinkedList</a><ul>
+                        
+                <li>
+                    <a href="#%e9%93%be%e8%a1%a8-%e7%ae%80%e4%bb%8b" aria-label="链表 简介">链表 简介</a></li></ul>
+                </li>
+                <li>
+                    <a href="#hash" aria-label="Hash">Hash</a><ul>
+                        
+                <li>
+                    <a href="#hash-%e7%ae%80%e4%bb%8b" aria-label="Hash 简介">Hash 简介</a></li>
+                <li>
+                    <a href="#%e6%95%a3%e5%88%97%e8%a1%a8" aria-label="散列表">散列表</a></li>
+                <li>
+                    <a href="#%e5%9f%ba%e6%9c%ac%e5%8e%9f%e7%90%86" aria-label="基本原理">基本原理</a></li>
+                <li>
+                    <a href="#%e6%95%a3%e5%88%97%e5%86%b2%e7%aa%81" aria-label="散列冲突">散列冲突</a></li>
+                <li>
+                    <a href="#%e6%8f%92%e6%a7%bd" aria-label="插槽">插槽</a></li>
+                <li>
+                    <a href="#hashtable-%e4%b8%8e-hashset%e7%9a%84%e5%8c%ba%e5%88%ab" aria-label="Hashtable 与 HashSet的区别">Hashtable 与 HashSet的区别</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="数据结构与算法">数据结构与算法<a hidden class="anchor" aria-hidden="true" href="#数据结构与算法">#</a></h2>
+<h3 id="什么是数据结构与算法">什么是数据结构与算法？<a hidden class="anchor" aria-hidden="true" href="#什么是数据结构与算法">#</a></h3>
+<p>在学习数据结构与算法的时候，常常会思考一个问题：什么是数据结构与算法？</p>
+<p>这里比较找到了一个比较好的答案。</p>
+<p>从宏观来讲：</p>
+<ul>
+<li>数据结构是一组数据的存储结构。</li>
+<li>算法就是操作数据的方法。</li>
+<li>数据结构为算法服务，算法要作用在特定的数据结构中。</li>
+</ul>
+<p>从狭义上来讲，就是数据结构与算法这门学科就是去学习比较经典的数据结构和算法。</p>
+<p>有点像学习设计模式一样，学习 23 种设计模式。</p>
+<h3 id="如何学习数据结构与算法">如何学习数据结构与算法？<a hidden class="anchor" aria-hidden="true" href="#如何学习数据结构与算法">#</a></h3>
+<p>说到设计模式，学习数据结构与算法与学习设计模式非常相似的。</p>
+<p>我们知道设计模式有 23 种，而一般一个开发者学习设计模式的时候，往往会对 23 个设计模式都从头到尾学一遍，但是学完之后发现除了记了个名字之外没啥卵用，就连名字也不一定记得住。</p>
+<p>那么是以为 23 种设计模式的核心并不是设计模式本身，而是 23 种设计模式所遵循的 SOLID 原则，即六大设计原则，而开发者一开始最应该掌握的是六大设计原则，而不是设计模式，六大设计原则是核心，而 23 种设计模式算是 23 种对于六大设计原则的案例一样，一定要先搞清楚这一点。否则学习就会事倍功半，当然如果有一定的编码经验再去学设计模式更好一些。</p>
+<p>学习数据结构与算法也是一样的，数据结构与算法的核心是时间复杂度和空间复杂度，就像对于设计模式中的六大设计原则一样，掌握了时间复杂度和空间复杂度的评估，那么剩下的经典的常用的数据结构和算法就是一个个案例而已，而不用死记硬背，当然有一定的编码经验再去学习会更好一些。</p>
+<p>这就是数据结构与算法的学习思路。</p>
+<h3 id="为什么要学习数据结构与算法">为什么要学习数据结构与算法？<a hidden class="anchor" aria-hidden="true" href="#为什么要学习数据结构与算法">#</a></h3>
+<ul>
+<li>国内大厂的面试比较爱考，但是考得不是很难</li>
+<li>Google、Facebook、微软等更爱考，而且非常难。</li>
+<li>可以评估代码性能，写出高性能的代码</li>
+<li>开发时选择合适的数据结构</li>
+<li>比较有名的基础框架，都柔和了很多基础数据解耦股和算法的设计思想</li>
+<li>阅读源码的时候可以减少阻碍（比如遇到一些算法的实现）</li>
+<li>提高编程能力</li>
+<li>思维提升</li>
+<li>简历上可以写一个精通数据结构与算法</li>
+</ul>
+<h3 id="数据结构与算法是不是高智商开发者的专属">数据结构与算法是不是高智商开发者的专属？<a hidden class="anchor" aria-hidden="true" href="#数据结构与算法是不是高智商开发者的专属">#</a></h3>
+<p>当然不是，数据结构与算法的常用的知识点不多，而且也不需要高智商。重点还是熟能生巧。</p>
+<h3 id="数据结构与算法学科的解决问题重点是什么">数据结构与算法学科的解决问题重点是什么？<a hidden class="anchor" aria-hidden="true" href="#数据结构与算法学科的解决问题重点是什么">#</a></h3>
+<ul>
+<li>更省更快地存储和处理数据的问题
+<img alt="image.png" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191923357.png"></li>
+</ul>
+<h3 id="时间复杂度">时间复杂度<a hidden class="anchor" aria-hidden="true" href="#时间复杂度">#</a></h3>
+<p>时间复杂度的定义很简单：</p>
+<ul>
+<li>算法的执行时间与数据规模之间的增长关系</li>
+</ul>
+<p>时间复杂度的全称其实叫做：渐进时间复杂度，我们就叫时间复杂度即可。</p>
+<p>时间复杂度的定义难得的清晰，不像一些设计模式这样的定义非常抽象。</p>
+<p>OK，既然时间复杂度的定义这么简单，那么我们也顺便说一下空间复杂度吧，空间复杂度的定义如下：</p>
+<ul>
+<li>算法的存储空间与数据规模之间的增长关系。</li>
+</ul>
+<p>空间复杂度的定义也非常直白。</p>
+<p>List 的遍历，代码如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">list</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;(){</span><span class="s">&#34;a&#34;</span><span class="p">,</span><span class="s">&#34;b&#34;</span><span class="p">,</span><span class="s">&#34;c&#34;</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl"><span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">s</span> <span class="k">in</span> <span class="n">list</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>代码中的 list 的数据规模是 3，其实就是数据量，那么这一段代码所执行的时间就是， Debug.Log(s) 所执行的时间 x 3。</p>
+<p>用公式表示如下：</p>
+<ul>
+<li>代码总共执行的时间 = Debug.Log(s) 执行一次的时间 x list.Count</li>
+</ul>
+<p>那么该代码的执行时间与数据规模之间的增长关系是怎么样的呢？</p>
+<p>其实以上的公式就回答了这个问题，代码的执行时间与数据规模之间的增长关系是一比一关系，即数据规模增长一倍，那么代码的执行时间也会增长一倍。</p>
+<p>这里我们用 T(n) 表示代码总共执行的时间，用 UnitTime 表示 Debug.Log(s) 执行一次的时间，用 n 表示 数据的规模（lisnt.Count)，代入以上公式，如下：</p>
+<ul>
+<li>T(n) = UnitTime x n</li>
+</ul>
+<p>通过以上公式就能够算出以上代码所执行花费的时间，只不过 UnitTime 的执行时间非常依赖具体的软硬件环境，而以上这个公式实际上是 <strong>事后统计法</strong> 的统计方式。</p>
+<p>而我们的时间复杂度，需要算出来的并不是代码中共执行所花费总时间，而是表示一个关系，即：代码执行时间与数据规模这件的增长关系。</p>
+<p>而目前的 T(n) = UnitTime x n 这个公式，根据我们的所学的数学知识，能够得出的增长关系就是正比例关系。</p>
+<p>但是在数据结构与算法中用大 O 表示法来表示算法执行时间与数据规模的增长关系，那么大 O 表示法如何使用呢？</p>
+<p>很简单，就是 O(T(n))，但是这个 O(T(n)) 不是最终计算完的版本，还需要一些计算的过程。</p>
+<p>第一步是吧 T(n) 代入到 O(T(n)) 中，结果如下：</p>
+<ul>
+<li>O(UnitTime x n)</li>
+</ul>
+<p>接着把系数、加减的常量、数量级更低的 n 都排除掉。</p>
+<p>在 UnitTime x n 中，UnitTime 虽然目前是未知数，但是我们可以确定的是它肯定是一个常数，所以就直接把 UnitTime 去掉。</p>
+<p>最终得到的执行时间与数据规模的增长关系如下：</p>
+<ul>
+<li>O(n)</li>
+</ul>
+<p>即，遍历 list 这个算法的执行时间与数据规模的增长关系，也就是所谓的时间复杂度为 O(n)。</p>
+<p>时间复杂度这个概念对大家来说不是很难，但是一定要掌握，因为时间复杂度这个概念是整个 数据结构与算法 这门学科的灵魂。</p>
+<h2 id="list">List<a hidden class="anchor" aria-hidden="true" href="#list">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System.Collections.Generic</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">DataStructure</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">class</span> <span class="nc">ListExample</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">void</span> <span class="n">Start</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// [&#34;List&#34;,&#34;数据结构与算法&#34;]</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="n">list</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;()</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="s">&#34;List&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">				<span class="s">&#34;数据结构与算法&#34;</span>
+</span></span><span class="line"><span class="cl">			<span class="p">};</span>
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl">			<span class="c1">// [&#34;List&#34;,&#34;数据结构与算法&#34;,&#34;框架搭建&#34;]</span>
+</span></span><span class="line"><span class="cl">			<span class="n">list</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="s">&#34;框架搭建&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl">			<span class="c1">// [&#34;List&#34;,&#34;数据结构与算法&#34;,&#34;框架搭建&#34;,&#34;Shader 案例&#34;]</span>
+</span></span><span class="line"><span class="cl">			<span class="n">list</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="s">&#34;Shader 案例&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl">			<span class="c1">// [&#34;数据结构与算法&#34;,&#34;框架搭建&#34;,&#34;Shader 案例&#34;]</span>
+</span></span><span class="line"><span class="cl">			<span class="n">list</span><span class="p">.</span><span class="n">Remove</span><span class="p">(</span><span class="s">&#34;List&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl">			<span class="c1">// [&#34;框架搭建&#34;,&#34;Shader 案例&#34;]</span>
+</span></span><span class="line"><span class="cl">			<span class="n">list</span><span class="p">.</span><span class="n">RemoveAll</span><span class="p">((</span><span class="n">content</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">content</span><span class="p">.</span><span class="n">StartsWith</span><span class="p">(</span><span class="s">&#34;数据&#34;</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// [&#34;插入的数据&#34;,&#34;框架搭建&#34;,&#34;Shader 案例&#34;]</span>
+</span></span><span class="line"><span class="cl">			<span class="n">list</span><span class="p">.</span><span class="n">Insert</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="s">&#34;插入的数据&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// [&#34;插入的数据&#34;,&#34;Shader 案例&#34;]</span>
+</span></span><span class="line"><span class="cl">			<span class="n">list</span><span class="p">.</span><span class="n">RemoveAt</span><span class="p">(</span><span class="m">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">content</span> <span class="k">in</span> <span class="n">list</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="n">content</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><img alt="image.png" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191923086.png"></p>
+<p><img alt="image.png" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191923377.png"></p>
+<h3 id="list-中的数据结构概念">List 中的数据结构概念<a hidden class="anchor" aria-hidden="true" href="#list-中的数据结构概念">#</a></h3>
+<p>List 有一些数据结构相关的特性，比如：</p>
+<ul>
+<li>动态扩容</li>
+<li>内存连续（任意访问）</li>
+</ul>
+<p>这些仅仅是一些特性，并不是概念。</p>
+<p>那么 List 中有哪些数据结构的概念呢？</p>
+<p>答案是线性表。</p>
+<h2 id="线性表-与-非线性表">线性表 与 非线性表<a hidden class="anchor" aria-hidden="true" href="#线性表-与-非线性表">#</a></h2>
+<p>线性表，全名为线性存储结构。使用线性表存储数据的方式可以这样理解，即“把所有数据用一根线儿串起来，再存储到物理空间中”。</p>
+<p>每个线性表上的数据最多只有前和后两个方向。</p>
+<p>List 就是一种线性表，因为 List 符合以上的线性表的定义。</p>
+<p>List 本质是一个数组，只不过这个数组是支持动态扩容的。通过看 List 源码就可以知道 List 内部维护了一个数组。</p>
+<p>所以数组也是一种线性表，所以 List 与数组一样，也是一种线性表。</p>
+<p>到这里大家可能会问，除了数组是线性表之外，还有哪些类型的数据结构是线性表？</p>
+<p>答案是：链表、栈、队列。</p>
+<p>而恰好，C# 中也有实现的数据结构与之对应，如下：
+<img alt="image.png" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191923712.png"></p>
+<p>而这些数据结构则是接下来要学习的内容。</p>
+<p>既然有了线性表，那么就应该有非线性表，非线性表的常见数据结构如下：</p>
+<ul>
+<li>散列/哈希表（hash）</li>
+<li>树：二叉树、堆等</li>
+<li>图</li>
+</ul>
+<p>之所以这些数据结构叫非线性表是因为数据之间并不是简单的前后关系。</p>
+<h2 id="dictionary">Dictionary<a hidden class="anchor" aria-hidden="true" href="#dictionary">#</a></h2>
+<h3 id="字典简介">字典简介<a hidden class="anchor" aria-hidden="true" href="#字典简介">#</a></h3>
+<p>Dictionary 是 C# 中比较常用的数据结构，从功能角度来说，用 List 和 Dictionary 其实就能满足大部分的业务开发需求。</p>
+<p>Dictionary 是 key-value 存储的数据结构，即通过 key 去访问 value 值。而 List 则是通过索引去访问 value 值。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System.Collections.Generic</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System.Linq</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">DataStructure2020</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">class</span> <span class="nc">DictionaryExample</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">void</span> <span class="n">Start</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// {</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// 	&#34;name&#34;:&#34;Unity C# 数据结构与算法精讲,</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// 	&#34;price&#34;:&#34;9.9&#34;</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// }</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="n">dictionary</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Dictionary</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">,</span><span class="kt">string</span><span class="p">&gt;()</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="p">{</span><span class="s">&#34;name&#34;</span><span class="p">,</span><span class="s">&#34;Unity C# 数据结构与算法精讲&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">				<span class="p">{</span><span class="s">&#34;price&#34;</span><span class="p">,</span><span class="s">&#34;9.9&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">			<span class="p">};</span>
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl">			<span class="c1">// {</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// 	&#34;name&#34;:&#34;Unity C# 数据结构与算法精讲,</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// 	&#34;price&#34;:&#34;9.9&#34;,</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">//	&#34;createAt&#34;:&#34;2021 年 12 月 12 日&#34;</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// }</span>
+</span></span><span class="line"><span class="cl">			<span class="n">dictionary</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="s">&#34;createAt&#34;</span><span class="p">,</span><span class="s">&#34;2021 年 12 月 12 日&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl">			<span class="c1">// {</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// 	&#34;name&#34;:&#34;Unity C# 数据结构与算法精讲,</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// 	&#34;price&#34;:&#34;9.9&#34;,</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">//	&#34;createAt&#34;:&#34;2021 年 12 月 12 日&#34;</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">//	&#34;updateAt&#34;:&#34;2021 年 12 月 12 日&#34;</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// }</span>
+</span></span><span class="line"><span class="cl">			<span class="n">dictionary</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="s">&#34;updateAt&#34;</span><span class="p">,</span><span class="s">&#34;2021 年 12 月 12 日&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// {</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// 	&#34;name&#34;:&#34;Unity C# 数据结构与算法精讲,</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// 	&#34;price&#34;:&#34;9.9&#34;,</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">//	&#34;updateAt&#34;:&#34;2021 年 12 月 12 日&#34;</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// }</span>
+</span></span><span class="line"><span class="cl">			<span class="n">dictionary</span><span class="p">.</span><span class="n">Remove</span><span class="p">(</span><span class="s">&#34;createAt&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl">			<span class="c1">// {</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// 	&#34;name&#34;:&#34;Unity C# 数据结构与算法精讲,</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// 	&#34;price&#34;:&#34;9.9&#34;,</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">//	&#34;updateAt&#34;:&#34;2021 年 12 月 12 日&#34;</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// }</span>
+</span></span><span class="line"><span class="cl">			<span class="n">dictionary</span><span class="p">[</span><span class="s">&#34;updateAt&#34;</span><span class="p">]</span> <span class="p">=</span> <span class="s">&#34;2021 年 12 月 12 日&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl">			<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="s">&#34;@@@@ keys @@@@&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="n">dictionary</span><span class="p">.</span><span class="n">Keys</span><span class="p">.</span><span class="n">ToList</span><span class="p">().</span><span class="n">ForEach</span><span class="p">(</span><span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl">			<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="s">&#34;@@@@ values @@@@&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="n">dictionary</span><span class="p">.</span><span class="n">Values</span><span class="p">.</span><span class="n">ToList</span><span class="p">().</span><span class="n">ForEach</span><span class="p">(</span><span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="s">&#34;@@@@ key:value @@@@&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="n">dictionary</span><span class="p">.</span><span class="n">ToList</span><span class="p">().</span><span class="n">ForEach</span><span class="p">(</span><span class="n">kv</span> <span class="p">=&gt;</span> <span class="n">Debug</span><span class="p">.</span><span class="n">LogFormat</span><span class="p">(</span><span class="s">&#34;key:{0},value:{1}&#34;</span><span class="p">,</span> <span class="n">kv</span><span class="p">.</span><span class="n">Key</span><span class="p">,</span> <span class="n">kv</span><span class="p">.</span><span class="n">Value</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl">			<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="s">&#34;@@@@ containsKey @@@@&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="n">Debug</span><span class="p">.</span><span class="n">LogFormat</span><span class="p">(</span><span class="s">&#34;dictionary.ContainsKey(updateAt):{0}&#34;</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">.</span><span class="n">ContainsKey</span><span class="p">(</span><span class="s">&#34;updateAt&#34;</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">			<span class="n">Debug</span><span class="p">.</span><span class="n">LogFormat</span><span class="p">(</span><span class="s">&#34;dictionary.ContainsKey(createAt):{0}&#34;</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">.</span><span class="n">ContainsKey</span><span class="p">(</span><span class="s">&#34;createAt&#34;</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><img alt="image.png" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191923831.png"></p>
+<h2 id="stack">Stack<a hidden class="anchor" aria-hidden="true" href="#stack">#</a></h2>
+<h3 id="stack-简介">Stack 简介<a hidden class="anchor" aria-hidden="true" href="#stack-简介">#</a></h3>
+<p>Stack 叫做栈，栈数据结构的一个特点就是：后进先出，先进后出。</p>
+<p>就是一摞叠在一起的盘子。我们平时放盘子的时候，都是从下往上一个一个放，取的时候，我们也是从上往下一个个地依次取，不能从中间人物抽出。</p>
+<p>从栈的操作特性上来看，栈是一种“操作受限”的线性表，只允许在一端插入和删除数据。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System.Collections.Generic</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">DataStructure</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">class</span> <span class="nc">StackExample</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">void</span> <span class="n">Start</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// []</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="n">stack</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Stack</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// [&#34;数据结构&#34;]</span>
+</span></span><span class="line"><span class="cl">			<span class="n">stack</span><span class="p">.</span><span class="n">Push</span><span class="p">(</span><span class="s">&#34;数据结构&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// [&#34;数据结构&#34;,&#34;算法&#34;]</span>
+</span></span><span class="line"><span class="cl">			<span class="n">stack</span><span class="p">.</span><span class="n">Push</span><span class="p">(</span><span class="s">&#34;算法&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// [&#34;数据结构&#34;,&#34;Stack&#34;,&#34;算法&#34;]</span>
+</span></span><span class="line"><span class="cl">			<span class="n">stack</span><span class="p">.</span><span class="n">Push</span><span class="p">(</span><span class="s">&#34;Stack&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// [&#34;数据结构&#34;,&#34;算法&#34;]</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="n">liangxie</span> <span class="p">=</span> <span class="n">stack</span><span class="p">.</span><span class="n">Pop</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="s">&#34;pop liangxie:&#34;</span> <span class="p">+</span> <span class="n">liangxie</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// [&#34;数据结构&#34;,&#34;算法&#34;]</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="n">algo</span> <span class="p">=</span> <span class="n">stack</span><span class="p">.</span><span class="n">Peek</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="s">&#34;peek algo:&#34;</span> <span class="p">+</span> <span class="n">algo</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="s">&#34;@@@@ stack foreach @@@@&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">title</span> <span class="k">in</span> <span class="n">stack</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="n">title</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><img alt="image.png" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191923146.png"></p>
+<h2 id="queue">Queue<a hidden class="anchor" aria-hidden="true" href="#queue">#</a></h2>
+<h3 id="queue-简介">Queue 简介<a hidden class="anchor" aria-hidden="true" href="#queue-简介">#</a></h3>
+<p>Queue 即，队列，队列是一种先进先出，后进后出的线性表。</p>
+<p>那么队列也有两个基本的操作：</p>
+<ul>
+<li>Enqueue：入队</li>
+<li>Dequeue：出队</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System.Collections.Generic</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">DataStructure</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">class</span> <span class="nc">QueueExample</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">void</span> <span class="n">Start</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="n">queue</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Queue</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// [&#34;数据结构&#34;]</span>
+</span></span><span class="line"><span class="cl">			<span class="n">queue</span><span class="p">.</span><span class="n">Enqueue</span><span class="p">(</span><span class="s">&#34;数据结构&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// [&#34;数据结构&#34;,&#34;算法&#34;]</span>
+</span></span><span class="line"><span class="cl">			<span class="n">queue</span><span class="p">.</span><span class="n">Enqueue</span><span class="p">(</span><span class="s">&#34;算法&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// [&#34;数据结构&#34;,&#34;算法&#34;,&#34;Queue&#34;]</span>
+</span></span><span class="line"><span class="cl">			<span class="n">queue</span><span class="p">.</span><span class="n">Enqueue</span><span class="p">(</span><span class="s">&#34;Queue&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// [&#34;算法&#34;,&#34;Queue&#34;]</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="n">dataStructure</span> <span class="p">=</span> <span class="n">queue</span><span class="p">.</span><span class="n">Dequeue</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="s">&#34;dequeue dataStructure:&#34;</span> <span class="p">+</span> <span class="n">dataStructure</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="n">algo</span> <span class="p">=</span> <span class="n">queue</span><span class="p">.</span><span class="n">Peek</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="s">&#34;peek algo:&#34;</span> <span class="p">+</span> <span class="n">algo</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="s">&#34;@@@@ foreach queue @@@@&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">title</span> <span class="k">in</span> <span class="n">queue</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="n">title</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><img alt="image.png" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191923546.png"></p>
+<h2 id="hashset">HashSet<a hidden class="anchor" aria-hidden="true" href="#hashset">#</a></h2>
+<h3 id="hashset-基本使用">HashSet 基本使用<a hidden class="anchor" aria-hidden="true" href="#hashset-基本使用">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System.Collections</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System.Collections.Generic</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">DataStructure</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">class</span> <span class="nc">HashSetExample</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">void</span> <span class="n">Start</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="k">set</span> <span class="p">=</span> <span class="k">new</span> <span class="n">HashSet</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// [&#34;数据结构&#34;]</span>
+</span></span><span class="line"><span class="cl">			<span class="k">set</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="s">&#34;数据结构&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl">			<span class="c1">// [&#34;数据结构&#34;,&#34;算法&#34;]</span>
+</span></span><span class="line"><span class="cl">			<span class="k">set</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="s">&#34;算法&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// [&#34;数据结构&#34;,&#34;算法&#34;]</span>
+</span></span><span class="line"><span class="cl">			<span class="k">set</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="s">&#34;算法&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl">			<span class="c1">// [&#34;数据结构&#34;,&#34;算法&#34;,&#34;HashSet&#34;]</span>
+</span></span><span class="line"><span class="cl">			<span class="k">set</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="s">&#34;HashSet&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// [&#34;数据结构&#34;,&#34;算法&#34;]</span>
+</span></span><span class="line"><span class="cl">			<span class="k">set</span><span class="p">.</span><span class="n">Remove</span><span class="p">(</span><span class="s">&#34;HashSet&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="s">&#34;contains 算法:&#34;</span> <span class="p">+</span> <span class="k">set</span><span class="p">.</span><span class="n">Contains</span><span class="p">(</span><span class="s">&#34;算法&#34;</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">			<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="s">&#34;contains HashSet:&#34;</span> <span class="p">+</span> <span class="k">set</span><span class="p">.</span><span class="n">Contains</span><span class="p">(</span><span class="s">&#34;HashSet&#34;</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl">			<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="s">&#34;@@@@ set foreach @@@@&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">title</span> <span class="k">in</span> <span class="k">set</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="n">title</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191923618.png"></p>
+<h2 id="linkedlist">LinkedList<a hidden class="anchor" aria-hidden="true" href="#linkedlist">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System.Collections.Generic</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">DataStructure</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">class</span> <span class="nc">LinkedListExample</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">void</span> <span class="n">Start</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="n">linkedList</span> <span class="p">=</span> <span class="k">new</span> <span class="n">LinkedList</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// &#34;数据结构&#34;</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="n">dataStructureNode</span> <span class="p">=</span> <span class="n">linkedList</span><span class="p">.</span><span class="n">AddFirst</span><span class="p">(</span><span class="s">&#34;数据结构&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// &#34;算法&#34;&lt;=&gt;&#34;数据结构&#34;</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="n">algoNode</span> <span class="p">=</span> <span class="n">linkedList</span><span class="p">.</span><span class="n">AddFirst</span><span class="p">(</span><span class="s">&#34;算法&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// &#34;算法&#34;&lt;=&gt;&#34;数据结构&#34;&lt;=&gt;&#34;LinkedList&#34;</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="n">liangxieNode</span> <span class="p">=</span> <span class="n">linkedList</span><span class="p">.</span><span class="n">AddLast</span><span class="p">(</span><span class="s">&#34;LinkedList&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// &#34;算法&#34;&lt;=&gt;&#34;专栏&#34;&lt;=&gt;&#34;数据结构&#34;&lt;=&gt;&#34;LinkedList&#34;</span>
+</span></span><span class="line"><span class="cl">			<span class="n">linkedList</span><span class="p">.</span><span class="n">AddAfter</span><span class="p">(</span><span class="n">algoNode</span><span class="p">,</span> <span class="s">&#34;专栏&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// &#34;算法&#34;&lt;=&gt;&#34;专栏&#34;&lt;=&gt;&#34;数据结构&#34;&lt;=&gt;&#34;笔记&#34;&lt;=&gt;&#34;LinkedList&#34;</span>
+</span></span><span class="line"><span class="cl">			<span class="n">linkedList</span><span class="p">.</span><span class="n">AddBefore</span><span class="p">(</span><span class="n">liangxieNode</span><span class="p">,</span> <span class="s">&#34;笔记&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// &#34;算法&#34;&lt;=&gt;&#34;专栏&#34;&lt;=&gt;&#34;笔记&#34;&lt;=&gt;&#34;LinkedList&#34;</span>
+</span></span><span class="line"><span class="cl">			<span class="n">linkedList</span><span class="p">.</span><span class="n">Remove</span><span class="p">(</span><span class="s">&#34;数据结构&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// &#34;算法&#34;&lt;=&gt;&#34;专栏&#34;&lt;=&gt;&#34;笔记&#34;</span>
+</span></span><span class="line"><span class="cl">			<span class="n">linkedList</span><span class="p">.</span><span class="n">Remove</span><span class="p">(</span><span class="n">liangxieNode</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="n">zhuanlanNode</span> <span class="p">=</span> <span class="n">linkedList</span><span class="p">.</span><span class="n">Find</span><span class="p">(</span><span class="s">&#34;专栏&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="s">&#34;find zhuanlanNode:&#34;</span> <span class="p">+</span> <span class="n">zhuanlanNode</span><span class="p">.</span><span class="n">Value</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="s">&#34;@@@@ linkedList foreach @@@@&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">s</span> <span class="k">in</span> <span class="n">linkedList</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>从结果和代码中注释和结果来看，LinkedList 中存储的元素并不是数据，而是一个个节点 LinkedListNode，而其中的节点才会去存储真正的数据。</p>
+<p><img alt="image.png" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191924101.png"></p>
+<h3 id="链表-简介">链表 简介<a hidden class="anchor" aria-hidden="true" href="#链表-简介">#</a></h3>
+<p>链表是一种物理存储单元上非连续、非顺序的存储结构，数据元素的逻辑顺序是通过链表中的指针链接次序实现的</p>
+<p>定义中有两个重点：</p>
+<ul>
+<li>内存中不连续、不顺序</li>
+<li>逻辑上通过链表节点的指针实现</li>
+</ul>
+<p>也就是说与数组相反，链表在内存中是不连续的，既然不连续，那就不支持任意访问。不连续还有个好处就是不用考虑因动态扩容造成的 GC Alloc 和 GC Collect。</p>
+<p>首先我们先定义一个链表节点对象，如下：
+<img alt="image.png" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191924665.png">
+即，该类有两个字段：</p>
+<ul>
+<li>指向下一个节点的 Next 字段</li>
+<li>用于存储数据的 Data</li>
+</ul>
+<p>而一个比较典型的链表数据结构如下图所示；
+<img alt="image.png" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191924769.png"></p>
+<p>图中的这种链表叫做单向链表。</p>
+<p>单向链表的特点就是只有一个 Next 指针指向下一个节点。</p>
+<p>那么到这里大家可能会问，链表 与 数组相比有什么优劣呢？</p>
+<p>这里笔者简单总结下它们的优劣：</p>
+<p>链表：</p>
+<ul>
+<li>不支持任意访问，想要实现任意访问的时间复杂度为 O(n)</li>
+<li>天然支持动态扩容</li>
+<li>在头结点或者尾结点插入数据的时间复杂度为 O(1)</li>
+<li>在中间插入结点的方式分为两种：
+<ul>
+<li>得到插入位置结点的情况下，插入一个节点的时间复杂度为 O(1)</li>
+<li>在没有得到插入位置结点的情况下，插入一个时间复杂度为 O(n)</li>
+</ul>
+</li>
+<li>查询某个符合条件的节点的时间复杂度为 O(n)</li>
+<li>删除节点的时间复杂度也同理：
+<ul>
+<li>在头和尾，或者得到插入位置的节点情况下是 O(1)</li>
+<li>否则是 O(n)</li>
+</ul>
+</li>
+<li>内存中不连续</li>
+</ul>
+<p>数组：</p>
+<ul>
+<li>支持任意访问，时间复杂度为 O(1)</li>
+<li>不支持动态扩容，List 支持</li>
+<li>插入数据的时间复杂度为 O(n)，因为要考虑数据搬移</li>
+<li>删除数据的时间复杂度为 O(n)，也是要考虑数据搬移</li>
+<li>查询符合条件的某个数据的时间复杂度是 O(n)</li>
+<li>内存中连续</li>
+</ul>
+<p>以上就是链表和数组的简单对比，不同的存储形式有不同的功能和作用，所以如何挑选合适的数据结构对程序的性能来说是非常重要的。</p>
+<h2 id="hash">Hash<a hidden class="anchor" aria-hidden="true" href="#hash">#</a></h2>
+<h3 id="hash-简介">Hash 简介<a hidden class="anchor" aria-hidden="true" href="#hash-简介">#</a></h3>
+<p>Hash 即哈希或者叫散列。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System.Linq</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">DataStructure2020</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">class</span> <span class="nc">HashPrincipleExample</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="cs">/// &lt;summary&gt;</span>
+</span></span><span class="line"><span class="cl">		<span class="cs">/// 学生类</span>
+</span></span><span class="line"><span class="cl">		<span class="cs">/// &lt;/summary&gt;</span>
+</span></span><span class="line"><span class="cl">		<span class="k">class</span> <span class="nc">Student</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="kd">public</span> <span class="kt">string</span> <span class="n">Id</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="kd">public</span> <span class="kt">string</span> <span class="n">Name</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">		<span class="cs">/// &lt;summary&gt;</span>
+</span></span><span class="line"><span class="cl">		<span class="cs">/// 学生数组</span>
+</span></span><span class="line"><span class="cl">		<span class="cs">/// &lt;/summary&gt;</span>
+</span></span><span class="line"><span class="cl">		<span class="n">Student</span><span class="p">[]</span> <span class="n">mStudent</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Student</span><span class="p">[]</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">new</span> <span class="n">Student</span><span class="p">()</span> <span class="p">{</span><span class="n">Id</span> <span class="p">=</span><span class="s">&#34;1001&#34;</span><span class="p">,</span><span class="n">Name</span> <span class="p">=</span> <span class="s">&#34;小数&#34;</span><span class="p">},</span> 
+</span></span><span class="line"><span class="cl">			<span class="k">new</span> <span class="n">Student</span><span class="p">()</span> <span class="p">{</span><span class="n">Id</span> <span class="p">=</span><span class="s">&#34;1002&#34;</span><span class="p">,</span><span class="n">Name</span> <span class="p">=</span> <span class="s">&#34;小据&#34;</span><span class="p">},</span> 
+</span></span><span class="line"><span class="cl">			<span class="k">new</span> <span class="n">Student</span><span class="p">()</span> <span class="p">{</span><span class="n">Id</span> <span class="p">=</span><span class="s">&#34;1003&#34;</span><span class="p">,</span><span class="n">Name</span> <span class="p">=</span> <span class="s">&#34;小结&#34;</span><span class="p">},</span> 
+</span></span><span class="line"><span class="cl">			<span class="k">new</span> <span class="n">Student</span><span class="p">()</span> <span class="p">{</span><span class="n">Id</span> <span class="p">=</span><span class="s">&#34;1004&#34;</span><span class="p">,</span><span class="n">Name</span> <span class="p">=</span> <span class="s">&#34;小构&#34;</span><span class="p">},</span> 
+</span></span><span class="line"><span class="cl">			<span class="k">new</span> <span class="n">Student</span><span class="p">()</span> <span class="p">{</span><span class="n">Id</span> <span class="p">=</span><span class="s">&#34;1005&#34;</span><span class="p">,</span><span class="n">Name</span> <span class="p">=</span> <span class="s">&#34;小与&#34;</span><span class="p">},</span> 
+</span></span><span class="line"><span class="cl">		<span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="cs">/// &lt;summary&gt;</span>
+</span></span><span class="line"><span class="cl">		<span class="cs">/// 根据 Id 获取学生对象</span>
+</span></span><span class="line"><span class="cl">		<span class="cs">/// &lt;/summary&gt;</span>
+</span></span><span class="line"><span class="cl">		<span class="cs">/// &lt;param name=&#34;id&#34;&gt;&lt;/param&gt;</span>
+</span></span><span class="line"><span class="cl">		<span class="cs">/// &lt;returns&gt;&lt;/returns&gt;</span>
+</span></span><span class="line"><span class="cl">		<span class="n">Student</span> <span class="n">GetStudentById</span><span class="p">(</span><span class="kt">string</span> <span class="n">id</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="n">idNumber</span> <span class="p">=</span> <span class="kt">int</span><span class="p">.</span><span class="n">Parse</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="n">index</span> <span class="p">=</span> <span class="n">idNumber</span> <span class="p">-</span> <span class="m">1001</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="n">mStudent</span><span class="p">[</span><span class="n">index</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="kd">private</span> <span class="k">void</span> <span class="n">Start</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// 查询学生</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="n">student</span> <span class="p">=</span> <span class="n">GetStudentById</span><span class="p">(</span><span class="s">&#34;1003&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl">			<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="n">student</span><span class="p">.</span><span class="n">Id</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>GetStudentById 的所使用的思想就是散列的思想，即通过把一个 key 转换成数组的下标，根据下标直接获取数据的思想。</p>
+<h3 id="散列表">散列表<a hidden class="anchor" aria-hidden="true" href="#散列表">#</a></h3>
+<p>散列表，即 Hashtable，是有一种使用散列思想的数据结构。而在 C# 中也有一个叫做 Hashtable 的数据结构。</p>
+<p>我们都知道，数组是支持下标的任意访问的，散列表用的就是数组的任意访问的特性，所以散列表其实就是数组的一种扩展，由数组演化而来。可以说，如果没有数组，就没有散列表。</p>
+<h3 id="基本原理">基本原理<a hidden class="anchor" aria-hidden="true" href="#基本原理">#</a></h3>
+<p>散列表由三个部分组成，即：</p>
+<ul>
+<li>key（关键字）</li>
+<li>hash function（散列/哈希函数）</li>
+<li>table（用于存储的数组）</li>
+</ul>
+<p>我们在上一篇知道，散列的思想本质上就是将 key 转换为 数组的下标，然后通过下标去访问数组的数据的一种思想，所以通过这一点不难看出，以上的三个部分中 hash function 就是将 key 转换为下标的一个方法。</p>
+<p>而 table 一般就是用数组或者能够通过下标访问的一些数据结构实现。</p>
+<p>其流程如下图所示：
+<img alt="image.png" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191924815.png"></p>
+<h3 id="散列冲突">散列冲突<a hidden class="anchor" aria-hidden="true" href="#散列冲突">#</a></h3>
+<p>Hashtable 的 hash function 其实就是将 key 的 hash code 转换为 数组下标。</p>
+<p>代码如下：</p>
+<ul>
+<li>uint hashcode = InitHash(key, buckets.Length, out seed, out incr);</li>
+<li>int bucketNumber = (int) (seed % (uint)buckets.Length);</li>
+</ul>
+<p>散列冲突指的就是，不同的 key 得到的 bucketNumber 有可能是一致的，也就是说数组的下标会产生重复的情况。</p>
+<p>]把发生数组小标重复的情况叫做 散列冲突。</p>
+<h3 id="插槽">插槽<a hidden class="anchor" aria-hidden="true" href="#插槽">#</a></h3>
+<p>在发生散列冲突的时候，我们就需要解决掉这个冲突。</p>
+<p>而解决这个冲突的方式一般有两种：</p>
+<ul>
+<li>开放寻址法（或闭散列法）</li>
+<li>链表法（或开散列法）</li>
+</ul>
+<p>开放寻址法的特点非常简单，当发生散列冲突的时候，会在数组内寻找下一个可用的位置来存储数据，这时候会对数组进行遍历操作。</p>
+<p>开放寻址法的缺陷就是当数组空余空间越少，发生散列冲突的概率越大，所以 C# 的 Hashtable 通过动态扩容来解决这个问题。</p>
+<p>而链表法的特点则是，当法神散列冲突的时候，会在冲突位置来创建一个链表来存储数据。</p>
+<p>而当发生冲突的时候，不管是开放寻址法还是链表法，都会去其他的内存空间中找到或者创建一个插槽（slot），用于存放数据。</p>
+<p>在 C# 的 Hashtable 中，插槽可以理解为数组中一个空的 bucket。</p>
+<p>由于在 C# Hashtable 中没有链表相关的代码，所以可以推测出 Hashtable 是使用开放寻址法来解决散列冲突。</p>
+<h3 id="hashtable-与-hashset的区别">Hashtable 与 HashSet的区别<a hidden class="anchor" aria-hidden="true" href="#hashtable-与-hashset的区别">#</a></h3>
+<p>Hashtable 与 HashSet 的基本存储单元以及集合的不同导致了对应的 添加、删除、查询等算法的差异。</p>
+<p>在 Hashtable 中，添加一个数据的流程如下：</p>
+<ul>
+<li>获取 key 的 hashcode：
+<ul>
+<li>uint hashcode = InitHash(key, buckets.Length, out seed, out incr);</li>
+</ul>
+</li>
+<li>获取下标：
+<ul>
+<li>int bucketNumber = (int) (seed % (uint)buckets.Length);</li>
+</ul>
+</li>
+<li>存储值：
+<ul>
+<li>buckets[bucketNumber].val = nvalue;</li>
+<li>buckets[bucketNumber].key = key;</li>
+<li>buckets[bucketNumber].hash_coll |= (int) hashcode;</li>
+</ul>
+</li>
+</ul>
+<p>在 HashSet 中，添加一个数据的流程如下：</p>
+<ul>
+<li>获取 hash code：
+<ul>
+<li>hashCode = value != null ? value.GetHashCode() : 0;</li>
+</ul>
+</li>
+<li>根据 hash code 获取 bucket （Entry 的下标）
+<ul>
+<li>bucket = ref GetBucketRef(hashCode);</li>
+</ul>
+</li>
+<li>下标前移</li>
+</ul>
+<pre tabindex="0"><code>int i = bucket - 1; // Value in _buckets is 1-based
+</code></pre><ul>
+<li>存储</li>
+</ul>
+<pre tabindex="0"><code>ref Entry entry = ref entries![index];
+entry.HashCode = hashCode;
+entry.Next = bucket - 1; // Value in _buckets is 1-based
+entry.Value = value;
+bucket = index + 1;
+_version++;
+location = index;
+</code></pre><p>其实，两者存储的流程是差不多的，区别在于当数据发生冲突的时候。</p>
+<p><img alt="image.png" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191924811.png"></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/c%23/">C#</a></li>
+      <li><a href="http://localhost:1313/tags/%E8%AF%AD%E6%B3%95/">语法</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/%E8%AF%AD%E6%B3%95/c-linq/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>C# LINQ</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/ioc/">
+    <span class="title">Next »</span>
+    <br>
+    <span>IOC</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share C#数据结构与算法 on x"
+            href="https://x.com/intent/tweet/?text=C%23%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84%e4%b8%8e%e7%ae%97%e6%b3%95&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AF%25AD%25E6%25B3%2595%2fc-%25E6%2595%25B0%25E6%258D%25AE%25E7%25BB%2593%25E6%259E%2584%25E4%25B8%258E%25E7%25AE%2597%25E6%25B3%2595%2f&amp;hashtags=C%23%2c%e8%af%ad%e6%b3%95">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share C#数据结构与算法 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AF%25AD%25E6%25B3%2595%2fc-%25E6%2595%25B0%25E6%258D%25AE%25E7%25BB%2593%25E6%259E%2584%25E4%25B8%258E%25E7%25AE%2597%25E6%25B3%2595%2f&amp;title=C%23%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84%e4%b8%8e%e7%ae%97%e6%b3%95&amp;summary=C%23%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84%e4%b8%8e%e7%ae%97%e6%b3%95&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AF%25AD%25E6%25B3%2595%2fc-%25E6%2595%25B0%25E6%258D%25AE%25E7%25BB%2593%25E6%259E%2584%25E4%25B8%258E%25E7%25AE%2597%25E6%25B3%2595%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share C#数据结构与算法 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AF%25AD%25E6%25B3%2595%2fc-%25E6%2595%25B0%25E6%258D%25AE%25E7%25BB%2593%25E6%259E%2584%25E4%25B8%258E%25E7%25AE%2597%25E6%25B3%2595%2f&title=C%23%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84%e4%b8%8e%e7%ae%97%e6%b3%95">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share C#数据结构与算法 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AF%25AD%25E6%25B3%2595%2fc-%25E6%2595%25B0%25E6%258D%25AE%25E7%25BB%2593%25E6%259E%2584%25E4%25B8%258E%25E7%25AE%2597%25E6%25B3%2595%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share C#数据结构与算法 on whatsapp"
+            href="https://api.whatsapp.com/send?text=C%23%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84%e4%b8%8e%e7%ae%97%e6%b3%95%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AF%25AD%25E6%25B3%2595%2fc-%25E6%2595%25B0%25E6%258D%25AE%25E7%25BB%2593%25E6%259E%2584%25E4%25B8%258E%25E7%25AE%2597%25E6%25B3%2595%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share C#数据结构与算法 on telegram"
+            href="https://telegram.me/share/url?text=C%23%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84%e4%b8%8e%e7%ae%97%e6%b3%95&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AF%25AD%25E6%25B3%2595%2fc-%25E6%2595%25B0%25E6%258D%25AE%25E7%25BB%2593%25E6%259E%2584%25E4%25B8%258E%25E7%25AE%2597%25E6%25B3%2595%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share C#数据结构与算法 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=C%23%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84%e4%b8%8e%e7%ae%97%e6%b3%95&u=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AF%25AD%25E6%25B3%2595%2fc-%25E6%2595%25B0%25E6%258D%25AE%25E7%25BB%2593%25E6%259E%2584%25E4%25B8%258E%25E7%25AE%2597%25E6%25B3%2595%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">LiuYingbo Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

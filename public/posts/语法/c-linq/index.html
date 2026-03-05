@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>C# LINQ | LiuYingbo Blog</title>
+<meta name="keywords" content="C#, 语法">
+<meta name="description" content="LINQ 是 Language INtegrated Query 单词的首字母缩写，翻译过来是语言集成查询。它为查询跨各种数据源和格式的数据提供了一致的模型，所以叫集成查询。由于这种查询并没有制造新的语言而只是在现有的语言基础上来实现，所以叫语言集成查询。
+基础
+在 C# 中，从功能上 LINQ 可分为两类：LINQ to Object 和 LINQ to XML；从语法上 LINQ 可以分为 LINQ to Object 和 LINQ 扩展方法
+纠正：
+从功能上 LINQ 可分为两类：
+
+LINQ to Object，查询内存集合，直接把查询编译成 .NET 代码执行。
+LINQ to Provider，查询自定义数据源，由开发者提供相应数据源的 Provider 并翻译和执行自定义查询，如 XML、JSON 等都可以作为 Provider 对应的数据源，数据源对应的 LINQ 查询叫 LINQ to &lt;数据源&gt;，比如：LINQ to XML。
+
+从语法上 LINQ 可以分为：
+
+SQL风格：语法和 SQL 相似，部分复杂查询用 SQL 风格语义会更清晰明了，比如 SelectMany 和 Join 查询。SQL 风格的可读性有绝对优势，但不支持全部标准 LINQ 函数，不支持自定义函数。纯粹的语法糖。
+函数风格：以 C# 扩展方法的方式实现，扩展方法即可以是标准库提供的也可以是自己实现的，完全的原生编程风格，编译后的代码都是函数调用。支持全部标准 LINQ 函数和任何自定义函数。随着查询复杂度的提高，可读性不如 SQL 风格。
+
+感谢 @coredx 的纠正。">
+<meta name="author" content="LiuYingbo">
+<link rel="canonical" href="http://localhost:1313/posts/%E8%AF%AD%E6%B3%95/c-linq/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.a29c24210eb31d9ce56f669c66a35c9c51b17376b7764e336a49af7dec914cf0.css" integrity="sha256-opwkIQ6zHZzlb2acZqNcnFGxc3a3dk4zakmvfeyRTPA=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/%E8%AF%AD%E6%B3%95/c-linq/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="LiuYingbo Blog (Alt + H)">LiuYingbo Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/categories/" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives/" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">Home</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      C# LINQ
+    </h1>
+    <div class="post-meta"><span title='2022-11-24 22:49:16 +0000 UTC'>November 24, 2022</span>&nbsp;·&nbsp;<span>12 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span>
+
+</div>
+  </header> 
+<figure class="entry-cover">
+        <img loading="eager" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191917907.png" alt="">
+        
+</figure><div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%9f%ba%e7%a1%80" aria-label="基础">基础</a></li>
+                <li>
+                    <a href="#firstlast-%e5%92%8c-single-%e7%ad%89" aria-label="First、Last 和 Single 等">First、Last 和 Single 等</a></li>
+                <li>
+                    <a href="#except-%e5%8f%96%e5%b7%ae%e9%9b%86" aria-label="Except 取差集">Except 取差集</a></li>
+                <li>
+                    <a href="#selectmany-%e9%9b%86%e5%90%88%e9%99%8d%e7%bb%b4" aria-label="SelectMany 集合降维">SelectMany 集合降维</a></li>
+                <li>
+                    <a href="#selectmany-%e8%bf%aa%e5%8d%a1%e5%b0%94%e7%a7%af%e8%bf%90%e7%ae%97" aria-label="SelectMany 迪卡尔积运算">SelectMany 迪卡尔积运算</a></li>
+                <li>
+                    <a href="#aggregate-%e8%81%9a%e5%90%88" aria-label="Aggregate 聚合">Aggregate 聚合</a></li>
+                <li>
+                    <a href="#join-%e5%85%b3%e8%81%94%e6%9f%a5%e8%af%a2" aria-label="Join 关联查询">Join 关联查询</a><ul>
+                        
+                <li>
+                    <a href="#inner-join" aria-label="Inner Join">Inner Join</a></li>
+                <li>
+                    <a href="#left-join" aria-label="Left Join">Left Join</a></li>
+                <li>
+                    <a href="#right-join" aria-label="Right Join">Right Join</a></li>
+                <li>
+                    <a href="#cross-join" aria-label="Cross Join">Cross Join</a></li>
+                <li>
+                    <a href="#full-outer-join" aria-label="Full Outer Join">Full Outer Join</a></li>
+                <li>
+                    <a href="#%e6%a0%b9%e6%8d%ae%e5%a4%9a%e4%b8%aa%e9%94%ae%e5%85%b3%e8%81%94" aria-label="根据多个键关联">根据多个键关联</a></li></ul>
+                </li>
+                <li>
+                    <a href="#skip--take-%e5%88%86%e9%a1%b5" aria-label="Skip &amp; Take 分页">Skip &amp; Take 分页</a></li>
+                <li>
+                    <a href="#zip-%e6%8b%89%e9%93%be" aria-label="Zip 拉链">Zip 拉链</a></li>
+                <li>
+                    <a href="#oftype-%e5%92%8c-cast-%e7%b1%bb%e5%9e%8b%e8%bf%87%e6%bb%a4%e4%b8%8e%e8%bd%ac%e6%8d%a2" aria-label="OfType 和 Cast 类型过滤与转换">OfType 和 Cast 类型过滤与转换</a></li>
+                <li>
+                    <a href="#tolookup-%e7%b4%a2%e5%bc%95%e5%bc%8f%e6%9f%a5%e6%89%be" aria-label="ToLookup 索引式查找">ToLookup 索引式查找</a></li>
+                <li>
+                    <a href="#distinct-%e5%8e%bb%e9%87%8d" aria-label="Distinct 去重">Distinct 去重</a></li>
+                <li>
+                    <a href="#todictionary-%e5%ad%97%e5%85%b8%e8%bd%ac%e6%8d%a2" aria-label="ToDictionary 字典转换">ToDictionary 字典转换</a></li>
+                <li>
+                    <a href="#%e5%85%b6%e5%ae%83%e5%b8%b8%e8%a7%81%e6%89%a9%e5%b1%95%e6%96%b9%e6%b3%95" aria-label="其它常见扩展方法">其它常见扩展方法</a><ul>
+                        
+                <li>
+                    <a href="#range-%e5%92%8c-repeat" aria-label="Range 和 Repeat">Range 和 Repeat</a></li>
+                <li>
+                    <a href="#any-%e5%92%8c-all" aria-label="Any 和 All">Any 和 All</a></li>
+                <li>
+                    <a href="#concat-%e5%92%8c-union" aria-label="Concat 和 Union">Concat 和 Union</a></li>
+                <li>
+                    <a href="#groupby-%e5%88%86%e7%bb%84" aria-label="GroupBy 分组">GroupBy 分组</a></li>
+                <li>
+                    <a href="#defaultifempty-%e7%a9%ba%e6%9b%bf%e6%8d%a2" aria-label="DefaultIfEmpty 空替换">DefaultIfEmpty 空替换</a></li>
+                <li>
+                    <a href="#sequenceequal-%e9%9b%86%e5%90%88%e7%9b%b8%e7%ad%89" aria-label="SequenceEqual 集合相等">SequenceEqual 集合相等</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%9c%80%e5%90%8e" aria-label="最后">最后</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>LINQ 是 Language INtegrated Query 单词的首字母缩写，翻译过来是语言集成查询。它为查询跨各种数据源和格式的数据提供了一致的模型，所以叫集成查询。由于这种查询并没有制造新的语言而只是在现有的语言基础上来实现，所以叫语言集成查询。</p>
+<h2 id="基础">基础<a hidden class="anchor" aria-hidden="true" href="#基础">#</a></h2>
+<p>在 C# 中，从功能上 LINQ 可分为两类：LINQ to Object 和 LINQ to XML；从语法上 LINQ 可以分为 LINQ to Object 和 LINQ 扩展方法</p>
+<p>纠正：</p>
+<p>从功能上 LINQ 可分为两类：</p>
+<ul>
+<li>LINQ to Object，查询内存集合，直接把查询编译成 .NET 代码执行。</li>
+<li>LINQ to Provider，查询自定义数据源，由开发者提供相应数据源的 Provider 并翻译和执行自定义查询，如 XML、JSON 等都可以作为 Provider 对应的数据源，数据源对应的 LINQ 查询叫 LINQ to &lt;数据源&gt;，比如：LINQ to XML。</li>
+</ul>
+<p>从语法上 LINQ 可以分为：</p>
+<ul>
+<li>SQL风格：语法和 SQL 相似，部分复杂查询用 SQL 风格语义会更清晰明了，比如 SelectMany 和 Join 查询。SQL 风格的可读性有绝对优势，但不支持全部标准 LINQ 函数，不支持自定义函数。纯粹的语法糖。</li>
+<li>函数风格：以 C# 扩展方法的方式实现，扩展方法即可以是标准库提供的也可以是自己实现的，完全的原生编程风格，编译后的代码都是函数调用。支持全部标准 LINQ 函数和任何自定义函数。随着查询复杂度的提高，可读性不如 SQL 风格。</li>
+</ul>
+<p>感谢 @coredx 的纠正。</p>
+<p>所有 LINQ to Object 都可以用 LINQ 扩展方法实现等同的效果，而且平时开发中用的最多的是 LINQ 扩展方法。</p>
+<p>LINQ to Object 多用于映射数据库的查询，LINQ to XML 用于查询 XML 元素数据。使用 LINQ 查询的前提是对象必须是一个 IEnumerable 集合（注意，为了描述方便，本文说的集合都是指 IEnumerable 对象，包含字面上的 ICollection 对象）。另外，LINQ 查询大多是都是链式查询，即操作的数据源是 <code>IEnumerable&lt;T1&gt;</code> 类型，返回的是 <code>IEnumerable&lt;T2&gt;</code> 类型，T1 和 T2 可以相同，也可以不同。</p>
+<p>形如下面这样的查询就是 LINQ to Object：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">list</span> <span class="p">=</span> <span class="k">from</span> <span class="n">user</span> <span class="k">in</span> <span class="n">users</span>
+</span></span><span class="line"><span class="cl">  <span class="k">where</span> <span class="n">user</span><span class="p">.</span><span class="n">Name</span><span class="p">.</span><span class="n">Contains</span><span class="p">(</span><span class="s">&#34;Wang&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="k">select</span> <span class="n">user</span><span class="p">.</span><span class="n">Id</span><span class="p">;</span>
+</span></span></code></pre></div><p>等同于使用下面的 LINQ 扩展方法：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">list</span> <span class="p">=</span> <span class="n">users</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="n">Where</span><span class="p">(</span><span class="n">u</span> <span class="p">=&gt;</span> <span class="n">user</span><span class="p">.</span><span class="n">Name</span><span class="p">.</span><span class="n">Contains</span><span class="p">(</span><span class="s">&#34;Wang&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="n">Select</span><span class="p">(</span><span class="n">u</span> <span class="p">=&gt;</span> <span class="n">u</span><span class="p">.</span><span class="n">id</span><span class="p">);</span>
+</span></span></code></pre></div><p>LINQ 查询支持在语句中间根据需要定义变量，比如取出数组中平方值大于平均值的数字：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">int</span><span class="p">[]</span> <span class="n">numbers</span> <span class="p">=</span> <span class="p">{</span> <span class="m">0</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">6</span><span class="p">,</span> <span class="m">7</span><span class="p">,</span> <span class="m">8</span><span class="p">,</span> <span class="m">9</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="k">from</span> <span class="n">number</span> <span class="k">in</span> <span class="n">numbers</span>
+</span></span><span class="line"><span class="cl">            <span class="k">let</span> <span class="n">average</span> <span class="p">=</span> <span class="n">numbers</span><span class="p">.</span><span class="n">Average</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="k">let</span> <span class="n">squared</span> <span class="p">=</span> <span class="n">Math</span><span class="p">.</span><span class="n">Pow</span><span class="p">(</span><span class="n">number</span><span class="p">,</span> <span class="m">2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">where</span> <span class="n">squared</span> <span class="p">&gt;</span> <span class="n">average</span>
+</span></span><span class="line"><span class="cl">            <span class="k">select</span> <span class="n">number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 平均值为 4.5, result 为 { 3, 4, 5, 6, 7, 8, 9 }</span>
+</span></span></code></pre></div><p>其中的 Select 方法接收的参数用的最多的是 <code>Func&lt;TSource, TResult&gt;</code>，它还可以接收 <code>Func&lt;TSource, int, TResult&gt;</code> 参数，示例:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">collectionWithRowNumber</span> <span class="p">=</span> <span class="n">collection</span><span class="p">.</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">Select</span><span class="p">((</span><span class="n">item</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="k">new</span> <span class="p">{</span> <span class="n">Item</span> <span class="p">=</span> <span class="n">item</span><span class="p">,</span> <span class="n">RowNumber</span> <span class="p">=</span><span class="n">index</span> <span class="p">})</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">ToList</span><span class="p">();</span>
+</span></span></code></pre></div><p>再来看一下 LINQ to XML 的示例。假如我们有如下 XML 文件：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34; ?&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;Employees&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;Employee&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;EmpId&gt;</span>1<span class="nt">&lt;/EmpId&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;Name&gt;</span>Liam<span class="nt">&lt;/Name&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;Sex&gt;</span>男<span class="nt">&lt;/Sex&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;/Employee&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;Employee&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;EmpId&gt;</span>2<span class="nt">&lt;/EmpId&gt;</span>
+</span></span><span class="line"><span class="cl">    ...
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;/Employee&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/Employees&gt;</span>
+</span></span></code></pre></div><p>使用 LINQ to XML 查询所有含有指定节点值的元素：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="n">XElement</span> <span class="n">xelement</span> <span class="p">=</span> <span class="n">XElement</span><span class="p">.</span><span class="n">Load</span><span class="p">(</span><span class="s">&#34;Employees.xml&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">els</span> <span class="p">=</span> <span class="k">from</span> <span class="n">el</span> <span class="k">in</span> <span class="n">xelement</span><span class="p">.</span><span class="n">Elements</span><span class="p">(</span><span class="s">&#34;Employee&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">          <span class="k">where</span> <span class="p">(</span><span class="kt">string</span><span class="p">)</span><span class="n">el</span><span class="p">.</span><span class="n">Element</span><span class="p">(</span><span class="s">&#34;Sex&#34;</span><span class="p">)</span> <span class="p">==</span> <span class="s">&#34;Male&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="k">select</span> <span class="n">el</span><span class="p">;</span>
+</span></span></code></pre></div><p>等同于使用 LINQ 扩展方法：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">els</span> <span class="p">=</span> <span class="n">xelement</span><span class="p">.</span><span class="n">Elements</span><span class="p">(</span><span class="s">&#34;Employee&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">Where</span><span class="p">(</span><span class="n">el</span> <span class="p">=&gt;</span> <span class="p">(</span><span class="kt">string</span><span class="p">)</span><span class="n">el</span><span class="p">.</span><span class="n">Element</span><span class="p">(</span><span class="s">&#34;Sex&#34;</span><span class="p">)</span> <span class="p">==</span> <span class="s">&#34;Male&#34;</span><span class="p">);</span>
+</span></span></code></pre></div><p>LINQ to XML 操作 XML 非常方便和灵活，大家可以在具体使用的时候去探索，这里就不展开讲了。</p>
+<p>LINQ 查询有很多方法，由于篇幅原因，就不一一列举演示了，这里只选取一些强大的查询方法，这些方法若使用非 LINQ 来实现可能会比较麻烦。</p>
+<p>LINQ 之所以强大，是因为它可以轻松实现复杂的查询，下面我们来总结一下 C# LINQ 的强大之处。</p>
+<h2 id="firstlast-和-single-等">First、Last 和 Single 等<a hidden class="anchor" aria-hidden="true" href="#firstlast-和-single-等">#</a></h2>
+<p>First、FirstOrDefault、Last、LastOrDefault、Single 和 SingleOrDefault 是快速查询集合中的第一个或最后一个元素的方法。如果集合是空的，Fist、Last 和 Single 都会报错，如果使其不报错而在空集合时使用默认值可以使用 FirstOrDefault、LastOrDefault 和 SingleOrDefault。Single/SingleOrDefault 和其它方法的区别是，它限定查询结果只有一个元素，如果查询结果集合中包含多个元素时会报错。具体看下面几个示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="k">new</span><span class="p">[]</span> <span class="p">{</span> <span class="s">&#34;a&#34;</span><span class="p">,</span> <span class="s">&#34;b&#34;</span> <span class="p">}.</span><span class="n">First</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Equals</span><span class="p">(</span><span class="s">&#34;b&#34;</span><span class="p">));</span> <span class="c1">// 返回 ”b“</span>
+</span></span><span class="line"><span class="cl"><span class="k">new</span><span class="p">[]</span> <span class="p">{</span> <span class="s">&#34;a&#34;</span><span class="p">,</span> <span class="s">&#34;b&#34;</span> <span class="p">}.</span><span class="n">First</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Equals</span><span class="p">(</span><span class="s">&#34;c&#34;</span><span class="p">));</span> <span class="c1">// 抛出 InvalidOperationException 异常</span>
+</span></span><span class="line"><span class="cl"><span class="k">new</span><span class="p">[]</span> <span class="p">{</span> <span class="s">&#34;a&#34;</span><span class="p">,</span> <span class="s">&#34;b&#34;</span> <span class="p">}.</span><span class="n">FirstOrDefault</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Equals</span><span class="p">(</span><span class="s">&#34;c&#34;</span><span class="p">));</span> <span class="c1">// 返回 null</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">new</span><span class="p">[]</span> <span class="p">{</span> <span class="s">&#34;a&#34;</span><span class="p">,</span> <span class="s">&#34;b&#34;</span> <span class="p">}.</span><span class="n">Single</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Equals</span><span class="p">(</span><span class="s">&#34;b&#34;</span><span class="p">));</span> <span class="c1">// 返回 ”b“</span>
+</span></span><span class="line"><span class="cl"><span class="k">new</span><span class="p">[]</span> <span class="p">{</span> <span class="s">&#34;a&#34;</span><span class="p">,</span> <span class="s">&#34;b&#34;</span> <span class="p">}.</span><span class="n">Single</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Equals</span><span class="p">(</span><span class="s">&#34;c&#34;</span><span class="p">));</span> <span class="c1">// 抛出 InvalidOperationException 异常</span>
+</span></span><span class="line"><span class="cl"><span class="k">new</span><span class="p">[]</span> <span class="p">{</span> <span class="s">&#34;a&#34;</span><span class="p">,</span> <span class="s">&#34;b&#34;</span> <span class="p">}.</span><span class="n">SingleOrDefault</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Equals</span><span class="p">(</span><span class="s">&#34;c&#34;</span><span class="p">));</span> <span class="c1">// 返回 null</span>
+</span></span><span class="line"><span class="cl"><span class="k">new</span><span class="p">[]</span> <span class="p">{</span> <span class="s">&#34;a&#34;</span><span class="p">,</span> <span class="s">&#34;a&#34;</span> <span class="p">}.</span><span class="n">Single</span><span class="p">();</span> <span class="c1">// 抛出 InvalidOperationException 异常</span>
+</span></span></code></pre></div><p>在实际应用中，如果要确保查询结果的唯一性（比如通过手机号查询用户），使用 Single/SingleOrDefaut，其它情况应尽量使用 First/FirstOrDefault。虽然 FirstOrDefault 也可以根据条件判断元素是否存在，但使用 Any 更高效。</p>
+<h2 id="except-取差集">Except 取差集<a hidden class="anchor" aria-hidden="true" href="#except-取差集">#</a></h2>
+<p>LINQ 的 Except 方法用来取差集，即取出集合中与另一个集合所有元素不同的元素。</p>
+<p>示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">int</span><span class="p">[]</span> <span class="n">first</span> <span class="p">=</span> <span class="p">{</span> <span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span><span class="p">[]</span> <span class="n">second</span> <span class="p">=</span> <span class="p">{</span> <span class="m">0</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">5</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="n">IEnumerable</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="n">result</span> <span class="p">=</span> <span class="n">first</span><span class="p">.</span><span class="n">Except</span><span class="p">(</span><span class="n">second</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// result = { 1, 4 }</span>
+</span></span></code></pre></div><p>注意 Except 方法会去除重复元素：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">int</span><span class="p">[]</span> <span class="n">second</span> <span class="p">=</span> <span class="p">{</span> <span class="m">0</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">5</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span><span class="p">[]</span> <span class="n">third</span> <span class="p">=</span> <span class="p">{</span> <span class="m">1</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="n">IEnumerable</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="n">result</span> <span class="p">=</span> <span class="n">third</span><span class="p">.</span><span class="n">Except</span><span class="p">(</span><span class="n">second</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// result = { 1, 4 }</span>
+</span></span></code></pre></div><p>对于简单类型（int、float、string 等）使用 Except 很简单，但对于自定义类型（或者叫复合类型，下同）的 Object 如何使用 Except 呢？此时需要将自定义类型实现<code>IEquatable&lt;T&gt;</code>接口，示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">User</span> <span class="p">:</span> <span class="n">IEquatable</span><span class="p">&lt;</span><span class="n">User</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">string</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">bool</span> <span class="n">Equals</span><span class="p">(</span><span class="n">User</span> <span class="n">other</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">Name</span> <span class="p">==</span> <span class="n">other</span><span class="p">.</span><span class="n">Name</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kd">override</span> <span class="kt">int</span> <span class="n">GetHashCode</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">Name</span><span class="p">?.</span><span class="n">GetHashCode</span><span class="p">()</span> <span class="p">??</span> <span class="m">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">Program</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">static</span> <span class="k">void</span> <span class="n">Main</span><span class="p">(</span><span class="kt">string</span><span class="p">[]</span> <span class="n">args</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">var</span> <span class="n">list1</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">User</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">new</span> <span class="n">User</span><span class="p">{</span> <span class="n">Name</span> <span class="p">=</span> <span class="s">&#34;User1&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">            <span class="k">new</span> <span class="n">User</span><span class="p">{</span> <span class="n">Name</span> <span class="p">=</span> <span class="s">&#34;User2&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="kt">var</span> <span class="n">list2</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">User</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">new</span> <span class="n">User</span><span class="p">{</span> <span class="n">Name</span> <span class="p">=</span> <span class="s">&#34;User2&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">            <span class="k">new</span> <span class="n">User</span><span class="p">{</span> <span class="n">Name</span> <span class="p">=</span> <span class="s">&#34;User3&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="n">list1</span><span class="p">.</span><span class="n">Except</span><span class="p">(</span><span class="n">list2</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">result</span><span class="p">.</span><span class="n">ForEach</span><span class="p">(</span><span class="n">u</span> <span class="p">=&gt;</span> <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="n">u</span><span class="p">.</span><span class="n">Name</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 输出：User1</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h2 id="selectmany-集合降维">SelectMany 集合降维<a hidden class="anchor" aria-hidden="true" href="#selectmany-集合降维">#</a></h2>
+<p>SelectMany 可以把多维集合降维，比如把二维的集合平铺成一个一维的集合。举例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">collection</span> <span class="p">=</span> <span class="k">new</span> <span class="kt">int</span><span class="p">[][]</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">new</span> <span class="kt">int</span><span class="p">[]</span> <span class="p">{</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="k">new</span> <span class="kt">int</span><span class="p">[]</span> <span class="p">{</span><span class="m">4</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">6</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="n">collection</span><span class="p">.</span><span class="n">SelectMany</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// result = [1, 2, 3, 4, 5, 6]</span>
+</span></span></code></pre></div><p>再来举个更贴合实际应用的例子。例如有如下实体类（一个部门有多个员工）：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">Department</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">Employee</span><span class="p">[]</span> <span class="n">Employees</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">Employee</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">string</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>此时，我们拥有一个这样的数据集合：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">departments</span> <span class="p">=</span> <span class="k">new</span><span class="p">[]</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">new</span> <span class="n">Department</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Employees</span> <span class="p">=</span> <span class="k">new</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">new</span> <span class="n">Employee</span> <span class="p">{</span> <span class="n">Name</span> <span class="p">=</span> <span class="s">&#34;Bob&#34;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">            <span class="k">new</span> <span class="n">Employee</span> <span class="p">{</span> <span class="n">Name</span> <span class="p">=</span> <span class="s">&#34;Jack&#34;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="k">new</span> <span class="n">Department</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Employees</span> <span class="p">=</span> <span class="k">new</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">new</span> <span class="n">Employee</span> <span class="p">{</span> <span class="n">Name</span> <span class="p">=</span> <span class="s">&#34;Jim&#34;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">            <span class="k">new</span> <span class="n">Employee</span> <span class="p">{</span> <span class="n">Name</span> <span class="p">=</span> <span class="s">&#34;John&#34;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span></code></pre></div><p>现在我们可以使用 SelectMany 把各部门的员工查询到一个结果集中：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">allEmployees</span> <span class="p">=</span> <span class="n">departments</span><span class="p">.</span><span class="n">SelectMany</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Employees</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="k">foreach</span><span class="p">(</span><span class="kt">var</span> <span class="n">emp</span> <span class="k">in</span> <span class="n">allEmployees</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="n">emp</span><span class="p">.</span><span class="n">Name</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 依次输出：Bob Jack Jim John</span>
+</span></span></code></pre></div><h2 id="selectmany-迪卡尔积运算">SelectMany 迪卡尔积运算<a hidden class="anchor" aria-hidden="true" href="#selectmany-迪卡尔积运算">#</a></h2>
+<p>SelectMany 不光适用于单个包含多维集合对象的降维，也适用于多个集合之前的两两相互操作，比如进行迪卡尔积运算。比如我们有这样两个集合：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">list1</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="p">{</span> <span class="s">&#34;a1&#34;</span><span class="p">,</span> <span class="s">&#34;a2&#34;</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">list2</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="p">{</span> <span class="s">&#34;b1&#34;</span><span class="p">,</span> <span class="s">&#34;b2&#34;</span><span class="p">,</span> <span class="s">&#34;b3&#34;</span> <span class="p">};</span>
+</span></span></code></pre></div><p>现在我们需要把它进行两两组合，使用普通的方法，我们需要用嵌套循环语句来实现：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="n">newList</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;();</span>
+</span></span><span class="line"><span class="cl"><span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">s1</span> <span class="k">in</span> <span class="n">list1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">s2</span> <span class="k">in</span> <span class="n">list2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">result</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="s">$&#34;{s1}{s2}&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// result = [&#34;a1b1&#34;, &#34;a1b2&#34;, &#34;a1b3&#34;, &#34;a2b1&#34;, &#34;a2b2&#34;, &#34;a2b3&#34;]</span>
+</span></span></code></pre></div><p>改用 SelectMany 实现：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="n">list1</span><span class="p">.</span><span class="n">SelectMany</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">list2</span><span class="p">.</span><span class="n">Select</span><span class="p">(</span><span class="n">y</span> <span class="p">=&gt;</span> <span class="s">$&#34;{x}{y}&#34;</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// result = [&#34;a1b1&#34;, &#34;a1b2&#34;, &#34;a1b3&#34;, &#34;a2b1&#34;, &#34;a2b2&#34;, &#34;a2b3&#34;]</span>
+</span></span></code></pre></div><p>具有挑战性的问题来了，如何对 N 个集合进行迪卡尔积运算呢，比如有这样的集合数据：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">arrList</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">[]&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">new</span> <span class="kt">string</span><span class="p">[]</span> <span class="p">{</span> <span class="s">&#34;a1&#34;</span><span class="p">,</span> <span class="s">&#34;a2&#34;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="k">new</span> <span class="kt">string</span><span class="p">[]</span> <span class="p">{</span> <span class="s">&#34;b1&#34;</span><span class="p">,</span> <span class="s">&#34;b2&#34;</span><span class="p">,</span> <span class="s">&#34;b3&#34;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="k">new</span> <span class="kt">string</span><span class="p">[]</span> <span class="p">{</span> <span class="s">&#34;c1&#34;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// ...</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span></code></pre></div><p>如何对上面的 arrList 中的各个集合进行两两组合呢？在电商业务尤其是零售业务中的产品组合促销中这种需求很常见。</p>
+<p>下面是一个使用 SelectMany 的实现，需要用到递归：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">Program</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">static</span> <span class="k">void</span> <span class="n">Main</span><span class="p">(</span><span class="kt">string</span><span class="p">[]</span> <span class="n">args</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">var</span> <span class="n">arrList</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">[]&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">new</span> <span class="kt">string</span><span class="p">[]</span> <span class="p">{</span> <span class="s">&#34;a1&#34;</span><span class="p">,</span> <span class="s">&#34;a2&#34;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">            <span class="k">new</span> <span class="kt">string</span><span class="p">[]</span> <span class="p">{</span> <span class="s">&#34;b1&#34;</span><span class="p">,</span> <span class="s">&#34;b2&#34;</span><span class="p">,</span> <span class="s">&#34;b3&#34;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">            <span class="k">new</span> <span class="kt">string</span><span class="p">[]</span> <span class="p">{</span> <span class="s">&#34;c1&#34;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">// ...</span>
+</span></span><span class="line"><span class="cl">        <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="n">Recursion</span><span class="p">(</span><span class="n">arrList</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;());</span>
+</span></span><span class="line"><span class="cl">        <span class="n">result</span><span class="p">.</span><span class="n">ForEach</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="n">x</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">static</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">Recursion</span><span class="p">(</span><span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">[]&gt;</span> <span class="n">list</span><span class="p">,</span> <span class="kt">int</span> <span class="n">start</span><span class="p">,</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">result</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">start</span> <span class="p">&gt;=</span> <span class="n">list</span><span class="p">.</span><span class="n">Count</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="n">Count</span> <span class="p">==</span> <span class="m">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">result</span> <span class="p">=</span> <span class="n">list</span><span class="p">[</span><span class="n">start</span><span class="p">].</span><span class="n">ToList</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span>
+</span></span><span class="line"><span class="cl">            <span class="n">result</span> <span class="p">=</span> <span class="n">result</span><span class="p">.</span><span class="n">SelectMany</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">list</span><span class="p">[</span><span class="n">start</span><span class="p">].</span><span class="n">Select</span><span class="p">(</span><span class="n">y</span> <span class="p">=&gt;</span> <span class="n">x</span> <span class="p">+</span> <span class="n">y</span><span class="p">)).</span><span class="n">ToList</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">result</span> <span class="p">=</span> <span class="n">Recursion</span><span class="p">(</span><span class="n">list</span><span class="p">,</span> <span class="n">start</span> <span class="p">+</span> <span class="m">1</span><span class="p">,</span> <span class="n">result</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>输出：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">a1b1c1
+</span></span><span class="line"><span class="cl">a1b2c1
+</span></span><span class="line"><span class="cl">a1b3c1
+</span></span><span class="line"><span class="cl">a2b1c1
+</span></span><span class="line"><span class="cl">a2b2c1
+</span></span><span class="line"><span class="cl">a2b3c1
+</span></span></code></pre></div><p>类似这种集合的迪卡尔积运算操作，也可以用 LINQ to Object 来代替 SelectMany 实现：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="n">result</span> <span class="p">=</span> <span class="n">result</span><span class="p">.</span><span class="n">SelectMany</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">list</span><span class="p">[</span><span class="n">start</span><span class="p">].</span><span class="n">Select</span><span class="p">(</span><span class="n">y</span> <span class="p">=&gt;</span> <span class="n">x</span> <span class="p">+</span> <span class="n">y</span><span class="p">)).</span><span class="n">ToList</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 等同使用扩展方法：</span>
+</span></span><span class="line"><span class="cl"><span class="n">result</span> <span class="p">=</span> <span class="p">(</span><span class="k">from</span> <span class="n">a</span> <span class="k">in</span> <span class="n">result</span> <span class="k">from</span> <span class="n">b</span> <span class="k">in</span> <span class="n">list</span><span class="p">[</span><span class="n">start</span><span class="p">]</span> <span class="k">select</span> <span class="n">a</span> <span class="p">+</span> <span class="n">b</span><span class="p">).</span><span class="n">ToList</span><span class="p">();</span>
+</span></span></code></pre></div><p>LINQ to Object 比扩展方法看上去易读性更好，但写起来扩展方法更方便。</p>
+<h2 id="aggregate-聚合">Aggregate 聚合<a hidden class="anchor" aria-hidden="true" href="#aggregate-聚合">#</a></h2>
+<p>Aggregate 扩展方法可以对一个集合依次执行类似累加器的操作，就像滚雪球一样把数据逐步聚集在一起。比如实现从 1 加到 10，用 Aggregate 扩展方法就很方便：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">int</span><span class="p">[]</span> <span class="n">numbers</span> <span class="p">=</span> <span class="p">{</span> <span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">6</span><span class="p">,</span> <span class="m">7</span><span class="p">,</span> <span class="m">8</span><span class="p">,</span> <span class="m">9</span><span class="p">,</span> <span class="m">10</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">sum</span> <span class="p">=</span> <span class="n">numbers</span><span class="p">.</span><span class="n">Aggregate</span><span class="p">((</span><span class="n">prevSum</span><span class="p">,</span> <span class="n">current</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">prevSum</span> <span class="p">+</span> <span class="n">current</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// sum = 55</span>
+</span></span></code></pre></div><p>我们来解析一下它的执行步骤</p>
+<ul>
+<li>第一步，prevSum 取第一个元素的值，即 prevSum = 1</li>
+<li>第二步，把第一步得到的 prevSum 的值加上第二个元素，即 prevSum = prevSum + 2</li>
+<li>依此类推，第 i 步把第 i-1 得到的 prevSum 加上第 i 个元素</li>
+</ul>
+<p>再来看一个字符串的例子加深理解：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">string</span><span class="p">[]</span> <span class="n">stringList</span> <span class="p">=</span> <span class="p">{</span> <span class="s">&#34;Hello&#34;</span><span class="p">,</span> <span class="s">&#34;World&#34;</span><span class="p">,</span> <span class="s">&#34;!&#34;</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="kt">string</span> <span class="n">joinedString</span> <span class="p">=</span> <span class="n">stringList</span><span class="p">.</span><span class="n">Aggregate</span><span class="p">((</span><span class="n">prev</span><span class="p">,</span> <span class="n">current</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">prev</span> <span class="p">+</span> <span class="s">&#34; &#34;</span> <span class="p">+</span> <span class="n">current</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// joinedString = &#34;Hello World !&#34;</span>
+</span></span></code></pre></div><p>Aggregate 还有一个重载方法，可以指定累加器的初始值。我们来看一个比较综合的复杂例子。假如我们有如下 1-12 的一个数字集合：</p>
+<pre tabindex="0"><code class="language-CS" data-lang="CS">var items = new List&lt;int&gt; { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
+</code></pre><p>现在我们想做如下计算：</p>
+<ul>
+<li>计算集合元素的总数个数</li>
+<li>计算值为偶数的元素个数</li>
+<li>收集每第 4 个元素</li>
+</ul>
+<p>当然通过普通的循环遍历也可以实现这三个计算，但使用 Aggregate 会更简洁，下面是 Aggregate 的实现：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="n">items</span><span class="p">.</span><span class="n">Aggregate</span><span class="p">(</span><span class="k">new</span> <span class="p">{</span> <span class="n">Total</span> <span class="p">=</span> <span class="m">0</span><span class="p">,</span> <span class="n">Even</span> <span class="p">=</span> <span class="m">0</span><span class="p">,</span> <span class="n">FourthItems</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;()</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="n">accum</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="p">=&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">new</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Total</span> <span class="p">=</span> <span class="n">accum</span><span class="p">.</span><span class="n">Total</span> <span class="p">+</span> <span class="m">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Even</span> <span class="p">=</span> <span class="n">accum</span><span class="p">.</span><span class="n">Even</span> <span class="p">+</span> <span class="p">(</span><span class="n">item</span> <span class="p">%</span> <span class="m">2</span> <span class="p">==</span> <span class="m">0</span> <span class="p">?</span> <span class="m">1</span> <span class="p">:</span> <span class="m">0</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">        <span class="n">FourthItems</span> <span class="p">=</span> <span class="p">(</span><span class="n">accum</span><span class="p">.</span><span class="n">Total</span> <span class="p">+</span> <span class="m">1</span><span class="p">)</span> <span class="p">%</span> <span class="m">4</span> <span class="p">==</span> <span class="m">0</span> <span class="p">?</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;(</span><span class="n">accum</span><span class="p">.</span><span class="n">FourthItems</span><span class="p">)</span> <span class="p">{</span> <span class="n">item</span> <span class="p">}</span> <span class="p">:</span> <span class="n">accum</span><span class="p">.</span><span class="n">FourthItems</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// result:</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// Total = 12</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// Even = 6</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// FourthItems = [4, 8, 12]</span>
+</span></span></code></pre></div><p>这里为了简单起见使用匿名类型作为累加器的初始值，由于匿名类型的属性是只读的，所以在累加的过程都 new 了一个新对象。如果初始值使用的是自定义类型，那累加时就不需 new 新对象了。</p>
+<h2 id="join-关联查询">Join 关联查询<a hidden class="anchor" aria-hidden="true" href="#join-关联查询">#</a></h2>
+<p>和 SQL 查询一样，LINQ 同样支持 Inner Join、Left Join、Right Join、Cross Join 和 Full Outer Join，有时候你可能看到不同的写法，其实是同一个意思，比如 Left Outer Join 就是 Left Join，Join 是 Inner Join 省略了 Inner 等。</p>
+<p>假设我们有下面两个集合，分别表示左边的数据和右边的数据。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">first</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;()</span> <span class="p">{</span> <span class="s">&#34;a&#34;</span><span class="p">,</span><span class="s">&#34;b&#34;</span><span class="p">,</span><span class="s">&#34;c&#34;</span> <span class="p">};</span> <span class="c1">// 左边</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">second</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;()</span> <span class="p">{</span> <span class="s">&#34;a&#34;</span><span class="p">,</span> <span class="s">&#34;c&#34;</span><span class="p">,</span> <span class="s">&#34;d&#34;</span> <span class="p">};</span> <span class="c1">// 右边</span>
+</span></span></code></pre></div><p>下面以此数据为例来演示各种关联查询。</p>
+<h3 id="inner-join">Inner Join<a hidden class="anchor" aria-hidden="true" href="#inner-join">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"> <span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="k">from</span> <span class="n">f</span> <span class="k">in</span> <span class="n">first</span>
+</span></span><span class="line"><span class="cl">              <span class="k">join</span> <span class="n">s</span> <span class="k">in</span> <span class="n">second</span> <span class="k">on</span> <span class="n">f</span> <span class="k">equals</span> <span class="n">s</span>
+</span></span><span class="line"><span class="cl">              <span class="k">select</span> <span class="k">new</span> <span class="p">{</span> <span class="n">f</span><span class="p">,</span> <span class="n">s</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 等同使用扩展方法：</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="n">first</span><span class="p">.</span><span class="n">Join</span><span class="p">(</span><span class="n">second</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">f</span> <span class="p">=&gt;</span> <span class="n">f</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">s</span> <span class="p">=&gt;</span> <span class="n">s</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="k">new</span> <span class="p">{</span> <span class="n">f</span><span class="p">,</span> <span class="n">s</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// result: {&#34;a&#34;,&#34;a&#34;}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//         {&#34;c&#34;,&#34;c&#34;}</span>
+</span></span></code></pre></div><h3 id="left-join">Left Join<a hidden class="anchor" aria-hidden="true" href="#left-join">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="k">from</span> <span class="n">f</span> <span class="k">in</span> <span class="n">first</span>
+</span></span><span class="line"><span class="cl">            <span class="k">join</span> <span class="n">s</span> <span class="k">in</span> <span class="n">second</span> <span class="k">on</span> <span class="n">f</span> <span class="k">equals</span> <span class="n">s</span> <span class="k">into</span> <span class="n">temp</span>
+</span></span><span class="line"><span class="cl">            <span class="k">from</span> <span class="n">t</span> <span class="k">in</span> <span class="n">temp</span><span class="p">.</span><span class="n">DefaultIfEmpty</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="k">select</span> <span class="k">new</span> <span class="p">{</span> <span class="n">First</span> <span class="p">=</span> <span class="n">f</span><span class="p">,</span> <span class="n">Second</span> <span class="p">=</span> <span class="n">t</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 或者：</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="k">from</span> <span class="n">f</span> <span class="k">in</span> <span class="n">first</span>
+</span></span><span class="line"><span class="cl">            <span class="k">from</span> <span class="n">s</span> <span class="k">in</span> <span class="n">second</span><span class="p">.</span><span class="n">Where</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span> <span class="p">==</span> <span class="n">f</span><span class="p">).</span><span class="n">DefaultIfEmpty</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="k">select</span> <span class="k">new</span> <span class="p">{</span> <span class="n">First</span> <span class="p">=</span> <span class="n">f</span><span class="p">,</span> <span class="n">Second</span> <span class="p">=</span> <span class="n">s</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 等同使用扩展方法：</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="n">first</span><span class="p">.</span><span class="n">GroupJoin</span><span class="p">(</span><span class="n">second</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">f</span> <span class="p">=&gt;</span> <span class="n">f</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">s</span> <span class="p">=&gt;</span> <span class="n">s</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="k">new</span> <span class="p">{</span> <span class="n">First</span> <span class="p">=</span> <span class="n">f</span><span class="p">,</span> <span class="n">Second</span> <span class="p">=</span> <span class="n">s</span> <span class="p">})</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">SelectMany</span><span class="p">(</span><span class="n">temp</span> <span class="p">=&gt;</span> <span class="n">temp</span><span class="p">.</span><span class="n">Second</span><span class="p">.</span><span class="n">DefaultIfEmpty</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">        <span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="k">new</span> <span class="p">{</span> <span class="n">First</span> <span class="p">=</span> <span class="n">f</span><span class="p">.</span><span class="n">First</span><span class="p">,</span> <span class="n">Second</span> <span class="p">=</span> <span class="n">s</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// result: {&#34;a&#34;,&#34;a&#34;}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//         {&#34;b&#34;, null}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//         {&#34;c&#34;,&#34;c&#34;}</span>
+</span></span></code></pre></div><h3 id="right-join">Right Join<a hidden class="anchor" aria-hidden="true" href="#right-join">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="k">from</span> <span class="n">s</span> <span class="k">in</span> <span class="n">second</span>
+</span></span><span class="line"><span class="cl">            <span class="k">join</span> <span class="n">f</span> <span class="k">in</span> <span class="n">first</span> <span class="k">on</span> <span class="n">s</span> <span class="k">equals</span> <span class="n">f</span> <span class="k">into</span> <span class="n">temp</span>
+</span></span><span class="line"><span class="cl">            <span class="k">from</span> <span class="n">t</span> <span class="k">in</span> <span class="n">temp</span><span class="p">.</span><span class="n">DefaultIfEmpty</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="k">select</span> <span class="k">new</span> <span class="p">{</span> <span class="n">First</span> <span class="p">=</span> <span class="n">t</span><span class="p">,</span> <span class="n">Second</span> <span class="p">=</span> <span class="n">s</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 其它和 Left Join 类似</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// result: {&#34;a&#34;,&#34;a&#34;}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//         {&#34;c&#34;,&#34;c&#34;}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//         {null,&#34;d&#34;}</span>
+</span></span></code></pre></div><h3 id="cross-join">Cross Join<a hidden class="anchor" aria-hidden="true" href="#cross-join">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="k">from</span> <span class="n">f</span> <span class="k">in</span> <span class="n">first</span>
+</span></span><span class="line"><span class="cl">            <span class="k">from</span> <span class="n">s</span> <span class="k">in</span> <span class="n">second</span>
+</span></span><span class="line"><span class="cl">            <span class="k">select</span> <span class="k">new</span> <span class="p">{</span> <span class="n">f</span><span class="p">,</span> <span class="n">s</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// result: {&#34;a&#34;,&#34;a&#34;}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//         {&#34;a&#34;,&#34;c&#34;}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//         {&#34;a&#34;,&#34;d&#34;}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//         {&#34;b&#34;,&#34;a&#34;}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//         {&#34;b&#34;,&#34;c&#34;}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//         {&#34;b&#34;,&#34;d&#34;}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//         {&#34;c&#34;,&#34;a&#34;}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//         {&#34;c&#34;,&#34;c&#34;}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//         {&#34;c&#34;,&#34;d&#34;}</span>
+</span></span></code></pre></div><h3 id="full-outer-join">Full Outer Join<a hidden class="anchor" aria-hidden="true" href="#full-outer-join">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">leftJoin</span> <span class="p">=</span> <span class="k">from</span> <span class="n">f</span> <span class="k">in</span> <span class="n">first</span>
+</span></span><span class="line"><span class="cl">            <span class="k">join</span> <span class="n">s</span> <span class="k">in</span> <span class="n">second</span> <span class="k">on</span> <span class="n">f</span> <span class="k">equals</span> <span class="n">s</span> <span class="k">into</span> <span class="n">temp</span>
+</span></span><span class="line"><span class="cl">            <span class="k">from</span> <span class="n">t</span> <span class="k">in</span> <span class="n">temp</span><span class="p">.</span><span class="n">DefaultIfEmpty</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="k">select</span> <span class="k">new</span> <span class="p">{</span> <span class="n">First</span> <span class="p">=</span> <span class="n">f</span><span class="p">,</span> <span class="n">Second</span> <span class="p">=</span> <span class="n">t</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">rightJoin</span> <span class="p">=</span> <span class="k">from</span> <span class="n">s</span> <span class="k">in</span> <span class="n">second</span>
+</span></span><span class="line"><span class="cl">            <span class="k">join</span> <span class="n">f</span> <span class="k">in</span> <span class="n">first</span> <span class="k">on</span> <span class="n">s</span> <span class="k">equals</span> <span class="n">f</span> <span class="k">into</span> <span class="n">temp</span>
+</span></span><span class="line"><span class="cl">            <span class="k">from</span> <span class="n">t</span> <span class="k">in</span> <span class="n">temp</span><span class="p">.</span><span class="n">DefaultIfEmpty</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="k">select</span> <span class="k">new</span> <span class="p">{</span> <span class="n">First</span> <span class="p">=</span> <span class="n">t</span><span class="p">,</span> <span class="n">Second</span> <span class="p">=</span> <span class="n">s</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">fullOuterJoin</span> <span class="p">=</span> <span class="n">leftJoin</span><span class="p">.</span><span class="n">Union</span><span class="p">(</span><span class="n">rightJoin</span><span class="p">);</span>
+</span></span></code></pre></div><h3 id="根据多个键关联">根据多个键关联<a hidden class="anchor" aria-hidden="true" href="#根据多个键关联">#</a></h3>
+<p>在 SQL 中，表与表进行关联查询时 on 条件可以指定多个键的逻辑判断，用 and 或 or 连接。但 C# 的 LINQ 不支持 and 关键字，若要根据多键关联，需要把要关联的键值分别以相同的属性名放到匿名对象中，然后使用 equals 比较两个匿名对象是否相等。示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">stringProps</span> <span class="p">=</span> <span class="k">typeof</span><span class="p">(</span><span class="kt">string</span><span class="p">).</span><span class="n">GetProperties</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">builderProps</span> <span class="p">=</span> <span class="k">typeof</span><span class="p">(</span><span class="n">StringBuilder</span><span class="p">).</span><span class="n">GetProperties</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">query</span> <span class="p">=</span>
+</span></span><span class="line"><span class="cl">    <span class="k">from</span> <span class="n">s</span> <span class="k">in</span> <span class="n">stringProps</span>
+</span></span><span class="line"><span class="cl">    <span class="k">join</span> <span class="n">b</span> <span class="k">in</span> <span class="n">builderProps</span>
+</span></span><span class="line"><span class="cl">    <span class="k">on</span> <span class="k">new</span> <span class="p">{</span> <span class="n">s</span><span class="p">.</span><span class="n">Name</span><span class="p">,</span> <span class="n">s</span><span class="p">.</span><span class="n">PropertyType</span> <span class="p">}</span> <span class="k">equals</span> <span class="k">new</span> <span class="p">{</span> <span class="n">b</span><span class="p">.</span><span class="n">Name</span><span class="p">,</span> <span class="n">b</span><span class="p">.</span><span class="n">PropertyType</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">select</span> <span class="k">new</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">s</span><span class="p">.</span><span class="n">Name</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">s</span><span class="p">.</span><span class="n">PropertyType</span>
+</span></span><span class="line"><span class="cl">    <span class="p">};</span>
+</span></span></code></pre></div><p>以上均使用两个集合做为示例，LINQ 关联查询也支持多个集合关联，就像 SQL 的多表关联，只需往后继续追加 join 操作即可，不再累述。</p>
+<p>LINQ 关联查与 SQL 相似，但使用上有很大区别。LINQ 关联查询的用法有很多，也很灵活，不用刻意去记住它们，只要熟悉简单常用的，其它的在实际用到的时候再查询相关文档。</p>
+<h2 id="skip--take-分页">Skip &amp; Take 分页<a hidden class="anchor" aria-hidden="true" href="#skip--take-分页">#</a></h2>
+<p>Skip 扩展方法用来跳过从起始位置开始的指定数量的元素读取集合；Take 扩展方法用来从集合中只读取指定数量的元素。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">values</span> <span class="p">=</span> <span class="k">new</span><span class="p">[]</span> <span class="p">{</span> <span class="m">5</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">1</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">skipTwo</span> <span class="p">=</span> <span class="n">values</span><span class="p">.</span><span class="n">Skip</span><span class="p">(</span><span class="m">2</span><span class="p">);</span>  <span class="c1">// { 3, 2, 1 }</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">takeThree</span> <span class="p">=</span> <span class="n">values</span><span class="p">.</span><span class="n">Take</span><span class="p">(</span><span class="m">3</span><span class="p">);</span>  <span class="c1">// { 5, 4, 3 }</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">skipOneTakeTwo</span> <span class="p">=</span> <span class="n">values</span><span class="p">.</span><span class="n">Skip</span><span class="p">(</span><span class="m">1</span><span class="p">).</span><span class="n">Take</span><span class="p">(</span><span class="m">2</span><span class="p">);</span> <span class="c1">// { 4, 3 }</span>
+</span></span></code></pre></div><p>Skip 与 Take 两个方法结合即可实现我们常见的分页查询：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kd">public</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">GetPage</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="k">this</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">collection</span><span class="p">,</span> <span class="kt">int</span> <span class="n">pageNumber</span><span class="p">,</span> <span class="kt">int</span> <span class="n">pageSize</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">startIndex</span> <span class="p">=</span> <span class="p">(</span><span class="n">pageNumber</span> <span class="p">-</span> <span class="m">1</span><span class="p">)</span> <span class="p">*</span> <span class="n">pageSize</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">collection</span><span class="p">.</span><span class="n">Skip</span><span class="p">(</span><span class="n">startIndex</span><span class="p">).</span><span class="n">Take</span><span class="p">(</span><span class="n">pageSize</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>使用过 EF (Core) 的同学一定很熟悉。</p>
+<p>另外，还有 SkipWhile 和 TakeWhile 扩展方法，它与 Skip 和 Take 不同的是，它们的参数是具体的条件。SkipWhile 从起始位置开始忽略元素，直到遇到不符合条件的元素则停止忽略，往后就是要查询的结果；TakeWhile 从起始位置开始读取符合条件的元素，一旦遇到不符合条件的就停止读取，即使后面还有符合条件的也不再读取。示例：</p>
+<p>SkipWhile：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">int</span><span class="p">[]</span> <span class="n">list</span> <span class="p">=</span> <span class="p">{</span> <span class="m">42</span><span class="p">,</span> <span class="m">42</span><span class="p">,</span> <span class="m">6</span><span class="p">,</span> <span class="m">6</span><span class="p">,</span> <span class="m">6</span><span class="p">,</span> <span class="m">42</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="n">list</span><span class="p">.</span><span class="n">SkipWhile</span><span class="p">(</span><span class="n">i</span> <span class="p">=&gt;</span> <span class="n">i</span> <span class="p">==</span> <span class="m">42</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// result: 6, 6, 6, 42</span>
+</span></span></code></pre></div><p>TakeWhile：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">int</span><span class="p">[]</span> <span class="n">list</span> <span class="p">=</span> <span class="p">{</span> <span class="m">1</span><span class="p">,</span> <span class="m">10</span><span class="p">,</span> <span class="m">40</span><span class="p">,</span> <span class="m">50</span><span class="p">,</span> <span class="m">44</span><span class="p">,</span> <span class="m">70</span><span class="p">,</span> <span class="m">4</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="n">list</span><span class="p">.</span><span class="n">TakeWhile</span><span class="p">(</span><span class="n">item</span> <span class="p">=&gt;</span> <span class="n">item</span> <span class="p">&lt;</span> <span class="m">50</span><span class="p">).</span><span class="n">ToList</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// result = { 1, 10, 40 }</span>
+</span></span></code></pre></div><h2 id="zip-拉链">Zip 拉链<a hidden class="anchor" aria-hidden="true" href="#zip-拉链">#</a></h2>
+<p>Zip 扩展方法操作的对象是两个集合，它就像拉链一样，根据位置将两个系列中的每个元素依次配对在一起。其接收的参数是一个 Func 实例，该 Func 实例允许我们成对在处理两个集合中的元素。如果两个集合中的元素个数不相等，那么多出来的将会被忽略。</p>
+<p>示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">int</span><span class="p">[]</span> <span class="n">numbers</span> <span class="p">=</span> <span class="p">{</span> <span class="m">3</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">7</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="kt">string</span><span class="p">[]</span> <span class="n">words</span> <span class="p">=</span> <span class="p">{</span> <span class="s">&#34;three&#34;</span><span class="p">,</span> <span class="s">&#34;five&#34;</span><span class="p">,</span> <span class="s">&#34;seven&#34;</span><span class="p">,</span> <span class="s">&#34;ignored&#34;</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="n">IEnumerable</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">zip</span> <span class="p">=</span> <span class="n">numbers</span><span class="p">.</span><span class="n">Zip</span><span class="p">(</span><span class="n">words</span><span class="p">,</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">n</span> <span class="p">+</span> <span class="s">&#34;=&#34;</span> <span class="p">+</span> <span class="n">w</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">foreach</span> <span class="p">(</span><span class="kt">string</span> <span class="n">s</span> <span class="k">in</span> <span class="n">zip</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>输出：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">3</span><span class="o">=</span>three
+</span></span><span class="line"><span class="cl"><span class="nv">5</span><span class="o">=</span>five
+</span></span><span class="line"><span class="cl"><span class="nv">7</span><span class="o">=</span>seven
+</span></span></code></pre></div><h2 id="oftype-和-cast-类型过滤与转换">OfType 和 Cast 类型过滤与转换<a hidden class="anchor" aria-hidden="true" href="#oftype-和-cast-类型过滤与转换">#</a></h2>
+<p>OfType 用于筛选集合中指定类型的元素，Cast 可以把集合转换为指定类型，但要求源类型必须可以隐式转换为目标类型。假如有如下数据：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="k">interface</span> <span class="nc">IFoo</span> <span class="p">{</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">Foo</span> <span class="p">:</span> <span class="n">IFoo</span> <span class="p">{</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">Bar</span> <span class="p">:</span> <span class="n">IFoo</span> <span class="p">{</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">item0</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Foo</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">item1</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Foo</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">item2</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Bar</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">item3</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Bar</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">collection</span> <span class="p">=</span> <span class="k">new</span> <span class="n">IFoo</span><span class="p">[]</span> <span class="p">{</span> <span class="n">item0</span><span class="p">,</span> <span class="n">item1</span><span class="p">,</span> <span class="n">item2</span><span class="p">,</span> <span class="n">item3</span> <span class="p">};</span>
+</span></span></code></pre></div><p>OfType 示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">foos</span> <span class="p">=</span> <span class="n">collection</span><span class="p">.</span><span class="n">OfType</span><span class="p">&lt;</span><span class="n">Foo</span><span class="p">&gt;();</span> <span class="c1">// result: item0, item1</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">bars</span> <span class="p">=</span> <span class="n">collection</span><span class="p">.</span><span class="n">OfType</span><span class="p">&lt;</span><span class="n">Bar</span><span class="p">&gt;();</span> <span class="c1">// result: item2, item3</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">foosAndBars</span> <span class="p">=</span> <span class="n">collection</span><span class="p">.</span><span class="n">OfType</span><span class="p">&lt;</span><span class="n">IFoo</span><span class="p">&gt;();</span> <span class="c1">// result: item0, item1, item2, item3</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 等同于使用 Where</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">foos</span> <span class="p">=</span> <span class="n">collection</span><span class="p">.</span><span class="n">Where</span><span class="p">(</span><span class="n">item</span> <span class="p">=&gt;</span> <span class="n">item</span> <span class="k">is</span> <span class="n">Foo</span><span class="p">);</span> <span class="c1">// result: item0, item1</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">bars</span> <span class="p">=</span> <span class="n">collection</span><span class="p">.</span><span class="n">Where</span><span class="p">(</span><span class="n">item</span> <span class="p">=&gt;</span> <span class="n">item</span> <span class="k">is</span> <span class="n">Bar</span><span class="p">);</span> <span class="c1">// result: item2, item3</span>
+</span></span></code></pre></div><p>Cast 示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">bars</span> <span class="p">=</span> <span class="n">collection</span><span class="p">.</span><span class="n">Cast</span><span class="p">&lt;</span><span class="n">Bar</span><span class="p">&gt;();</span>  <span class="c1">// InvalidCastException 异常</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">foos</span> <span class="p">=</span> <span class="n">collection</span><span class="p">.</span><span class="n">Cast</span><span class="p">&lt;</span><span class="n">Foo</span><span class="p">&gt;();</span>  <span class="c1">// InvalidCastException 异常</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">foosAndBars</span> <span class="p">=</span> <span class="n">collection</span><span class="p">.</span><span class="n">Cast</span><span class="p">&lt;</span><span class="n">IFoo</span><span class="p">&gt;();</span>  <span class="c1">// OK</span>
+</span></span></code></pre></div><h2 id="tolookup-索引式查找">ToLookup 索引式查找<a hidden class="anchor" aria-hidden="true" href="#tolookup-索引式查找">#</a></h2>
+<p>ToLookup 扩展方法返回的是可索引查找的数据结构，它是一个 ILookup 实例，所有元素根据指定的键进行分组并可以按键进行索引。这样说有点抽象，来看具体示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">string</span><span class="p">[]</span> <span class="n">array</span> <span class="p">=</span> <span class="p">{</span> <span class="s">&#34;one&#34;</span><span class="p">,</span> <span class="s">&#34;two&#34;</span><span class="p">,</span> <span class="s">&#34;three&#34;</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 根据元素字符串长度创建一个查找对象</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">lookup</span> <span class="p">=</span> <span class="n">array</span><span class="p">.</span><span class="n">ToLookup</span><span class="p">(</span><span class="n">item</span> <span class="p">=&gt;</span> <span class="n">item</span><span class="p">.</span><span class="n">Length</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 查找字符串长度为 3 的元素</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="n">lookup</span><span class="p">[</span><span class="m">3</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// result: one,two</span>
+</span></span></code></pre></div><p>再来一个示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">int</span><span class="p">[]</span> <span class="n">array</span> <span class="p">=</span> <span class="p">{</span> <span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">8</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 创建一个奇偶查找（键为 0 和 1）</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">lookup</span> <span class="p">=</span> <span class="n">array</span><span class="p">.</span><span class="n">ToLookup</span><span class="p">(</span><span class="n">item</span> <span class="p">=&gt;</span> <span class="n">item</span> <span class="p">%</span> <span class="m">2</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 查找偶数</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">even</span> <span class="p">=</span> <span class="n">lookup</span><span class="p">[</span><span class="m">0</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// even: 2,4,6,8</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 查找奇数</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">odd</span> <span class="p">=</span> <span class="n">lookup</span><span class="p">[</span><span class="m">1</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// odd: 1,3,5,7</span>
+</span></span></code></pre></div><h2 id="distinct-去重">Distinct 去重<a hidden class="anchor" aria-hidden="true" href="#distinct-去重">#</a></h2>
+<p>Distinct 方法用来去除重复项，这个容易理解。示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">int</span><span class="p">[]</span> <span class="n">array</span> <span class="p">=</span> <span class="p">{</span> <span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">2</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">distinct</span> <span class="p">=</span> <span class="n">array</span><span class="p">.</span><span class="n">Distinct</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// distinct = { 1, 2, 3, 4, 5 }</span>
+</span></span></code></pre></div><p>简单类型的集合调用 Distinct 方法使用的是默认的比较器，Distinct 方法用此比较器来判断元素是否与其它元素重复，但对于自定义类型要实现去重则需要自定义比较器。示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kd">public</span> <span class="k">class</span> <span class="nc">IdEqualityComparer</span> <span class="p">:</span> <span class="n">IEqualityComparer</span><span class="p">&lt;</span><span class="n">Person</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">bool</span> <span class="n">Equals</span><span class="p">(</span><span class="n">Person</span> <span class="n">x</span><span class="p">,</span> <span class="n">Person</span> <span class="n">y</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Id</span> <span class="p">==</span> <span class="n">y</span><span class="p">.</span><span class="n">Id</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">int</span> <span class="n">GetHashCode</span><span class="p">(</span><span class="n">Person</span> <span class="n">p</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">p</span><span class="p">.</span><span class="n">Id</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="k">class</span> <span class="nc">Person</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">string</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">Program</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">static</span> <span class="k">void</span> <span class="n">Main</span><span class="p">(</span><span class="kt">string</span><span class="p">[]</span> <span class="n">args</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">var</span> <span class="n">people</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Person</span><span class="p">&gt;();</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">var</span> <span class="n">distinct</span> <span class="p">=</span> <span class="n">people</span><span class="p">.</span><span class="n">Distinct</span><span class="p">(</span><span class="k">new</span> <span class="n">IdEqualityComparer</span><span class="p">());</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h2 id="todictionary-字典转换">ToDictionary 字典转换<a hidden class="anchor" aria-hidden="true" href="#todictionary-字典转换">#</a></h2>
+<p>ToDictionary 扩展方法可以把集合 <code>IEnumerable&lt;TElement&gt;</code> 转换为 <code>Dictionary&lt;TKey, TValue&gt;</code> 结构的字典，它接收一个 <code>Func&lt;TSource, TKey&gt;</code> 参数用来返回每个元素指定的键与值。示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">User</span><span class="p">&gt;</span> <span class="n">users</span> <span class="p">=</span> <span class="n">GetUsers</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="n">Dictionary</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="n">User</span><span class="p">&gt;</span> <span class="n">usersById</span> <span class="p">=</span> <span class="n">users</span><span class="p">.</span><span class="n">ToDictionary</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Id</span><span class="p">);</span>
+</span></span></code></pre></div><p>如果不用 ToDictionary，你需要这样写：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">User</span><span class="p">&gt;</span> <span class="n">users</span> <span class="p">=</span> <span class="n">GetUsers</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="n">Dictionary</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="n">User</span><span class="p">&gt;</span> <span class="n">usersById</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Dictionary</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="n">User</span><span class="p">&gt;();</span>
+</span></span><span class="line"><span class="cl"><span class="k">foreach</span> <span class="p">(</span><span class="n">User</span> <span class="n">u</span> <span class="k">in</span> <span class="n">users</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">usersById</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">u</span><span class="p">.</span><span class="n">Id</span><span class="p">,</span> <span class="n">u</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>上面 ToDictionary 返回的字典数据中的值是整个元素，你也可以通过它的第二个参数来自定义字典的值。示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="n">Dictionary</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;</span> <span class="n">userNamesById</span> <span class="p">=</span> <span class="n">users</span><span class="p">.</span><span class="n">ToDictionary</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Id</span><span class="p">,</span> <span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Name</span><span class="p">);</span>
+</span></span></code></pre></div><p>你也可以为转换的字典指定其键是否区分大小写，即自定义字典的 IComparer，示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="n">Dictionary</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">,</span> <span class="n">User</span><span class="p">&gt;</span> <span class="n">usersByCaseInsenstiveName</span> <span class="p">=</span> <span class="n">users</span><span class="p">.</span><span class="n">ToDictionary</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span><span class="n">x</span><span class="p">.</span><span class="n">Name</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">StringComparer</span><span class="p">.</span><span class="n">InvariantCultureIgnoreCase</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">user1</span> <span class="p">=</span><span class="n">usersByCaseInsenstiveName</span><span class="p">[</span><span class="s">&#34;liam&#34;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">user2</span> <span class="p">=</span><span class="n">usersByCaseInsenstiveName</span><span class="p">[</span><span class="s">&#34;LIAM&#34;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="n">user1</span> <span class="p">==</span> <span class="n">user2</span><span class="p">;</span> <span class="c1">// true</span>
+</span></span></code></pre></div><p>注意，字典类型要求所有键不能重复，所以在使用 ToDictionary 方法时要确保作为字典的键的元素属性不能有重复值，否则会抛出异常。</p>
+<h2 id="其它常见扩展方法">其它常见扩展方法<a hidden class="anchor" aria-hidden="true" href="#其它常见扩展方法">#</a></h2>
+<p>LINQ 还有很多其它常见的扩展方法，大家在平时应该用的比较多，比如 Where、Any、All 等，这里也选几个简单举例介绍一下。</p>
+<h3 id="range-和-repeat">Range 和 Repeat<a hidden class="anchor" aria-hidden="true" href="#range-和-repeat">#</a></h3>
+<p>Range 和 Repeat 用于生成简单的数字或字符串系列。示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="c1">// 生成 1-100 的数字，即结果为 [1, 2, ..., 99, 100]</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">range</span> <span class="p">=</span> <span class="n">Enumerable</span><span class="p">.</span><span class="n">Range</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">100</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 生成三个重复的字符串“a”，即结果为 [&#34;a&#34;, &#34;a&#34;, &#34;a&#34;]</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">repeatedValues</span> <span class="p">=</span> <span class="n">Enumerable</span><span class="p">.</span><span class="n">Repeat</span><span class="p">(</span><span class="s">&#34;a&#34;</span><span class="p">,</span> <span class="m">3</span><span class="p">);</span>
+</span></span></code></pre></div><h3 id="any-和-all">Any 和 All<a hidden class="anchor" aria-hidden="true" href="#any-和-all">#</a></h3>
+<p>Any 用来判断集合中是否存在任一一个元素符合条件，All 用来判断集合中是否所有元素符合条件。示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">numbers</span> <span class="p">=</span> <span class="k">new</span> <span class="kt">int</span><span class="p">[]</span> <span class="p">{</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="m">5</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="kt">bool</span> <span class="n">result</span> <span class="p">=</span> <span class="n">numbers</span><span class="p">.</span><span class="n">Any</span><span class="p">();</span> <span class="c1">// true</span>
+</span></span><span class="line"><span class="cl"><span class="kt">bool</span> <span class="n">result</span> <span class="p">=</span> <span class="n">numbers</span><span class="p">.</span><span class="n">Any</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span> <span class="p">==</span> <span class="m">6</span><span class="p">);</span> <span class="c1">// false</span>
+</span></span><span class="line"><span class="cl"><span class="kt">bool</span> <span class="n">result</span> <span class="p">=</span> <span class="n">numbers</span><span class="p">.</span><span class="n">All</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span> <span class="p">&gt;</span> <span class="m">0</span><span class="p">);</span> <span class="c1">// true</span>
+</span></span><span class="line"><span class="cl"><span class="kt">bool</span> <span class="n">result</span> <span class="p">=</span> <span class="n">numbers</span><span class="p">.</span><span class="n">All</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span> <span class="p">&gt;</span> <span class="m">1</span><span class="p">);</span> <span class="c1">// false</span>
+</span></span></code></pre></div><h3 id="concat-和-union">Concat 和 Union<a hidden class="anchor" aria-hidden="true" href="#concat-和-union">#</a></h3>
+<p>Concat 用来拼接两个集合，不会去除重复元素，示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="n">List</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="n">foo</span> <span class="p">=</span> <span class="n">newList</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="p">{</span> <span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="n">List</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="n">bar</span> <span class="p">=</span> <span class="n">newList</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="p">{</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="m">5</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 通过 Enumerable 类的静态方法</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="n">Enumerable</span><span class="p">.</span><span class="n">Concat</span><span class="p">(</span><span class="n">foo</span><span class="p">,</span> <span class="n">bar</span><span class="p">).</span><span class="n">ToList</span><span class="p">();</span> <span class="c1">// 1,2,3,3,4,5</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 通过扩展方法</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="n">foo</span><span class="p">.</span><span class="n">Concat</span><span class="p">(</span><span class="n">bar</span><span class="p">).</span><span class="n">ToList</span><span class="p">();</span> <span class="c1">// 1,2,3,3,4,5</span>
+</span></span></code></pre></div><p>Union 也是用来拼接两个集合，与 Concat 不同的是，它会去除重复项，示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="n">foo</span><span class="p">.</span><span class="n">Union</span><span class="p">(</span><span class="n">bar</span><span class="p">);</span> <span class="c1">// 1,2,3,4,5</span>
+</span></span></code></pre></div><h3 id="groupby-分组">GroupBy 分组<a hidden class="anchor" aria-hidden="true" href="#groupby-分组">#</a></h3>
+<p>GroupBy 扩展方法用来对集合进行分组，下面是一个根据奇偶进行分组的示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">list</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;()</span> <span class="p">{</span> <span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">6</span><span class="p">,</span> <span class="m">7</span><span class="p">,</span> <span class="m">8</span><span class="p">,</span> <span class="m">9</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">grouped</span> <span class="p">=</span> <span class="n">list</span><span class="p">.</span><span class="n">GroupBy</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span> <span class="p">%</span> <span class="m">2</span> <span class="p">==</span> <span class="m">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// grouped: [1, 3, 5, 7, 9] 和 [2, 4, 6, 8]</span>
+</span></span></code></pre></div><p>还可以根据指定属性进行分组：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kd">public</span> <span class="k">class</span> <span class="nc">Person</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">int</span> <span class="n">Age</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">string</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">people</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Person</span><span class="p">&gt;();</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">query</span> <span class="p">=</span> <span class="n">people</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">GroupBy</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Age</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">Select</span><span class="p">(</span><span class="n">g</span> <span class="p">=&gt;</span> <span class="p">{</span> <span class="n">Age</span> <span class="p">=</span> <span class="n">g</span><span class="p">.</span><span class="n">Key</span><span class="p">,</span> <span class="n">Count</span> <span class="p">=</span> <span class="n">g</span><span class="p">.</span><span class="n">Count</span><span class="p">()</span> <span class="p">});</span>
+</span></span></code></pre></div><h3 id="defaultifempty-空替换">DefaultIfEmpty 空替换<a hidden class="anchor" aria-hidden="true" href="#defaultifempty-空替换">#</a></h3>
+<p>在上面的关联查询中我们使用了 DefaultIfEmpty 扩展方法，它表示在没有查询到指定条件的元素时使用元素的默认值代替。其实 DefaultIfEmpty 还可以指定其它的默认值，示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">chars</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;()</span> <span class="p">{</span> <span class="s">&#34;a&#34;</span><span class="p">,</span> <span class="s">&#34;b&#34;</span><span class="p">,</span> <span class="s">&#34;c&#34;</span><span class="p">,</span> <span class="s">&#34;d&#34;</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="n">chars</span><span class="p">.</span><span class="n">Where</span><span class="p">(</span><span class="n">s</span> <span class="p">=&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">Length</span> <span class="p">&gt;</span> <span class="m">1</span><span class="p">).</span><span class="n">DefaultIfEmpty</span><span class="p">().</span><span class="n">First</span><span class="p">();</span> <span class="c1">// 返回 null</span>
+</span></span><span class="line"><span class="cl"><span class="n">chars</span><span class="p">.</span><span class="n">DefaultIfEmpty</span><span class="p">(</span><span class="s">&#34;N/A&#34;</span><span class="p">).</span><span class="n">FirstOrDefault</span><span class="p">();</span> <span class="c1">// 返回 &#34;a&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">chars</span><span class="p">.</span><span class="n">Where</span><span class="p">(</span><span class="n">s</span> <span class="p">=&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">Length</span> <span class="p">&gt;</span> <span class="m">1</span><span class="p">).</span><span class="n">DefaultIfEmpty</span><span class="p">(</span><span class="s">&#34;N/A&#34;</span><span class="p">).</span><span class="n">FirstOrDefault</span><span class="p">();</span> <span class="c1">// 返回 &#34;N/A&#34;</span>
+</span></span></code></pre></div><h3 id="sequenceequal-集合相等">SequenceEqual 集合相等<a hidden class="anchor" aria-hidden="true" href="#sequenceequal-集合相等">#</a></h3>
+<p>SequenceEqual 扩展方法用于比较集合系列各个相同位置的元素是否相等。示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cs" data-lang="cs"><span class="line"><span class="cl"><span class="kt">int</span><span class="p">[]</span> <span class="n">a</span> <span class="p">=</span> <span class="k">new</span> <span class="kt">int</span><span class="p">[]</span> <span class="p">{</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span><span class="p">[]</span> <span class="n">b</span> <span class="p">=</span> <span class="k">new</span> <span class="kt">int</span><span class="p">[]</span> <span class="p">{</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span><span class="p">[]</span> <span class="n">c</span> <span class="p">=</span> <span class="k">new</span> <span class="kt">int</span><span class="p">[]</span> <span class="p">{</span><span class="m">1</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">2</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">bool</span> <span class="n">result1</span> <span class="p">=</span> <span class="n">a</span><span class="p">.</span><span class="n">SequenceEqual</span><span class="p">(</span><span class="n">b</span><span class="p">);</span> <span class="c1">// true</span>
+</span></span><span class="line"><span class="cl"><span class="kt">bool</span> <span class="n">result2</span> <span class="p">=</span> <span class="n">a</span><span class="p">.</span><span class="n">SequenceEqual</span><span class="p">(</span><span class="n">c</span><span class="p">);</span> <span class="c1">// false</span>
+</span></span></code></pre></div><h2 id="最后">最后<a hidden class="anchor" aria-hidden="true" href="#最后">#</a></h2>
+<p>还有一些常用和简单的扩展方法就不举例了，比如 OrderBy（排序）、Sum（求和）、Count（计数）、Reverse（反转）等，同时欢迎大家补充本文遗漏的强大或好用的 LINQ 语法糖。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/c%23/">C#</a></li>
+      <li><a href="http://localhost:1313/tags/%E8%AF%AD%E6%B3%95/">语法</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/%E5%B8%B8%E7%94%A8%E8%AE%B0%E5%BD%95/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>备忘录</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/%E8%AF%AD%E6%B3%95/c-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">
+    <span class="title">Next »</span>
+    <br>
+    <span>C#数据结构与算法</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share C# LINQ on x"
+            href="https://x.com/intent/tweet/?text=C%23%20LINQ&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AF%25AD%25E6%25B3%2595%2fc-linq%2f&amp;hashtags=C%23%2c%e8%af%ad%e6%b3%95">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share C# LINQ on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AF%25AD%25E6%25B3%2595%2fc-linq%2f&amp;title=C%23%20LINQ&amp;summary=C%23%20LINQ&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AF%25AD%25E6%25B3%2595%2fc-linq%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share C# LINQ on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AF%25AD%25E6%25B3%2595%2fc-linq%2f&title=C%23%20LINQ">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share C# LINQ on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AF%25AD%25E6%25B3%2595%2fc-linq%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share C# LINQ on whatsapp"
+            href="https://api.whatsapp.com/send?text=C%23%20LINQ%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AF%25AD%25E6%25B3%2595%2fc-linq%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share C# LINQ on telegram"
+            href="https://telegram.me/share/url?text=C%23%20LINQ&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AF%25AD%25E6%25B3%2595%2fc-linq%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share C# LINQ on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=C%23%20LINQ&u=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AF%25AD%25E6%25B3%2595%2fc-linq%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">LiuYingbo Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

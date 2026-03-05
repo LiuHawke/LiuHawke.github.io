@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>C#学习-C# 2.0 | LiuYingbo Blog</title>
+<meta name="keywords" content="C#, 学习">
+<meta name="description" content="C# 2.0 版本
+在 C# 2.0 版本提供的特性如下:
+
+泛型
+分部类型（partial）
+匿名方法
+可以为 null 的值类型
+迭代器
+协变和逆变
+getter/setter 单独可访问性
+方法组转换（委托）
+静态类
+委托推断
+
+
+泛型
+最常用的 List 就是泛型的一个应用。
+C# 文档地址：泛型
+泛型 API 的设计
+要设计一个泛型 的 API 非常简单，看以下代码中的 GetTypeName 方法。
+using UnityEngine;
+
+namespace QFramework.Master
+{
+	public class ReflectionExample : MonoBehaviour
+	{
+		string GetTypeName&lt;T&gt;()
+		{
+			var type = typeof(T);
+
+			return type.Name;
+		}
+	
+		private void Awake()
+		{
+			Debug.Log(GetTypeName&lt;string&gt;());
+		}
+	}
+}
+// 输出结果:
+// String
+泛型可以把一个类或者一个方法，当做一个模板，而这个模板所需要填充的内容则是定义的各种类型，所以泛型可以最大限度地实现代码的复用。
+C# 什么要实现泛型？
+C# 实现泛型这个特性，肯定是为了解决开发者遇到的实际问题的，要想知道泛型具体解决了什么问题，那么就要回过头看看没实现泛型之前的 C# 语言有什么样的问题？
+在 C# 实现泛型之前，我们只能使用 ArrayList 来充当不定长的数组。">
+<meta name="author" content="LiuYingbo">
+<link rel="canonical" href="http://localhost:1313/posts/%E8%AF%AD%E6%B3%95/c%23%E5%AD%A6%E4%B9%A0-c%23-2.0/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.a29c24210eb31d9ce56f669c66a35c9c51b17376b7764e336a49af7dec914cf0.css" integrity="sha256-opwkIQ6zHZzlb2acZqNcnFGxc3a3dk4zakmvfeyRTPA=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/%E8%AF%AD%E6%B3%95/c%23%E5%AD%A6%E4%B9%A0-c%23-2.0/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="LiuYingbo Blog (Alt + H)">LiuYingbo Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/categories/" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives/" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">Home</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      C#学习-C# 2.0
+    </h1>
+    <div class="post-meta"><span title='2021-12-05 20:27:45 +0000 UTC'>December 5, 2021</span>&nbsp;·&nbsp;<span>9 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span>
+
+</div>
+  </header> 
+<figure class="entry-cover">
+        <img loading="eager" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191917907.png" alt="">
+        
+</figure><div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#c-20-%e7%89%88%e6%9c%ac" aria-label="C# 2.0 版本">C# 2.0 版本</a></li>
+                <li>
+                    <a href="#%e6%b3%9b%e5%9e%8b" aria-label="泛型">泛型</a><ul>
+                        
+                <li>
+                    <a href="#%e6%b3%9b%e5%9e%8b-api-%e7%9a%84%e8%ae%be%e8%ae%a1" aria-label="泛型 API 的设计">泛型 API 的设计</a></li>
+                <li>
+                    <a href="#c-%e4%bb%80%e4%b9%88%e8%a6%81%e5%ae%9e%e7%8e%b0%e6%b3%9b%e5%9e%8b" aria-label="C# 什么要实现泛型？">C# 什么要实现泛型？</a></li>
+                <li>
+                    <a href="#%e6%b3%9b%e5%9e%8b%e7%ba%a6%e6%9d%9f" aria-label="泛型约束">泛型约束</a></li>
+                <li>
+                    <a href="#%e6%b3%9b%e5%9e%8b%e4%bd%bf%e7%94%a8" aria-label="泛型使用">泛型使用</a></li>
+                <li>
+                    <a href="#%e5%8d%8f%e5%8f%98" aria-label="协变">协变</a></li>
+                <li>
+                    <a href="#%e9%80%86%e5%8f%98" aria-label="逆变">逆变</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%88%86%e9%83%a8%e7%b1%bb%e5%9e%8b-partial" aria-label="分部类型 partial">分部类型 partial</a></li>
+                <li>
+                    <a href="#%e5%8c%bf%e5%90%8d%e6%96%b9%e6%b3%95" aria-label="匿名方法">匿名方法</a></li>
+                <li>
+                    <a href="#%e5%8f%af%e4%bb%a5%e4%b8%ba-null-%e7%9a%84%e5%80%bc%e7%b1%bb%e5%9e%8b" aria-label="可以为 null 的值类型">可以为 null 的值类型</a></li>
+                <li>
+                    <a href="#%e8%bf%ad%e4%bb%a3%e5%99%a8" aria-label="迭代器">迭代器</a><ul>
+                        
+                <li>
+                    <a href="#%e4%bb%80%e4%b9%88%e6%98%af%e8%bf%ad%e4%bb%a3%e5%99%a8%e6%a8%a1%e5%bc%8f" aria-label="什么是迭代器模式">什么是迭代器模式</a></li>
+                <li>
+                    <a href="#%e5%a6%82%e4%bd%95%e4%bd%bf%e7%94%a8-ienumerable" aria-label="如何使用 IEnumerable">如何使用 IEnumerable</a></li>
+                <li>
+                    <a href="#foreach-%e5%90%8c%e7%ad%89%e5%ae%9e%e7%8e%b0" aria-label="foreach 同等实现">foreach 同等实现</a></li>
+                <li>
+                    <a href="#ienumerator-%e5%ae%9a%e4%b9%89" aria-label="IEnumerator 定义">IEnumerator 定义</a></li>
+                <li>
+                    <a href="#ienuemrator-%e4%bb%a3%e7%a0%81%e7%a4%ba%e4%be%8b" aria-label="IEnuemrator 代码示例">IEnuemrator 代码示例</a></li>
+                <li>
+                    <a href="#yield" aria-label="yield">yield</a></li></ul>
+                </li>
+                <li>
+                    <a href="#gettersetter-%e5%8d%95%e7%8b%ac%e5%8f%af%e8%ae%bf%e9%97%ae%e6%80%a7" aria-label="getter/setter 单独可访问性">getter/setter 单独可访问性</a></li>
+                <li>
+                    <a href="#%e6%96%b9%e6%b3%95%e7%bb%84%e8%bd%ac%e6%8d%a2%e5%a7%94%e6%89%98" aria-label="方法组转换（委托）">方法组转换（委托）</a></li>
+                <li>
+                    <a href="#%e9%9d%99%e6%80%81%e7%b1%bb" aria-label="静态类">静态类</a></li>
+                <li>
+                    <a href="#%e5%a7%94%e6%89%98%e6%8e%a8%e6%96%ad" aria-label="委托推断">委托推断</a></li>
+                <li>
+                    <a href="#%e6%80%bb%e7%bb%93" aria-label="总结">总结</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="c-20-版本">C# 2.0 版本<a hidden class="anchor" aria-hidden="true" href="#c-20-版本">#</a></h2>
+<p>在 C# 2.0 版本提供的特性如下:</p>
+<ul>
+<li>泛型</li>
+<li>分部类型（partial）</li>
+<li>匿名方法</li>
+<li>可以为 null 的值类型</li>
+<li>迭代器</li>
+<li>协变和逆变</li>
+<li>getter/setter 单独可访问性</li>
+<li>方法组转换（委托）</li>
+<li>静态类</li>
+<li>委托推断</li>
+</ul>
+<p><img alt="image.png" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191928011.png"></p>
+<h2 id="泛型">泛型<a hidden class="anchor" aria-hidden="true" href="#泛型">#</a></h2>
+<p>最常用的 List<T> 就是泛型的一个应用。</p>
+<p>C# 文档地址：<a href="https://docs.microsoft.com/zh-cn/dotnet/csharp/programming-guide/generics/index">泛型</a></p>
+<h3 id="泛型-api-的设计">泛型 API 的设计<a hidden class="anchor" aria-hidden="true" href="#泛型-api-的设计">#</a></h3>
+<p>要设计一个泛型 的 API 非常简单，看以下代码中的 GetTypeName 方法。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">QFramework.Master</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">class</span> <span class="nc">ReflectionExample</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="kt">string</span> <span class="n">GetTypeName</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="n">type</span> <span class="p">=</span> <span class="k">typeof</span><span class="p">(</span><span class="n">T</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="n">type</span><span class="p">.</span><span class="n">Name</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">		<span class="kd">private</span> <span class="k">void</span> <span class="n">Awake</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="n">GetTypeName</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;());</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 输出结果:</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// String</span>
+</span></span></code></pre></div><p>泛型可以把一个类或者一个方法，当做一个模板，而这个模板所需要填充的内容则是定义的各种类型，所以泛型可以最大限度地实现代码的复用。</p>
+<h3 id="c-什么要实现泛型">C# 什么要实现泛型？<a hidden class="anchor" aria-hidden="true" href="#c-什么要实现泛型">#</a></h3>
+<p>C# 实现泛型这个特性，肯定是为了解决开发者遇到的实际问题的，要想知道泛型具体解决了什么问题，那么就要回过头看看没实现泛型之前的 C# 语言有什么样的问题？</p>
+<p>在 C# 实现泛型之前，我们只能使用 ArrayList 来充当不定长的数组。</p>
+<p>而 ArrayList 所存储的元素都需要转换成 object 类型，其中也包括值类型，而值类型转换成 object 需要做装箱操作，这样会造成性能的消耗。</p>
+<p>这是第一个问题，就是性能问题。</p>
+<p>而 ArrayList 所存储的 object 类型，是类型不安全的，为什么说是类型不安全呢？</p>
+<p>因为，ArrayList 可以存储任何类型，可以同时存储 int 和 string 甚至是自己创建的对象，也就是说你从 ArrayList 中拿到一个元素，那么这个元素的类型是不确定的，没有约束的。</p>
+<p>那么有没有什么方式避免 ArrayList 存储值类型造成的性能消耗么，同时也能约束存储的类型。</p>
+<p>答案就是泛型。</p>
+<p>在 C# 添加了泛型这个特性之后，List<T> 就成为了 ArrayList 的替代，List<T> 不管是存储值类型还是引用类型，它的性能都是非常高的，而一旦确定了 T 是什么类型，那么 List 中只能添加类型为 T （或者继承于 T）的元素。</p>
+<p>所以，泛型类型可以最大限度地重用代码之外，还可以保护类型安全性以及提高性能。</p>
+<p>这就是泛型存在的意义。</p>
+<p><img alt="image.png" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191928908.png"></p>
+<h3 id="泛型约束">泛型约束<a hidden class="anchor" aria-hidden="true" href="#泛型约束">#</a></h3>
+<p>说到泛型，有一个重要的特性就是泛型约束。</p>
+<p>先写一个泛型约束的示例，如下:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">QFramework.Master</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">class</span> <span class="nc">GenericExample</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="cs">/// &lt;summary&gt;</span>
+</span></span><span class="line"><span class="cl">		<span class="cs">/// 只能获取值类型的名字</span>
+</span></span><span class="line"><span class="cl">		<span class="cs">/// &lt;/summary&gt;</span>
+</span></span><span class="line"><span class="cl">		<span class="cs">/// &lt;typeparam name=&#34;T&#34;&gt;&lt;/typeparam&gt;</span>
+</span></span><span class="line"><span class="cl">		<span class="cs">/// &lt;returns&gt;&lt;/returns&gt;</span>
+</span></span><span class="line"><span class="cl">		<span class="kt">string</span> <span class="n">GetTypeName</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;()</span> <span class="k">where</span> <span class="n">T</span> <span class="p">:</span> <span class="k">struct</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="n">type</span> <span class="p">=</span> <span class="k">typeof</span><span class="p">(</span><span class="n">T</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="n">type</span><span class="p">.</span><span class="n">Name</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">		<span class="kd">private</span> <span class="k">void</span> <span class="n">Awake</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="n">GetTypeName</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;());</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 输出结果:</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// int</span>
+</span></span></code></pre></div><p>在定义了 GetTypeName<T> 方法后，还加上了一个 where T : struct。</p>
+<p>意思是给 T 类型必须要继承 struct，而只要继承了 struct 那么说明 T 类型是值类型。</p>
+<p>在 C# 中 int、float 等都是值类型，所以就可以将 int 类型传给 GetTypeName<T> 中的 T。</p>
+<p>在刚开始接触泛型的时候，觉得泛型用得不多，但是当写了很多通用工具后，发现泛型真的是一个很方便、易用的语言特性。</p>
+<p>一般情况下，我们通过方法、类、继承的方式来达到代码的复用，但是加上了泛型之后，可以更进一步地达到代码的复用。</p>
+<p>关于泛型约束更全面且深入地使用，建议阅读微软的官方指南:<a href="https://docs.microsoft.com/zh-cn/dotnet/csharp/programming-guide/generics/constraints-on-type-parameters">泛型约束</a></p>
+<h3 id="泛型使用">泛型使用<a hidden class="anchor" aria-hidden="true" href="#泛型使用">#</a></h3>
+<p>使用泛型这个概念比较多的地方是 一些底层的、通用的代码。</p>
+<p>比如用来创建单例的模板，泛型这个概念一开始接触的时候会觉得非常复杂，但是一旦用它设计过几个通用工具后，就会觉得泛型是一个非常好用的<strong>设计工具</strong>。</p>
+<p>在一般的项目开发的过程中，写界面逻辑 或者 游戏的业务逻辑时，基本上不需要我们去设计泛型的 API，但是像 List、Dictionary 等 .Net 提供的数据结构中，要求我们最起码要掌握泛型 API 的基本使用。</p>
+<p>而如果我们在项目开发中负责写一些通用工具的时候，那么就有很大的概率需要我们自己设计泛型 API 了。</p>
+<p>需要我们设计的泛型 API 的大致类型如下:</p>
+<ul>
+<li>泛型接口</li>
+<li>泛型类</li>
+<li>泛型方法</li>
+<li>泛型委托</li>
+<li>泛型的反射</li>
+<li>等等</li>
+</ul>
+<p>像泛型委托、泛型的反射、泛型的方法 这些设计起来难度不是那么高。</p>
+<p>而泛型类 和 泛型接口 则涉及到了 继承 的问题，那么理解起来可能会有一点难度。</p>
+<p>这里举个例子，如下:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">QFramework.Master</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// T 要保证继承 Base&lt;T&gt;</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// T 是泛型</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="k">interface</span> <span class="nc">Base</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="k">where</span> <span class="n">T</span> <span class="p">:</span> <span class="n">Base</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">T</span> <span class="n">Value</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="c1">// 在 SameClass 里 T 就是 SomeClass</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="k">class</span> <span class="nc">SomeClass</span> <span class="p">:</span> <span class="n">Base</span><span class="p">&lt;</span><span class="n">SomeClass</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">public</span> <span class="n">SomeClass</span> <span class="n">Value</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>以上这段代码，算是泛型 API 设计中比较绕的设计方式了，如果能看懂那是最好了，如果看不懂也没关系，因为这样的代码一般都是出现在一些框架或者库的底层。</p>
+<p>如果你打算自己写一个框架或者库，那么泛型部分最起码要能够自己写出来以上这样的代码才行。</p>
+<h3 id="协变">协变<a hidden class="anchor" aria-hidden="true" href="#协变">#</a></h3>
+<p>先看如下代码:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System.Collections.Generic</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">QFramework.Master</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">class</span> <span class="nc">GenericExample</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="kd">public</span> <span class="k">class</span> <span class="nc">BaseClass</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="kd">public</span> <span class="k">class</span> <span class="nc">SubClass</span> <span class="p">:</span> <span class="n">BaseClass</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">		<span class="kd">private</span> <span class="k">void</span> <span class="n">Awake</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// 这样写是合法的（但是性能很差）</span>
+</span></span><span class="line"><span class="cl">			<span class="n">BaseClass</span><span class="p">[]</span> <span class="n">baseClass</span> <span class="p">=</span> <span class="k">new</span> <span class="n">SubClass</span><span class="p">[</span><span class="m">10</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl">			<span class="c1">// 这样是会报编译错误的 </span>
+</span></span><span class="line"><span class="cl">            <span class="c1">// 因为 List&lt;BaseClass&gt; 不是 List&lt;SubClass&gt; 的父类</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">// 它们是两个完全不同的类型</span>
+</span></span><span class="line"><span class="cl">			<span class="n">List</span><span class="p">&lt;</span><span class="n">BaseClass</span><span class="p">&gt;</span> <span class="n">baseClasses</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">SubClass</span><span class="p">&gt;();</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>首先 SubClass 继承了 BaseClass，在 Awake 方法中，用父类的数组变量接收子类的数组是没问题的。</p>
+<p>但是用父类的 List 接收子类的数组就会报编译错误，这是泛型的一个设计问题。</p>
+<p>不过我们换一种写法，缺没什么问题，代码如下:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System.Collections.Generic</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">QFramework.Master</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">class</span> <span class="nc">GenericExample</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="kd">public</span> <span class="k">class</span> <span class="nc">BaseClass</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="kd">public</span> <span class="k">class</span> <span class="nc">SubClass</span> <span class="p">:</span> <span class="n">BaseClass</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="kd">private</span> <span class="k">void</span> <span class="n">Awake</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// 合法的协变 C# 4.0 之前，支持的简单协变</span>
+</span></span><span class="line"><span class="cl">			<span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">BaseClass</span><span class="p">&gt;</span> <span class="n">baseClassesA</span> <span class="p">=</span> <span class="k">new</span> <span class="n">SubClass</span><span class="p">[</span><span class="m">10</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl">			<span class="c1">// 合法的协变 C# 4.0 之前，支持的简单协变</span>
+</span></span><span class="line"><span class="cl">			<span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">BaseClass</span><span class="p">&gt;</span> <span class="n">baseClassesB</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">BaseClass</span><span class="p">&gt;();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// C# 4.0 后这样写是合法的,也是协变</span>
+</span></span><span class="line"><span class="cl">			<span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">BaseClass</span><span class="p">&gt;</span> <span class="n">baseClassesC</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">SubClass</span><span class="p">&gt;();</span>
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>为什么以上的代码是合法的呢，其实原因非常简单，因为 IEnumerable 是只读的，也就是说我们不可以为 IEnumerable 添加数据。而次要的原因是 List 和 Array 都实现了 IEnuemrable 接口，而 SubClass 继承了 BaseClass，这些共同的条件才可以允许协变的发生。</p>
+<p>那么在 C# 中，如何确保 IEnumerable 是只读的呢？非常简单，只需要在泛型定义上加上 out 关键字即可，代码如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System.Runtime.CompilerServices</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// C# 4.0 之后的 iEnumerable 定义</span>
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">System.Collections.Generic</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">public</span> <span class="k">interface</span> <span class="nc">IEnumerable</span><span class="p">&lt;[</span><span class="n">Nullable</span><span class="p">(</span><span class="m">2</span><span class="p">)]</span> <span class="k">out</span> <span class="n">T</span><span class="p">&gt;</span> <span class="p">:</span> <span class="n">IEnumerable</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span>
+</span></span><span class="line"><span class="cl"><span class="na">    [NullableContext(1)]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">IEnumerator</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">GetEnumerator</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>而在 C# 4.0 之前的定义如下:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">System.Collections.Generic</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">public</span> <span class="k">interface</span> <span class="nc">IEnumerable</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="p">:</span> <span class="n">IEnumerable</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">IEnumerator</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">GetEnumerator</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>由于 C# 4.0 之前，没有加上 out 关键字，那么协变就无法在 IEnumerable 和 List 之间发生。
+这就是泛型的协变的作用。</p>
+<p>想自己实现一个也非常简单，代码如下:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">QFramework.Master</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">class</span> <span class="nc">GenericExample</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="kd">public</span> <span class="k">interface</span> <span class="nc">Base</span><span class="p">&lt;</span><span class="k">out</span> <span class="n">T</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="kd">public</span> <span class="k">class</span> <span class="nc">Sub</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="p">:</span> <span class="n">Base</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="kd">private</span> <span class="k">void</span> <span class="n">Awake</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// 完全合法 发生了协变</span>
+</span></span><span class="line"><span class="cl">			<span class="n">Base</span><span class="p">&lt;</span><span class="kt">object</span><span class="p">&gt;</span> <span class="n">baseObject</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Sub</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;();</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>OK，关于协变就介绍到这里，接下来介绍逆变。</p>
+<h3 id="逆变">逆变<a hidden class="anchor" aria-hidden="true" href="#逆变">#</a></h3>
+<p>理解了协变，逆变就更容易被理解了。</p>
+<p>逆变只需要用 in 关键字，来标记父接口的类型是只写的。</p>
+<p>具体的示例代码如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">QFramework.Master</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">class</span> <span class="nc">GenericExample</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// 用 in 表示只写</span>
+</span></span><span class="line"><span class="cl">		<span class="kd">public</span> <span class="k">interface</span> <span class="nc">Base</span><span class="p">&lt;</span><span class="k">in</span> <span class="n">T</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="n">T</span> <span class="n">Value</span> <span class="p">{</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span> <span class="c1">// 不能声明 get</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="kd">public</span> <span class="k">class</span> <span class="nc">Sub</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="p">:</span> <span class="n">Base</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="kd">public</span> <span class="n">T</span> <span class="n">Value</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="kd">private</span> <span class="k">void</span> <span class="n">Awake</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// 完全合法</span>
+</span></span><span class="line"><span class="cl">			<span class="n">Base</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">baseObject</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Sub</span><span class="p">&lt;</span><span class="kt">object</span><span class="p">&gt;();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="n">baseObject</span><span class="p">.</span><span class="n">Value</span> <span class="p">=</span> <span class="s">&#34;hello&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>代码看懂了，就算理解了逆变了。</p>
+<p>这里总结一下：</p>
+<ul>
+<li>协变就是父接口的泛型是只读的，用 out 关键字修饰即可</li>
+<li>逆变就是父接口的泛型是只写的，用 in 关键字修饰即可</li>
+<li>如果无法确定父接口的泛型是只读和只写的，只能确保同泛型类型之间发生协变。比如:`IEnumerable<string> a = new List<string>();</li>
+</ul>
+<h2 id="分部类型-partial">分部类型 partial<a hidden class="anchor" aria-hidden="true" href="#分部类型-partial">#</a></h2>
+<p>分部类型可以把一个类的定义拆分到不同的文件中。</p>
+<p>这样非常容易实现对类进行扩展的操作。</p>
+<p>基本的使用方式如下:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="c1">// 需要在同一个程序集中的同一个命名空间</span>
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">QFramework.Partial</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 类名 和 访问权限 要完全一致</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="kd">partial</span> <span class="k">class</span> <span class="nc">PartialClass</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="kd">public</span> <span class="kt">string</span> <span class="n">A</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">QFramework.Partial</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 加上 abstract 关键字，那么 PartialClass 则变成抽象类型</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">partial</span> <span class="k">class</span> <span class="nc">PartialClass</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="kd">public</span> <span class="kt">string</span> <span class="n">B</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>微软的官方文档说，partial 关键字设计的初衷则是为了把一个类的职责拆分给不同的开发者维护。</p>
+<p>而现实情况则是，partial 关键字一般是用来给界面类拆分 View 和 Controller 的职责。</p>
+<p>比如 Xamarin 的中一个界面的代码一般会分别写在两个文件中，即 SomeUI.cs 和 SomeUI.Designer.cs。</p>
+<p>SomeUI.cs 中主要是提供给用户自己写逻辑用的，充当的是 Controller 的职责，而 SomeUI.Designer.cs 主要是提供一个 UI 元素的引用提供，充当的是 View 的职责，为什么拆分成两个文件呢？这是因为 SomeUI.Designer.cs 中的代码，完全是自动生成的。</p>
+<p>大概代码如下:
+SomeUI.cs</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">partial</span> <span class="k">class</span> <span class="nc">SomeUI</span> <span class="p">:</span> <span class="n">ViewController</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">protected</span> <span class="kd">override</span> <span class="k">void</span> <span class="n">Init</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 逻辑</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>SomeUI.Designer.cs</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">partial</span> <span class="k">class</span> <span class="nc">SomeUI</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl"><span class="na">    [Bind]</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">UIText</span> <span class="n">Text</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="na">  
+</span></span></span><span class="line"><span class="cl"><span class="na">    [Bind]</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">UIButton</span> <span class="n">Button</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>这就是 partial 关键字比较常见的用法。</p>
+<p>当然还有一些用法，像 UniRx 的 API 统一都是由 Observable 静态类提供的，而 UniRx 有大量的操作符和事件源的 API，那么都写在一个 Observable 静态类中那是不现实的，所以作者用 partial 关键字把 Observable 静态类拆分到了几个文件中，这样情况就好多了。</p>
+<p>大概用法如下:
+Observable.XXX.cs</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">static</span> <span class="kd">partial</span> <span class="n">Observable</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kd">static</span> <span class="n">IObserver</span><span class="p">&lt;</span><span class="n">TSource</span><span class="p">&gt;</span> <span class="n">Create</span><span class="p">()</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>Observable.YYY.cs</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">static</span> <span class="kd">partial</span> <span class="n">Observable</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kd">static</span> <span class="n">IObserver</span><span class="p">&lt;</span><span class="n">TSource</span><span class="p">&gt;</span> <span class="n">Timer</span><span class="p">()</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>所以 partial 关键字的另一个用法就是拆分 API 的定义。</p>
+<h2 id="匿名方法">匿名方法<a hidden class="anchor" aria-hidden="true" href="#匿名方法">#</a></h2>
+<p>C# 2.0 中的匿名方法写法如下:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">QFramework.Master</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">class</span> <span class="nc">DelegateExample</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="kd">public</span> <span class="n">Action</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="n">OnValueChanged</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="kd">private</span> <span class="k">void</span> <span class="n">Awake</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// C# 1.0 中 委托只能注册方法</span>
+</span></span><span class="line"><span class="cl">			<span class="n">OnValueChanged</span> <span class="p">=</span> <span class="n">OnSomeValueChanged</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// C# 2.0 中 委托支持了匿名方法（）</span>
+</span></span><span class="line"><span class="cl">			<span class="n">OnValueChanged</span> <span class="p">=</span> <span class="k">delegate</span><span class="p">(</span><span class="kt">int</span> <span class="k">value</span><span class="p">)</span> <span class="p">{</span> <span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="k">value</span><span class="p">);</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="k">void</span> <span class="n">OnSomeValueChanged</span><span class="p">(</span><span class="kt">int</span> <span class="k">value</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>非常简单，匿名方法就不多说了。</p>
+<h2 id="可以为-null-的值类型">可以为 null 的值类型<a hidden class="anchor" aria-hidden="true" href="#可以为-null-的值类型">#</a></h2>
+<p>代码如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">QFramework.Master</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">class</span> <span class="nc">NullableValueTypeExample</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="kd">private</span> <span class="k">void</span> <span class="n">Awake</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">int?</span> <span class="n">number</span> <span class="p">=</span> <span class="kc">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>实际上，可以为 null 的值类型，我们在 Unity 开发中用得非常少。</p>
+<p>值类型和引用类型相比，有一个不太方便的地方就是值类型的变量，比较难以判断是否进行过初始化。而引用类型则比较容易，如果值为 null，说明未初始化。</p>
+<p>而有了可空值类型这个特性，就比容易判断一个 number 是否是初始化过了。</p>
+<h2 id="迭代器">迭代器<a hidden class="anchor" aria-hidden="true" href="#迭代器">#</a></h2>
+<p>迭代器是非常重要的一个 C# 特性。</p>
+<p>Coroutine、LINQ、甚至是 UniRx 的实现都是以迭代器为基础的。</p>
+<p>那么什么是 C# 中的迭代器呢？</p>
+<p>我们先看一个示例，代码如下:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System.Collections</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">QFramework.Master</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">class</span> <span class="nc">IEnumerableExample</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="kd">private</span> <span class="k">void</span> <span class="n">Awake</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="k">value</span> <span class="k">in</span> <span class="n">GetSomeValue</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="k">value</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="n">IEnumerable</span> <span class="n">GetSomeValue</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">yield</span> <span class="k">return</span> <span class="m">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">			<span class="k">yield</span> <span class="k">return</span> <span class="m">2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">			<span class="k">yield</span> <span class="k">return</span> <span class="m">3</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 输出结果:</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 1</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 2</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 3 </span>
+</span></span></code></pre></div><p>其中 GetSomeValue 叫做迭代器方法，GetSomeValue 中写了 yield return 这样的语句。</p>
+<p>从以上代码中的输出结果，就可以猜到 GetSomeValue 具体做了什么事情，在 foreach 遍历时，每次遍历获取到的 value 值，就是 GetSomevalue 中返回的值。</p>
+<p>换一个角度，我们可以把 GetSomeValue 的返回 IEnumerable 当做一个 int 数组，数组中的值分别是 1，2，3，这样的话就比较容易理解了。</p>
+<p>我们来介绍下 GetSomeValue 还可以返回哪些类型的参数，如下:</p>
+<ul>
+<li>IEnumerable</li>
+<li>IEnumerator</li>
+<li>IEnumerable<T></li>
+<li>IEnumerator<T></li>
+</ul>
+<p>示例代码如下:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System.Collections</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System.Collections.Generic</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">QFramework.Master</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">class</span> <span class="nc">IEnumerableExample</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="kd">private</span> <span class="k">void</span> <span class="n">Awake</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="k">value</span> <span class="k">in</span> <span class="n">GetSomeValue</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="k">value</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="k">value</span> <span class="k">in</span> <span class="k">new</span> <span class="n">GetSomeValue2</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="k">value</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="k">value</span> <span class="k">in</span> <span class="n">GetSomeValue3</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="k">value</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="k">value</span> <span class="k">in</span> <span class="k">new</span> <span class="n">GetSomeValue4</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="k">value</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="n">IEnumerable</span> <span class="n">GetSomeValue</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">yield</span> <span class="k">return</span> <span class="m">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">			<span class="k">yield</span> <span class="k">return</span> <span class="m">2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">			<span class="k">yield</span> <span class="k">return</span> <span class="m">3</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="kd">public</span> <span class="k">class</span> <span class="nc">GetSomeValue2</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// 只要有 GetEnumerator 方法就可以用 foreach 迭代</span>
+</span></span><span class="line"><span class="cl">			<span class="kd">public</span> <span class="n">IEnumerator</span> <span class="n">GetEnumerator</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="k">yield</span> <span class="k">return</span> <span class="m">4</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">				<span class="k">yield</span> <span class="k">return</span> <span class="m">5</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">				<span class="k">yield</span> <span class="k">return</span> <span class="m">6</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="n">IEnumerable</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="n">GetSomeValue3</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">yield</span> <span class="k">return</span> <span class="m">7</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">			<span class="k">yield</span> <span class="k">return</span> <span class="m">8</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">			<span class="k">yield</span> <span class="k">return</span> <span class="m">9</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="kd">public</span> <span class="k">class</span> <span class="nc">GetSomeValue4</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// 只要有 GetEnumerator 方法就可以用 foreach 迭代</span>
+</span></span><span class="line"><span class="cl">			<span class="kd">public</span> <span class="n">IEnumerator</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="n">GetEnumerator</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="k">yield</span> <span class="k">return</span> <span class="m">10</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">				<span class="k">yield</span> <span class="k">return</span> <span class="m">11</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">				<span class="k">yield</span> <span class="k">return</span> <span class="m">12</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 输出结果:</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 1</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 2</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 3 </span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 4 </span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 5 </span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 6 </span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 7 </span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 8 </span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 9 </span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 10</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 11</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 12</span>
+</span></span></code></pre></div><h3 id="什么是迭代器模式">什么是迭代器模式<a hidden class="anchor" aria-hidden="true" href="#什么是迭代器模式">#</a></h3>
+<blockquote>
+<p>在不知道集合内部细节的情况下，提供一个按序方法存取的一个对象集合体的每一个单元。—GoF
+提供一种方法顺序访问一个集合对象中的各个元素，又不暴露该对象的内部表示</p>
+</blockquote>
+<p>迭代器模式由于经常使用到，已经被 .Net 收录到 API 中。</p>
+<p>在 C# 中，经常使用泛型存储对象，当想按序存取这些泛型容器时，都会使用 C# 的 foreach 语句。</p>
+<p>foreach 语句就是一个能顺序访问一个集合的方法。
+它就是 C# 语言内置的迭代器模式。</p>
+<h3 id="如何使用-ienumerable">如何使用 IEnumerable<a hidden class="anchor" aria-hidden="true" href="#如何使用-ienumerable">#</a></h3>
+<p>在使用之前，我们先理解一下 IEnumerable。这里老师直接给一个比较容易记住的定义，IEnumerable 中文意思是 可枚举的，教练直接把他理解为 IForeachable（可遍历的），虽然定义不是很准确，但是在区分 IEnumerable 和 IEnumerator 时候很容易搞清楚。</p>
+<p>我们直接看下 IEnumerable 的定义:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="c1">//这个接口告知调方对象的子项可以枚举</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="k">interface</span> <span class="nc">IEnumerable</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="n">IEnumerator</span> <span class="n">GetEnumerator</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>示例代码如下:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System.Collections</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">UniRxLesson</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">class</span> <span class="nc">IEnumerableExample</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">class</span> <span class="nc">ForEachable</span> <span class="p">:</span> <span class="n">IEnumerable</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">object</span><span class="p">[]</span> <span class="n">mObjArray</span> <span class="p">=</span> <span class="k">new</span> <span class="kt">object</span><span class="p">[</span><span class="m">4</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="s">&#34;1&#34;</span><span class="p">,</span><span class="s">&#34;2&#34;</span><span class="p">,</span><span class="s">&#34;3&#34;</span><span class="p">,</span><span class="s">&#34;4&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl">			<span class="kd">public</span> <span class="n">IEnumerator</span> <span class="n">GetEnumerator</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="k">return</span> <span class="n">mObjArray</span><span class="p">.</span><span class="n">GetEnumerator</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="kd">private</span> <span class="k">void</span> <span class="n">Start</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="n">foreachAble</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ForEachable</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">number</span> <span class="k">in</span> <span class="n">foreachAble</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="n">number</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">//输出结果为</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 1</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 2</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 3</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 4</span>
+</span></span></code></pre></div><p>只要实现一个 GetEnumerator 就可以使用 foreach 了。</p>
+<h3 id="foreach-同等实现">foreach 同等实现<a hidden class="anchor" aria-hidden="true" href="#foreach-同等实现">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System.Collections</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">UniRxLesson</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">class</span> <span class="nc">ForEachExample</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">class</span> <span class="nc">ForEachable</span> <span class="p">:</span> <span class="n">IEnumerable</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">object</span><span class="p">[]</span> <span class="n">mObjArray</span> <span class="p">=</span> <span class="k">new</span> <span class="kt">object</span><span class="p">[</span><span class="m">4</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="s">&#34;1&#34;</span><span class="p">,</span><span class="s">&#34;2&#34;</span><span class="p">,</span><span class="s">&#34;3&#34;</span><span class="p">,</span><span class="s">&#34;4&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="kd">public</span> <span class="n">IEnumerator</span> <span class="n">GetEnumerator</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="k">return</span> <span class="n">mObjArray</span><span class="p">.</span><span class="n">GetEnumerator</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="kd">private</span> <span class="k">void</span> <span class="n">Start</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="n">foreachAble</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ForEachable</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl">			<span class="c1">// 手动与 IEnumerator 协作</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="n">i</span> <span class="p">=</span> <span class="n">foreachAble</span><span class="p">.</span><span class="n">GetEnumerator</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl">			<span class="k">while</span> <span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">MoveNext</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span> 
+</span></span><span class="line"><span class="cl">				<span class="kt">var</span> <span class="n">number</span> <span class="p">=</span> <span class="n">i</span><span class="p">.</span><span class="n">Current</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">				<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="n">number</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">//输出结果为</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 1</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 2</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 3</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 4</span>
+</span></span></code></pre></div><p>代码中出现的 MoveNext、Current 等 API 简单看下 IEnumerator 定义就清楚了。</p>
+<h3 id="ienumerator-定义">IEnumerator 定义<a hidden class="anchor" aria-hidden="true" href="#ienumerator-定义">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="kd">public</span> <span class="k">interface</span> <span class="nc">IEnumerator</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">bool</span> <span class="n">MoveNext</span><span class="p">();</span>             <span class="c1">//将游标的内部位置向前移动</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">object</span> <span class="n">Current</span><span class="p">{</span><span class="k">get</span><span class="p">;}</span>         <span class="c1">//获取当前的项（只读属性）</span>
+</span></span><span class="line"><span class="cl">	<span class="k">void</span> <span class="n">Reset</span><span class="p">();</span>                <span class="c1">//将游标重置到第一个成员前面</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="ienuemrator-代码示例">IEnuemrator 代码示例<a hidden class="anchor" aria-hidden="true" href="#ienuemrator-代码示例">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System.Collections</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">UniRxLesson</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">class</span> <span class="nc">IEnumeratorExample</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="kd">private</span> <span class="k">class</span> <span class="nc">ForEachable</span> <span class="p">:</span> <span class="n">IEnumerable</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="kd">public</span> <span class="n">IEnumerator</span> <span class="n">GetEnumerator</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="k">return</span> <span class="k">new</span> <span class="n">FiveTimes</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">		<span class="kd">private</span> <span class="k">class</span> <span class="nc">FiveTimes</span> <span class="p">:</span> <span class="n">IEnumerator</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="kd">private</span> <span class="kt">int</span> <span class="n">mCount</span> <span class="p">=</span> <span class="m">5</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl">			<span class="kd">public</span> <span class="kt">bool</span> <span class="n">MoveNext</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="n">mCount</span><span class="p">--;</span>
+</span></span><span class="line"><span class="cl">				<span class="k">return</span> <span class="n">mCount</span> <span class="p">&gt;=</span> <span class="m">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="kd">public</span> <span class="k">void</span> <span class="n">Reset</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="n">mCount</span> <span class="p">=</span> <span class="m">5</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="kd">public</span> <span class="kt">object</span> <span class="n">Current</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="kt">string</span><span class="p">.</span><span class="n">Empty</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="kd">private</span> <span class="k">void</span> <span class="n">Start</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="n">foreachAble</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ForEachable</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">empty</span> <span class="k">in</span> <span class="n">foreachAble</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="s">&#34;A&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">//输出结果为</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// A</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// A</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// A</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// A</span>
+</span></span></code></pre></div><h3 id="yield">yield<a hidden class="anchor" aria-hidden="true" href="#yield">#</a></h3>
+<p>yield 实质是一个语法糖，它让程序员能够更方便的去使用迭代器，通过 yield 你可以直接使用迭代器操作而不需要去实现 IEnumerable 和 IEnumerator，也不需要一个临时的 Collection 来完成迭代。</p>
+<p>yield 有两种格式声明</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">yield</span> <span class="k">return</span> <span class="p">&lt;</span><span class="n">expression</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="k">yield</span> <span class="k">break</span><span class="p">;</span>
+</span></span></code></pre></div><p>yield 工作流程</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System.Collections</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">UniRxLesson</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">class</span> <span class="nc">YieldExample</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="kd">private</span> <span class="k">void</span> <span class="n">Start</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">empty</span> <span class="k">in</span> <span class="n">FiveTimes</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="s">&#34;A&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="kd">private</span>  <span class="n">IEnumerable</span> <span class="n">FiveTimes</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">for</span> <span class="p">(</span><span class="kt">var</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="m">5</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="k">yield</span> <span class="k">return</span> <span class="kt">string</span><span class="p">.</span><span class="n">Empty</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">//输出结果为</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// A</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// A</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// A</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// A</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// A</span>
+</span></span></code></pre></div><p><img alt="image.png" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191928017.png"></p>
+<h2 id="gettersetter-单独可访问性">getter/setter 单独可访问性<a hidden class="anchor" aria-hidden="true" href="#gettersetter-单独可访问性">#</a></h2>
+<p>getter/setter 单独可访问性，英文原文是 getter/setter seperate accessbility，翻译成人话应该是，gette/setter 的分别的访问权限。</p>
+<p>代码如下:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="kd">public</span> <span class="k">class</span> <span class="nc">PropertyExample</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">mAge</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">int</span> <span class="n">Age</span> 
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">get</span> 
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">mAge</span><span class="p">;</span>    
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      
+</span></span><span class="line"><span class="cl">        <span class="c1">// 可以单独设置 setter 的访问权限</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">private</span> <span class="k">set</span> 
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">mAge</span> <span class="p">=</span> <span class="k">value</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><img alt="image.png" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191928855.png"></p>
+<p>get 和 set 的访问器，可以有不同的访问权限。</p>
+<h2 id="方法组转换委托">方法组转换（委托）<a hidden class="anchor" aria-hidden="true" href="#方法组转换委托">#</a></h2>
+<p>这个特性，直接看如下代码就懂了。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="kd">public</span> <span class="k">class</span> <span class="nc">CSharpExample</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="k">delegate</span> <span class="k">void</span> <span class="n">SomeDelegate</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">void</span> <span class="n">SomeFunc</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">void</span> <span class="n">Example</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// C# 1.0 只能这样写，要使用 new 关键字</span>
+</span></span><span class="line"><span class="cl">        <span class="n">SomeDelegate</span> <span class="n">delegateA</span> <span class="p">=</span> <span class="k">new</span> <span class="n">SomeDelegate</span><span class="p">(</span><span class="n">SomeFunc</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// C# 2.0 可以直接这样写 </span>
+</span></span><span class="line"><span class="cl">        <span class="n">SomeDelegate</span> <span class="n">delegateB</span> <span class="p">=</span> <span class="n">SomeFunc</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h2 id="静态类">静态类<a hidden class="anchor" aria-hidden="true" href="#静态类">#</a></h2>
+<p>静态类 与 非静态类唯一的区别就是 静态类不能实例化。</p>
+<p>除了这个静态类是实现静态扩展方法的基础之一，不过静态扩展在 C# 3.0 才开始支持。</p>
+<p>还有一个比较重要的一点就是静态构造方法。</p>
+<p>代码如下:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">SimpleClass</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">static</span> <span class="k">readonly</span> <span class="kt">long</span> <span class="n">baseline</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">static</span> <span class="n">SimpleClass</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">baseline</span> <span class="p">=</span> <span class="n">DateTime</span><span class="p">.</span><span class="n">Now</span><span class="p">.</span><span class="n">Ticks</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><ul>
+<li>静态构造函数在类的静态成员第一次访问或第一个类实例创建之前由系统调用</li>
+</ul>
+<p>在 Unity 中，静态构造函数调用时机一般是前者，也就是静态类中的成员被第一次访问的时候调用。</p>
+<p>想了解更多静态构造跟多地特性，可以看 C# 官方文档：<a href="https://docs.microsoft.com/zh-cn/dotnet/csharp/programming-guide/classes-and-structs/static-constructors"> 静态构造函数（C# 编程指南）</a></p>
+<h2 id="委托推断">委托推断<a hidden class="anchor" aria-hidden="true" href="#委托推断">#</a></h2>
+<p>代码如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="kd">public</span> <span class="k">class</span> <span class="nc">CSharpExample</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="k">delegate</span> <span class="k">void</span> <span class="n">SomeDelegate</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">void</span> <span class="n">SomeFunc</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">void</span> <span class="n">Example</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// C# 1.0 只能这样写，要使用 new 关键字</span>
+</span></span><span class="line"><span class="cl">        <span class="n">SomeDelegate</span> <span class="n">delegateA</span> <span class="p">=</span> <span class="k">new</span> <span class="n">SomeDelegate</span><span class="p">(</span><span class="n">SomeFunc</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// C# 2.0 可以直接这样写 </span>
+</span></span><span class="line"><span class="cl">        <span class="n">SomeDelegate</span> <span class="n">delegateB</span> <span class="p">=</span> <span class="n">SomeFunc</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>可以看到，其实和方法组转换的例子一模一样。</p>
+<p>方法组转换的重点是方法组，方法组实际上就是方法名，可以把一个方法组直接设置给一个同类型同返回值的委托变量上，在这个直接设置值的过程中，方法组本身发生了方法组转换。</p>
+<p>而委托推断意思就是，通过委托的返回值和参数去匹配方法组。</p>
+<p>方法组转换和 委托推断共同可以实现以上的示例。</p>
+<h2 id="总结">总结<a hidden class="anchor" aria-hidden="true" href="#总结">#</a></h2>
+<ul>
+<li>泛型：
+<ul>
+<li>泛型约束：where</li>
+<li>协变：父接口只读用 out T，父接口&lt;父类型&gt; = 子类&lt;\子类型&gt;</li>
+<li>逆变：父接口只写用 in T。父接口&lt;子类型&gt; = 子类&lt;父类型&gt;</li>
+</ul>
+</li>
+<li>分部类型：
+<ul>
+<li>使用 partial 关键字将一个类的定义拆分到多个文件中（或者多个代码位置中）</li>
+<li>用途：
+<ul>
+<li>ViewController 中的 VIew 和 Controller 分别声明（代码生成部分和编程部分）</li>
+<li>同一个类的 API 分别在不同的文件中声明</li>
+<li>等等</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>匿名方法：
+<ul>
+<li>delegate(int a )=&gt;{}</li>
+</ul>
+</li>
+<li>可空值类型:
+<ul>
+<li>int? a = null</li>
+<li>笔者自己的理解就是为了比较方便地判断一个值类型是否进行过初始化</li>
+</ul>
+</li>
+<li>迭代器:
+<ul>
+<li>IEnumerable: 可以直接 foreach</li>
+<li>IEnumerator：需要作为 GetEnumerator 的返回值时，可以对所在的对象 foreach</li>
+<li>yield return：语法糖，通过生成代码来生成迭代器对象</li>
+</ul>
+</li>
+<li>协变和逆变：在泛型中有介绍</li>
+<li>getter/setter 可单独访问性：
+<ul>
+<li>可以单独为 setter 或 getter 设置访问权限</li>
+</ul>
+</li>
+<li>方法组转换、委托推断：
+<ul>
+<li>del a = funcB</li>
+<li>方法组就是方法名</li>
+</ul>
+</li>
+<li>静态类
+<ul>
+<li>不能创建实例的类</li>
+<li>静态构造，在第一次访问时调用</li>
+</ul>
+</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/c%23/">C#</a></li>
+      <li><a href="http://localhost:1313/tags/%E5%AD%A6%E4%B9%A0/">学习</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/%E8%AF%AD%E6%B3%95/c%23%E5%AD%A6%E4%B9%A0-c%23-3.0/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>C#学习-C# 3.0</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/%E8%AF%AD%E6%B3%95/c%23%E5%AD%A6%E4%B9%A0-c%23-1.0/">
+    <span class="title">Next »</span>
+    <br>
+    <span>C#学习-C# 1.0</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share C#学习-C# 2.0 on x"
+            href="https://x.com/intent/tweet/?text=C%23%e5%ad%a6%e4%b9%a0-C%23%202.0&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AF%25AD%25E6%25B3%2595%2fc%2523%25E5%25AD%25A6%25E4%25B9%25A0-c%2523-2.0%2f&amp;hashtags=C%23%2c%e5%ad%a6%e4%b9%a0">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share C#学习-C# 2.0 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AF%25AD%25E6%25B3%2595%2fc%2523%25E5%25AD%25A6%25E4%25B9%25A0-c%2523-2.0%2f&amp;title=C%23%e5%ad%a6%e4%b9%a0-C%23%202.0&amp;summary=C%23%e5%ad%a6%e4%b9%a0-C%23%202.0&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AF%25AD%25E6%25B3%2595%2fc%2523%25E5%25AD%25A6%25E4%25B9%25A0-c%2523-2.0%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share C#学习-C# 2.0 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AF%25AD%25E6%25B3%2595%2fc%2523%25E5%25AD%25A6%25E4%25B9%25A0-c%2523-2.0%2f&title=C%23%e5%ad%a6%e4%b9%a0-C%23%202.0">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share C#学习-C# 2.0 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AF%25AD%25E6%25B3%2595%2fc%2523%25E5%25AD%25A6%25E4%25B9%25A0-c%2523-2.0%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share C#学习-C# 2.0 on whatsapp"
+            href="https://api.whatsapp.com/send?text=C%23%e5%ad%a6%e4%b9%a0-C%23%202.0%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AF%25AD%25E6%25B3%2595%2fc%2523%25E5%25AD%25A6%25E4%25B9%25A0-c%2523-2.0%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share C#学习-C# 2.0 on telegram"
+            href="https://telegram.me/share/url?text=C%23%e5%ad%a6%e4%b9%a0-C%23%202.0&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AF%25AD%25E6%25B3%2595%2fc%2523%25E5%25AD%25A6%25E4%25B9%25A0-c%2523-2.0%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share C#学习-C# 2.0 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=C%23%e5%ad%a6%e4%b9%a0-C%23%202.0&u=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AF%25AD%25E6%25B3%2595%2fc%2523%25E5%25AD%25A6%25E4%25B9%25A0-c%2523-2.0%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">LiuYingbo Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>
