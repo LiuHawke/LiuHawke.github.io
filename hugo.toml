@@ -1,13 +1,84 @@
 baseURL = "https://LiuHawke.github.io/"
 languageCode = "zh-cn"
-title = "LiuHawke Blog"
+title = "LiuYingbo Blog"
 theme = "PaperMod"
+
+enableRobotsTXT = true
+buildDrafts = false
+buildFuture = false
+buildExpired = false
+
+pagination.pagerSize = 10
+
+[outputs]
+  home = ["HTML", "RSS", "JSON"]
 
 [author]
   name = "LiuHawke"
 
+# SEO
+[sitemap]
+  changefreq = "weekly"
+  priority = 0.5
+  filename = "sitemap.xml"
+
+# 分类和标签
+[taxonomies]
+  category = "categories"
+  tag = "tags"
+
+# 顶部菜单
+[[menu.main]]
+name = "Categories"
+url = "/categories/"
+weight = 10
+
+[[menu.main]]
+name = "Tags"
+url = "/tags/"
+weight = 20
+
+[[menu.main]]
+name = "Archives"
+url = "/archives/"
+weight = 30
+
+[[menu.main]]
+name = "Search"
+url = "/search/"
+weight = 40
+
 [params]
-  author = "LiuHawke"
+
+  author = "LiuYingbo"
+  description = "LiuYingbo 的博客"
+
+  defaultTheme = "auto"
   ShowReadingTime = true
   ShowShareButtons = true
   ShowPostNavLinks = true
+  ShowBreadCrumbs = true
+  ShowCodeCopyButtons = true
+  ShowToc = true
+
+  # 首页介绍
+  [params.homeInfoParams]
+  Title = "👋 欢迎来到 LiuYingbo Blog"
+  Content = "记录开发、技术和思考"
+
+  # 社交链接
+  [[params.socialIcons]]
+  name = "github"
+  url = "https://github.com/LiuHawke"
+
+  # 代码高亮
+  [params.assets]
+  disableHLJS = true
+
+[markup]
+
+  [markup.highlight]
+  noClasses = false
+
+  [markup.goldmark.renderer]
+  unsafe = true
