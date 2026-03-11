@@ -146,6 +146,27 @@
 </article>
 
 <article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Unity 小游戏优化
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Unity小游戏优化 性能优化主要的4个方向：启动速度，资源加载，内存占用，减少CPU消耗
+加快游戏启动速度 构建选项中仅勾选首场景，其他场景用到时再下载 精简首场景物件，尽快渲染让玩家看到游戏首画面 减少代码包体，剔除不必要的插件 减少初始化与首帧逻辑，首场景 Awake / Start / 首次 Update 不要包含过重逻辑 减少代码包体，剔除不必要的插件 CDN 必须开启 Brotli 或 gzip 压缩 优化的目标与标准 目前普通小游戏普遍启动时间为 5~6s，
+优化目标首屏启动时间控制在 5~10s 甚至更短。
+启动耗时 小游戏启动主要由三部分影响：
+首包资源下载 wasm代码下载和编译 引擎初始化与开发者首帧逻辑 首包资源 首包资源（webgl/Build 目录下的 data 文件）主要有以下组成：
+Unity default resources 文件，引擎默认资源，如 Arial 字体、默认 mesh、纹理等 il2cppmetadata，C#代码使用 il2Cpp 生成 cpp 代码时生成的类、方法等信息 unity builtin_extra，always include 的 shader BuildSettings 中所有 active 的场景 Resources 文件夹中的资源，以及其中引用到的其他资源 全局设置及引用到的资源，例如 splash 图片 wasm代码 生成的 原始代码不超过 30MB
+路径：Build/webgl_package/code.unityweb
+优化方法：
+勾选 Strip Engine Code 设置 Managed Stripping Level 为 High 配置 link.xml 文件告诉 Unity 哪些代码必须保留 使用代码分包工具减少 wasm 首包大小 Unity 2021 以上版本可将 PlayerSettings 中 IL2CPP 选项设置为 SIZE 以减少函数数量 引擎初始化与首帧逻辑 优化建议：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-11 00:00:00 +0000 UTC'>March 11, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to Unity 小游戏优化" href="http://localhost:1313/posts/work/unity%E5%B0%8F%E6%B8%B8%E6%88%8F%E4%BC%98%E5%8C%96/"></a>
+</article>
+
+<article class="post-entry"> 
 <figure class="entry-cover">
         <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211192022487.jpg" alt="">
 </figure>
@@ -401,25 +422,6 @@ C# 与 C&#43;&#43;通信不需要特殊处理 他们都是小端模式
   </div>
   <footer class="entry-footer"><span title='2022-08-14 22:13:47 +0800 CST'>August 14, 2022</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
   <a class="entry-link" aria-label="post link to Unity-网络开发（三）" href="http://localhost:1313/posts/unity/unity-%E7%BD%91%E7%BB%9C%E5%BC%80%E5%8F%91%E4%B8%89/"></a>
-</article>
-
-<article class="post-entry"> 
-<figure class="entry-cover">
-        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211192022487.jpg" alt="">
-</figure>
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Unity-UniTask
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>UniTask 为Unity提供一个高性能，0GC的async/await异步方案。
-基于值类型的UniTask&lt;T&gt;和自定义的 AsyncMethodBuilder 来实现0GC 使所有 Unity 的 AsyncOperations 和 Coroutines 可等待 基于 PlayerLoop 的任务( UniTask.Yield, UniTask.Delay, UniTask.DelayFrame, etc…) 可以替换所有协程操作 对MonoBehaviour 消息事件和 uGUI 事件进行 可等待/异步枚举 拓展 完全在 Unity 的 PlayerLoop 上运行，因此不使用Thread，并且同样能在 WebGL、wasm 等平台上运行。 带有 Channel 和 AsyncReactiveProperty的异步 LINQ， 提供一个 TaskTracker EditorWindow 以追踪所有UniTask分配来预防内存泄漏 与原生 Task/ValueTask/IValueTaskSource 高度兼容的行为 有关技术细节，请参阅博客文章：UniTask v2 — Unity 的0GC async/await 以及 异步LINQ 的使用 有关高级技巧，请参阅博客文章：通过异步装饰器模式扩展 UnityWebRequest — UniTask 的高级技术
-入门 通过UniTask/releases页面中提供的UPM 包或资产包 ( UniTask.*.*.*.unitypackage)安装。
-CSHARP// 使用UniTask所需的命名空间using Cysharp.Threading.Tasks;// 你可以返回一个形如 UniTask&lt;T&gt;(或 UniTask) 的类型，这种类型事为Unity定制的，作为替代原生Task&lt;T&gt;的轻量级方案// 为Unity集成的 0GC，快速调用，0消耗的 async/await 方案async UniTask&lt;string&gt; DemoAsync(){// 你可以等待一个Unity异步对象var asset = await Resources.LoadAsync&lt;TextAsset&gt;(&#34;foo&#34;);var txt = (await UnityWebRequest.Get(&#34;https://...&#34;).SendWebRequest()).downloadHandler.text;await SceneManager.LoadSceneAsync(&#34;scene2&#34;);// .WithCancellation 会启用取消功能，GetCancellationTokenOnDestroy 表示获取一个依赖对象生命周期的Cancel句柄，当对象被销毁时，将会调用这个Cancel句柄，从而实现取消的功能var asset2 = await Resources.LoadAsync&lt;TextAsset&gt;(&#34;bar&#34;).WithCancellation(this.GetCancellationTokenOnDestroy());// .ToUniTask 可接收一个 progress 回调以及一些配置参数，Progress.Create是IProgress&lt;T&gt;的轻量级替代方案var asset3 = await Resources.LoadAsync&lt;TextAsset&gt;(&#34;baz&#34;).ToUniTask(Progress.Create&lt;float&gt;(x =&gt; Debug.Log(x)));// 等待一个基于帧的延时操作（就像一个协程一样）await UniTask.DelayFrame(100); // yield return new WaitForSeconds/WaitForSecondsRealtime 的替代方案await UniTask.Delay(TimeSpan.FromSeconds(10), ignoreTimeScale: false);// 可以等待任何 playerloop 的生命周期(PreUpdate, Update, LateUpdate, 等...)await UniTask.Yield(PlayerLoopTiming.PreLateUpdate);// yield return null 替代方案await UniTask.Yield();await UniTask.NextFrame();// WaitForEndOfFrame 替代方案 (需要 MonoBehaviour(CoroutineRunner))await UniTask.WaitForEndOfFrame(this); // this 是一个 MonoBehaviour// yield return new WaitForFixedUpdate 替代方案，(和 UniTask.Yield(PlayerLoopTiming.FixedUpdate) 效果一样)await UniTask.WaitForFixedUpdate();// yield return WaitUntil 替代方案await UniTask.WaitUntil(() =&gt; isActive == false);// WaitUntil拓展，指定某个值改变时触发await UniTask.WaitUntilValueChanged(this, x =&gt; x.isActive);// 你可以直接 await 一个 IEnumerator 协程await FooCoroutineEnumerator();// 你可以直接 await 一个原生 taskawait Task.Run(() =&gt; 100);// 多线程示例，在此行代码后的内容都运行在一个线程池上await UniTask.SwitchToThreadPool();/* 工作在线程池上的代码 */// 转回主线程await UniTask.SwitchToMainThread();// 获取异步的 webrequestasync UniTask&lt;string&gt; GetTextAsync(UnityWebRequest req){var op = await req.SendWebRequest();return op.downloadHandler.text;}var task1 = GetTextAsync(UnityWebRequest.Get(&#34;http://google.com&#34;));var task2 = GetTextAsync(UnityWebRequest.Get(&#34;http://bing.com&#34;));var task3 = GetTextAsync(UnityWebRequest.Get(&#34;http://yahoo.com&#34;));// 构造一个async-wait，并通过元组语义轻松获取所有结果var (google, bing, yahoo) = await UniTask.WhenAll(task1, task2, task3);// WhenAll简写形式var (google2, bing2, yahoo2) = await (task1, task2, task3);// 返回一个异步值，或者你也可以使用`UniTask`(无结果), `UniTaskVoid`(协程，不可等待)return (asset as TextAsset)?.text ?? throw new InvalidOperationException(&#34;Asset not found&#34;);} UniTask 和 AsyncOperation 基础知识 UniTask 功能依赖于 C# 7.0( task-like custom async method builder feature ) 所以需要的 Unity 最低版本是Unity 2018.3 ，官方支持的最低版本是Unity 2018.4.13f1.
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2022-08-14 21:24:49 +0800 CST'>August 14, 2022</span>&nbsp;·&nbsp;<span>12 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
-  <a class="entry-link" aria-label="post link to Unity-UniTask" href="http://localhost:1313/posts/unity/unity-unitask/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">

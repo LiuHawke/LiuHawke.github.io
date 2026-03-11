@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>性能优化 on LiuYingbo Blog</title>
+    <link>http://localhost:1313/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/</link>
+    <description>Recent content in 性能优化 on LiuYingbo Blog</description>
+    <generator>Hugo -- 0.155.2</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Wed, 11 Mar 2026 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Unity 小游戏优化</title>
+      <link>http://localhost:1313/posts/unity/unity%E5%B0%8F%E6%B8%B8%E6%88%8F%E4%BC%98%E5%8C%96/</link>
+      <pubDate>Wed, 11 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/unity/unity%E5%B0%8F%E6%B8%B8%E6%88%8F%E4%BC%98%E5%8C%96/</guid>
+      <description>&lt;h1 id=&#34;unity小游戏优化&#34;&gt;Unity小游戏优化&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;性能优化主要的4个方向：启动速度，资源加载，内存占用，减少CPU消耗&lt;/strong&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h1 id=&#34;加快游戏启动速度&#34;&gt;加快游戏启动速度&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;构建选项中仅勾选首场景，其他场景用到时再下载&lt;/li&gt;
+&lt;li&gt;精简首场景物件，尽快渲染让玩家看到游戏首画面&lt;/li&gt;
+&lt;li&gt;减少代码包体，剔除不必要的插件&lt;/li&gt;
+&lt;li&gt;减少初始化与首帧逻辑，首场景 Awake / Start / 首次 Update 不要包含过重逻辑&lt;/li&gt;
+&lt;li&gt;减少代码包体，剔除不必要的插件&lt;/li&gt;
+&lt;li&gt;CDN 必须开启 Brotli 或 gzip 压缩&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;优化的目标与标准&#34;&gt;优化的目标与标准&lt;/h2&gt;
+&lt;p&gt;目前普通小游戏普遍启动时间为 &lt;strong&gt;5~6s&lt;/strong&gt;，&lt;br&gt;
+&lt;strong&gt;优化目标首屏启动时间控制在 5~10s 甚至更短。&lt;/strong&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h1 id=&#34;启动耗时&#34;&gt;启动耗时&lt;/h1&gt;
+&lt;p&gt;小游戏启动主要由三部分影响：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;首包资源下载&lt;/li&gt;
+&lt;li&gt;wasm代码下载和编译&lt;/li&gt;
+&lt;li&gt;引擎初始化与开发者首帧逻辑&lt;/li&gt;
+&lt;/ol&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;首包资源&#34;&gt;首包资源&lt;/h2&gt;
+&lt;p&gt;首包资源（webgl/Build 目录下的 data 文件）主要有以下组成：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Unity default resources 文件，引擎默认资源，如 Arial 字体、默认 mesh、纹理等&lt;/li&gt;
+&lt;li&gt;il2cppmetadata，C#代码使用 il2Cpp 生成 cpp 代码时生成的类、方法等信息&lt;/li&gt;
+&lt;li&gt;unity builtin_extra，always include 的 shader&lt;/li&gt;
+&lt;li&gt;BuildSettings 中所有 active 的场景&lt;/li&gt;
+&lt;li&gt;Resources 文件夹中的资源，以及其中引用到的其他资源&lt;/li&gt;
+&lt;li&gt;全局设置及引用到的资源，例如 splash 图片&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;wasm代码&#34;&gt;wasm代码&lt;/h2&gt;
+&lt;p&gt;生成的 &lt;strong&gt;原始代码不超过 30MB&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;路径：Build/webgl_package/code.unityweb&lt;/p&gt;
+&lt;p&gt;优化方法：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;勾选 &lt;code&gt;Strip Engine Code&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;设置 &lt;code&gt;Managed Stripping Level&lt;/code&gt; 为 &lt;code&gt;High&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;配置 &lt;code&gt;link.xml&lt;/code&gt; 文件告诉 Unity 哪些代码必须保留&lt;/li&gt;
+&lt;li&gt;使用代码分包工具减少 wasm 首包大小&lt;/li&gt;
+&lt;li&gt;Unity 2021 以上版本可将 PlayerSettings 中 IL2CPP 选项设置为 &lt;strong&gt;SIZE&lt;/strong&gt; 以减少函数数量&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;引擎初始化与首帧逻辑&#34;&gt;引擎初始化与首帧逻辑&lt;/h2&gt;
+&lt;p&gt;优化建议：&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
