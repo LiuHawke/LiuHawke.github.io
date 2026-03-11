@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Unity | LiuYingbo Blog</title>
+<meta name="keywords" content="">
+<meta name="description" content="LiuYingbo 的博客">
+<meta name="author" content="LiuYingbo">
+<link rel="canonical" href="http://localhost:1313/categories/unity/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.a29c24210eb31d9ce56f669c66a35c9c51b17376b7764e336a49af7dec914cf0.css" integrity="sha256-opwkIQ6zHZzlb2acZqNcnFGxc3a3dk4zakmvfeyRTPA=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/categories/unity/index.xml" title="rss">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/categories/unity/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="LiuYingbo Blog (Alt + H)">LiuYingbo Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/categories/" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives/" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+<header class="page-header"><div class="breadcrumbs"><a href="http://localhost:1313/">Home</a>&nbsp;»&nbsp;<a href="http://localhost:1313/categories/">Categories</a></div>
+  <h1>
+    Unity
+  </h1>
+</header>
+
+<article class="post-entry tag-entry"> 
+<figure class="entry-cover">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211192022487.jpg" alt="">
+</figure>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Unity-水流体Shader
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>水流体Shader Shader &#34;UI/WaterWave&#34;{Properties{[PerRendererData] _MainTex (&#34;Sprite Texture&#34;, 2D) = &#34;white&#34; {}_Color (&#34;Tint&#34;, Color) = (1,1,1,1)_StencilComp (&#34;Stencil Comparison&#34;, Float) = 8_Stencil (&#34;Stencil ID&#34;, Float) = 0_StencilOp (&#34;Stencil Operation&#34;, Float) = 0_StencilWriteMask (&#34;Stencil Write Mask&#34;, Float) = 255_StencilReadMask (&#34;Stencil Read Mask&#34;, Float) = 255_ColorMask (&#34;Color Mask&#34;, Float) = 15[Toggle(UNITY_UI_ALPHACLIP)] _UseUIAlphaClip (&#34;Use Alpha Clip&#34;, Float) = 0// 水波参数_WaterHeight (&#34;Water Height&#34;, Range(0, 1)) = 0.5_WaveSpeed (&#34;Wave Speed&#34;, Float) = 1.0_WaveFrequency (&#34;Wave Frequency&#34;, Float) = 5.0_WaveAmplitude (&#34;Wave Amplitude&#34;, Range(0, 0.1)) = 0.02_WaveOffset (&#34;Wave Offset&#34;, Float) = 0.0_WaveRange (&#34;Wave Range&#34;, Range(0, 0.2)) = 0.05}SubShader{Tags{&#34;Queue&#34;=&#34;Transparent&#34;&#34;IgnoreProjector&#34;=&#34;True&#34;&#34;RenderType&#34;=&#34;Transparent&#34;&#34;PreviewType&#34;=&#34;Plane&#34;&#34;CanUseSpriteAtlas&#34;=&#34;True&#34;}Stencil{Ref [_Stencil]Comp [_StencilComp]Pass [_StencilOp]ReadMask [_StencilReadMask]WriteMask [_StencilWriteMask]}Cull OffLighting OffZWrite OffZTest [unity_GUIZTestMode]Blend SrcAlpha OneMinusSrcAlphaColorMask [_ColorMask]Pass{Name &#34;Default&#34;CGPROGRAM#pragma vertex vert#pragma fragment frag#pragma target 2.0#include &#34;UnityCG.cginc&#34;#include &#34;UnityUI.cginc&#34;#pragma multi_compile_local _ UNITY_UI_CLIP_RECT#pragma multi_compile_local _ UNITY_UI_ALPHACLIPstruct appdata_t{float4 vertex : POSITION;float4 color : COLOR;float2 texcoord : TEXCOORD0;};struct v2f{float4 vertex : SV_POSITION;fixed4 color : COLOR;float2 texcoord : TEXCOORD0;float4 worldPosition : TEXCOORD1;};sampler2D _MainTex;fixed4 _Color;fixed4 _TextureSampleAdd;float4 _ClipRect;float4 _MainTex_ST;float _WaterHeight;float _WaveSpeed;float _WaveFrequency;float _WaveAmplitude;float _WaveOffset;float _WaveRange;v2f vert(appdata_t v){v2f o;o.worldPosition = v.vertex;o.vertex = UnityObjectToClipPos(v.vertex);o.texcoord = TRANSFORM_TEX(v.texcoord, _MainTex);o.color = v.color * _Color;return o;}fixed4 frag(v2f i) : SV_Target{// ---------- 水波计算 ----------float distanceToSurface = abs(i.texcoord.y - _WaterHeight);float wave = 0;float2 waveUV = i.texcoord;if (distanceToSurface &lt; _WaveRange){float t = _Time.y * _WaveSpeed &#43; _WaveOffset;float x = i.texcoord.x * _WaveFrequency;float w1 = sin(x &#43; t) * _WaveAmplitude;float w2 = sin(x * 1.5 &#43; t * 0.8) * _WaveAmplitude * 0.6;wave = w1 &#43; w2;float influence = smoothstep(_WaveRange, 0, distanceToSurface);waveUV.y &#43;= wave * influence;}half4 col = tex2D(_MainTex, waveUV);// ---------- 水面软裁剪（无锯齿核心） ----------float waterLevel = saturate(_WaterHeight &#43; wave);// 自适应软边缘（跟分辨率有关）float edge = fwidth(i.texcoord.y) * 2.0;float alphaMask = smoothstep(waterLevel &#43; edge,waterLevel - edge,i.texcoord.y);col.a *= alphaMask;// ---------- 水面高光 ----------float surfaceDist = abs(i.texcoord.y - waterLevel);float highlight = smoothstep(0.03, 0.0, surfaceDist);col.rgb &#43;= highlight * 0.15;// ---------- UI 标准处理 ----------col &#43;= _TextureSampleAdd;col *= i.color;#ifdef UNITY_UI_CLIP_RECTcol.a *= UnityGet2DClipping(i.worldPosition.xy, _ClipRect);#endif#ifdef UNITY_UI_ALPHACLIPclip(col.a - 0.001);#endifreturn col;}ENDCG}}Fallback &#34;UI/Default&#34;} </p>
+  </div>
+  <footer class="entry-footer"><span title='2026-02-08 22:48:15 +0800 CST'>February 8, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to Unity-水流体Shader" href="http://localhost:1313/posts/unity/unity-%E6%B0%B4%E6%B5%81%E4%BD%93shader/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+<figure class="entry-cover">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202304101313250.jpg" alt="">
+</figure>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Unity-Dots
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Dots前置 Dots简介 DOTS是什么 Data-Oriented Technology Stack(面向数据的技术栈）
+The C# job system The Burst compiler Unity Mathematics Unity Collections Entities ( Entity-Component System) Entities.Graphics ( Hybird Renderer )
+Netcode
+Physics
+Animation (WIP)
+Audio(WIP)
+DOTS可以应用到哪些地方？ 具有大世界流式加载的游戏
+具有复杂的大规模模拟的游戏
+具有多种网络类型的多人联线游戏
+具有需要客户端模拟预测的网络游戏，如射击游戏
+为什么我们需要DOTS? CPU与Memory的速度发展不均衡以及带宽限制
+添加高速的缓存Cache内存层级结构去弥补
+摩尔定律的延续与现代CPU设计。
+越来越好的工艺
+越来越多的核
+分工越来越细的处理单元与存储
+SIMD/SIMT
+3.并行编程的发展
+OpenMP
+TBB—-Intel Threading Building Blocks
+CUDA–Compute Unified Divice Architecture
+OpencL-—Open Computing Language
+MPI/OpenMPI-—Message Passing Interface
+OOD ==&gt;DOD
+面向数据设计（ODO） 程序设计方法 Instructional Programming 指令化编程
+Functional Programming 函数化编程
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2023-04-10 13:10:43 +0800 CST'>April 10, 2023</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to Unity-Dots" href="http://localhost:1313/posts/unity/unity-dots/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+<figure class="entry-cover">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303052044934.jpg" alt="">
+</figure>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Unity-性能优化
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>一个B站UP主的教程，后半部分涉及到很多urp源码修改暂时还看不懂，只记录了前半部的内容
+视频地址：https://www.bilibili.com/video/BV1AL4y1b75c/?spm_id_from=333.999.0.0&amp;vd_source=4c7b49a270731b8ec068bfb156c5af6a
+资源优化 Unity资源检测工具 Asset Checker 用于本地资源检测，帮助开发者尽早发现资源文件中存在的问题
+支持所有版本的Unity项目 不依赖Unity Editor，无需安装绿色运行 检测速度极快，可在UPR中查阅检测结果 支持命令行模式，可与CI/CD工具轻松集成，实现自动化检测 规则库持续更新 支持AssetBundle冗余检测 支持静态代码分析 Asset Checker 官方教程地址（包含工具下载地址） Audio导入设置检查与优化 根据平台选择合理的音频设置，原始音频资源尽量采用未压缩WAV格式
+移动平台对音乐音效统一采用单通道设置（Force to Mono）,并将音乐采样频率设置为22050Hz
+一般勾选了强制单声道之后也要勾选Normalize选项，这样引擎内部会选择最合适的方式来强行转换单声道。
+移动平台大多数声音尽量采用Vorbis压缩设置，IOS平台或不打算循环的声音可以选择MP3格式，对于简短、常用的音效，可以采用解码速度快的ADPCM格式（PCM为未压缩格式）
+音频片段加载类型说明
+简短音效导入后小于200kb，采用Decompress on Load模式 对于复杂音效，大小大于200kb，长度超过5秒的音效采用Compressed In Memory模式 对于长度较长的音效或背景音乐则采用Streaming模式，虽然会有CPU额外开销，但节省内存并且加载不卡顿 当实现静音功能时，不要简单的将音量设置为0，应销毁音频（AudioSource）组件，将音频从内存中卸载。
+优化前后真机对比（Android） Apk包体由原来的560.7M下降到544.6M
+Audio部分的内存由76.1M下降到6.9M
+CPU开销由2.5%左右上升到5%左右，这是由于部分音频资源才用了Streaming模式加载
+Model导入设置检查与优化 DCC中模型导出 Unity 支持多种标准和专有模型文件格式（DCC）。Unity 内部使用 .fbx 文件格式作为其导入链。最佳做法尽可能使用 .fbx 文件格式，并且不应在生产中使用专有文件格式。
+优化原始导入模型文件，删除不需要的数据
+统一单位 导出的网格必须是多边形拓扑网格，不能是贝塞尔曲线、样条曲线、NURBS、NURMS、细分曲面等 烘培Deformers,在导出之前，确保变形体被烘培到网格模型上，如骨骼形变烘培到蒙皮权重上 不建议模型使用到的纹理随模型导出 如果你需要导入blend shape normals，必须要指定光滑组smooth groups DCC导出面板设置, 不建议携带场景信息导出，如不建议导出摄像机、灯光、材质等信息，因为这些的信息与Unity内默认都不同。除非你自己为某DCC做过自定义导出插件。 Unity模型导入流程 原始模型文件对性能的影响点 最小化面数，不要使用微三角形，分布尽量均匀 合理的网络拓扑和平滑组 尽量少的使用材质个数 尽可能少的使用蒙皮网格 尽可能少的骨骼数量 FK与IK节点没分离，IK节点没删除 模型优化 尽可能的将网格合并到一起，（） 尽可能使用共享材质 不要使用网格碰撞体 不必要不要开启网格读写 使用合理的LOD级别 Skin Weights受骨骼影响个过多 合理压缩网格 不需要rigs和BlendShapes尽量关闭 如果可能，禁用法线或切线 多套模型 资源检查报告 FBX部分问题解读
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2023-03-05 21:31:20 +0800 CST'>March 5, 2023</span>&nbsp;·&nbsp;<span>9 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to Unity-性能优化" href="http://localhost:1313/posts/unity/unity-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+<figure class="entry-cover">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303052044934.jpg" alt="">
+</figure>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Unity-移动端打包记录（持续更新）
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Android Gradle版本问题 本地打包的大部分错误都是因为这个问题，这是因为笔者接入的SDK自定义了gradle的插件版本，这个再unity本身其实已经定义过了，但是自己是可以通过修改build.gradle进行修改的。查看unity本身gradel的插件版本的路径是：Editor\Data\PlaybackEngines\AndroidPlayer\Tools\GradleTemplates\baseProjectTemplate.gradle,以2019.4.28版本为例，里面代码为：
+allprojects { buildscript { *** dependencies { *** classpath &#39;com.android.tools.build:gradle:3.4.0&#39; **BUILD_SCRIPT_DEPS** } } *** } *** 如上图，可以看到插件版本为3.4.0，如果unity里本身修改了baseProjectTemplate.gradle就按照修改后的来，这个文件夹内所有的gradle和properties都是默认的，如果程序里修改就按照程序里的来。修改的方法在Editor–&gt;ProjectSettings–&gt;Player–&gt;Publishing Settings，如下图所示：
+如上图，其实就是对应编辑器文件夹下的gradle文件，如果打勾就会在pluging/Android文件夹下生成对应的文件，就可以直接修改，不再按照unity默认的来，就可以修改配置了。
+经过上面的介绍已经知道如何查看并修改unity的gradle插件版本，下面就是修改对应的gradle版本。首先打开Editor–&gt;Preference–&gt;External Tools就可以看到Android的打包环境配置。
+2020版本以后的Unity是默认路径下就自己配置好环境，选择默认就可以，但是依旧可能会存在环境不存在或者版本不对，所以可以自己配置，这样修改也方便。这里有需要特别关注的一点也是大部分打包失败的原因，就是gradle的版本和对应的插件版本是有对照关系的，必须对照上才能正常打包。对应关系如下图：
+只要配置好对应的关系就行了。
+APK&#43;obb分包无法运行问题 因为Google商店对上传的apk有内存限制，要求是100M以内，这里推荐使用的是APk&#43;OBB进行分包，根据最新的要求是要求使用AAB包，这里先介绍APK&#43;OBB的分包遇到的问题。
+分开打包的方法是Editor–&gt;ProjectSettings–&gt;Player–&gt;Publishing Settings里，勾选上最下面的Split Application Binary。
+这个是可以代码控制的：
+PlayerSettings.Android.useAPKExpansionFiles = true; 分包后如何在手机上运行呢，这里只需要安装分包后的APK，然后在手机上运行，发现第一次运行不成功，这是因为资源都在OBB中，所以无法正常运行，这里只需要吧自己的OBB改好名字放在对应的文件夹就行了。然后再运行就可以了。
+文件夹地址：手机目录\Android\obb&#34;APP的包名” OBB文件的名字: main.安卓内部版本号.APP包名.obb (举例：main.102.com.XXX.XXX.XXX.obb)
+华为手机出现水滴屏无法适配的问题 笔者的项目要求手机在遇到水滴屏或者刘海屏的时候，上面显示黑条不进行渲染就可以，笔者查了一下unity的设置方法，发现只需要不勾选Editor–&gt;ProjectSettings–&gt;Resolution and Presentation里的Render outside safe area即可。
+但是笔者发现APP在某个测试的华为手机上依旧渲染了，最后发现是接入的SDK里设置了华为手机的屏幕渲染。在华为手机Android8.0的适配方案是在AndroidManfiest里面添加下面的话即可，笔者发现接入的SDK设置了这个，于是去掉就没有问题了。
+&lt;meta-data android:name=&#34;android.notch_support&#34; android:value=&#34;true&#34;/&gt; 这里列举一下小米手机的适配方案是：
+&lt;meta-data android:name=&#34;notch.config&#34; android:value=&#34;portrait|landscape&#34;/&gt; 华为荣耀系列闪退 2023-02-22 14:34:08.234 12494-12494 AndroidRuntime pid-12494 E FATAL EXCEPTION: mainProcess: com.xg.legendofliqi, PID: 12494java.lang.Error: *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***Version &#39;2021.3.1f1c1 (0cb3bd085a01)&#39;, Build type &#39;Release&#39;, Scripting Backend &#39;il2cpp&#39;, CPU &#39;arm64-v8a&#39;Build fingerprint: &#39;HONOR/FNE-AN00/HNFNE:12/HONORFNE-AN00/6.1.0.178C00:user/release-keys&#39;Revision: &#39;0&#39;ABI: &#39;arm64&#39;Timestamp: 2023-02-22 14:34:03&#43;0800pid: 12494, tid: 12580, name: Thread-9 &gt;&gt;&gt; com.xg.legendofliqi &lt;&lt;&lt;uid: 10052signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x100000071x0 0000000000000000 x1 0000000000000001 x2 00000075508123b8 x3 0000000000000001x4 ffffffffffffffff x5 00000075b0c07208 x6 0000000000000000 x7 0000000000000000x8 0000000000000000 x9 0000000000010cc0 x10 0000000000000000 x11 0000000000000000x12 0000000000000a80 x13 0000000000000000 x14 431bde82d7b634db x15 0000000100000001x16 00000076512d3bb8 x17 00000079a4bec168 x18 000000753f646000 x19 0000000000000000x20 ffffffffffffffff x21 000000777bdb99b0 x22 00000075b0bf2400 x23 00000075508123f8x24 00000075b0bf2278 x25 0000007550812740 x26 00000075b0be3c10 x27 00000075508128d8x28 000000761018e900 x29 0000007550812360sp 0000007550812360 lr 0000007650856d54 pc 00000075513c0730backtrace:#00 pc 00000000000a9730 /vendor/lib64/hw/vulkan.adreno.so (qglinternal::vkWaitForFences(VkDevice_T*, unsigned int, VkFence_T* const*, unsigned int, unsigned long)&#43;184) (BuildId: 5839fbcc06912e00a12c12db16914158)#01 pc 0000000000781d50 /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)#02 pc 000000000075f864 /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)#03 pc 0000000000781260 /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)#04 pc 0000000000760a08 /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)#05 pc 000000000076ec38 /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)#06 pc 0000000000758714 /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)#07 pc 0000000000750994 /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)#08 pc 000000000075a9f4 /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)#09 pc 00000000006a71d4 /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)#10 pc 00000000007508fc /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)#11 pc 00000000006a8f00 /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)#12 pc 00000000008a5e50 /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)#13 pc 00000000008a7c18 /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)2023-02-22 14:34:08.234 12494-12494 AndroidRuntime pid-12494 E #14 pc 000000000089f4a8 /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)#15 pc 000000000033070c /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)#16 pc 00000000000b3ea0 /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)&#43;264) (BuildId: 82e5b2ff86b193c94139353a92c4af29)#17 pc 0000000000053880 /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread&#43;64) (BuildId: 82e5b2ff86b193c94139353a92c4af29)at vulkan.qglinternal::vkWaitForFences(VkDevice_T*, unsigned int, VkFence_T* const*, unsigned int, unsigned long)(vkWaitForFences:184)at libunity.0x781d50(Native Method)at libunity.0x75f864(Native Method)at libunity.0x781260(Native Method)at libunity.0x760a08(Native Method)at libunity.0x76ec38(Native Method)at libunity.0x758714(Native Method)at libunity.0x750994(Native Method)at libunity.0x75a9f4(Native Method)at libunity.0x6a71d4(Native Method)at libunity.0x7508fc(Native Method)at libunity.0x6a8f00(Native Method)at libunity.0x8a5e50(Native Method)at libunity.0x8a7c18(Native Method)at libunity.0x89f4a8(Native Method)at libunity.0x33070c(Native Method)at libc.__pthread_start(void*)(__pthread_start:264)at libc.__start_thread(__start_thread:64) 打包版本是Unity 2021.3.1f1c1,有使用最新版Unity打包但还是一样的空包一样会闪退
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2023-03-05 20:34:23 +0800 CST'>March 5, 2023</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to Unity-移动端打包记录（持续更新）" href="http://localhost:1313/posts/unity/unity-%E7%A7%BB%E5%8A%A8%E7%AB%AF%E6%89%93%E5%8C%85%E8%AE%B0%E5%BD%95%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+<figure class="entry-cover">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242151718.jpg" alt="">
+</figure>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Unity-移动平台相关Java语法
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>简单了解Java语法
+环境 Java环境：www.baidu.com
+写Java编辑器推荐是IDEA
+但是我们是Unity导出的Android项目所以还是用AndroidStudio
+变量 Java中的有符号整型 //1.byte(1个字节，8位，-2^7 ~ 2^7 - 1，-128 ~ 127) System.out.println(&#34;byte位数&#34; &#43; Byte.SIZE); System.out.println(&#34;byte最大值&#34; &#43; Byte.MAX_VALUE); System.out.println(&#34;byte最小值&#34; &#43; Byte.MIN_VALUE); //2.short(2个字节，16位，-2^15 ~ 2^15 - 1，-32768 ~ 32767) System.out.println(&#34;short位数&#34; &#43; Short.SIZE); System.out.println(&#34;short最大值&#34; &#43; Short.MAX_VALUE); System.out.println(&#34;short最小值&#34; &#43; Short.MIN_VALUE); //3.int(4个字节，32位，-2^31 ~ 2^31 - 1，-2,147,483,648 ~ 2,147,483,647) System.out.println(&#34;int位数&#34; &#43; Integer.SIZE); System.out.println(&#34;int最大值&#34; &#43; Integer.MAX_VALUE); System.out.println(&#34;int最小值&#34; &#43; Integer.MIN_VALUE); //4.long(8个字节，64位，-2^63 ~ 2^63 - 1，9,223,372,036,854,775,808 ~ 9,223,372,036,854,775,807) System.out.println(&#34;long位数&#34; &#43; Long.SIZE); System.out.println(&#34;long最大值&#34; &#43; Long.MAX_VALUE); System.out.println(&#34;long最小值&#34; &#43; Long.MIN_VALUE); //注意：Java最初设计中没有无符号类型 //Java 8中添加了一些和无符号类型有关的一些方法(但是一般使用较少) Java中的浮点型 //1.float(4个字节，32位) System.out.println(&#34;float位数&#34; &#43; Float.SIZE); System.out.println(&#34;float最大值&#34; &#43; Float.MAX_VALUE); System.out.println(&#34;float最小值&#34; &#43; Float.MIN_VALUE); float f = .5f; System.out.println(f); f = 1.f; System.out.println(f); //2.double(8个字节，64位) System.out.println(&#34;double位数&#34; &#43; Double.SIZE); System.out.println(&#34;double最大值&#34; &#43; Double.MAX_VALUE); System.out.println(&#34;double最小值&#34; &#43; Double.MIN_VALUE); double d = 1.5; Java中的其它类型 //1.boolean(单个boolean在编译时使用int类型，这时4个字节；boolean数组时，编译时用字节数组，所以占1个字节) //默认值是false boolean b0 = true; boolean[] bs; //2.char(2个字节，16位) System.out.println(&#34;char位数&#34; &#43; Character.SIZE); char c = &#39;A&#39;; System.out.println(c); //3.String(根据字符串长度而定) String str = &#34;123&#34;; System.out.println(str); Java中的常量 关键字：final
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2022-11-24 21:56:45 +0800 CST'>November 24, 2022</span>&nbsp;·&nbsp;<span>6 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to Unity-移动平台相关Java语法" href="http://localhost:1313/posts/unity/unity-%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E7%9B%B8%E5%85%B3java%E8%AF%AD%E6%B3%95/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+<figure class="entry-cover">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242151718.jpg" alt="">
+</figure>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Unity-移动平台相关Android
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Android发布流程 Unity2019及以上 发布Android准备工作
+通过UnityHub安装Android平台相关工具
+1.Android构建支持
+2.Android SDK（安卓软件开发工具包）、NDKTools（本地开发工具包）
+3.OpenJDK（Java开发工具包）
+注意：Unity支持Android 5.1及以上版本
+Unity2019以下版本 1.Android构建支持工具安装（Unity提供下载,安装时需要关闭Unity）
+2.JDK（Java开发工具包）（网络下载） JDK 必须是版本 8
+https://www.oracle.com/java/technologies/downloads/#jdk18-windows
+3.NDK (本地开发工具包)（网络下载）NDK 版本必须是 Unity2018——r16b, Unity2017——r13d
+注意：NDK是可选的工具，如果之后要发il2cpp的应用程序，那么NDK是必须的，如果是Mono可以不使用它
+https://blog.csdn.net/momo0853/article/details/73898066
+https://developer.android.google.cn/ndk/downloads/#lts-downloads
+4.Android SDK（安卓软件开发工具包）（网络下载或通过AndroidStudio下载）
+建议通过AndroidStudio下载
+https://developer.android.com/studio
+安装AndroidStudio后 通过它来安装AndroidSDK
+5.Java环境变量配置
+我的电脑——&gt;系统属性——&gt;查找——&gt;系统环境变量——&gt;环境变量
+5-1:JAVA_HOME: 变量值为JDK在你电脑上的安装路径
+安装好后可以利用%JAVA_HOME%作为JDK安装目录的统一引用路径
+5-2:Path: 编辑Path属性，在原变量后追加 %JAVA_HOME%\bin;%JAVA_HOME%\jre\bin
+5-3:CLASSPATH: 变量值为 .;%JAVA_HOME%\lib\dt.jar;%JAVA_HOME%\lib\tools.jar
+发布前必修改的设置 在File —— Build Setting —— Player Setting中修改
+1.公司名
+2.游戏项目名
+3.版本号
+4.默认图标
+5.Other Settings —— Package Name（必须修改设置）
+6.Other Settings —— Minimum APILevel
+Unity发布参数 Build Settings 参数 Texture Compression 纹理压缩 设置发布后的纹理压缩格式
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2022-09-01 15:06:06 +0800 CST'>September 1, 2022</span>&nbsp;·&nbsp;<span>9 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to Unity-移动平台相关Android" href="http://localhost:1313/posts/unity/unity-%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E7%9B%B8%E5%85%B3android/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+<figure class="entry-cover">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211192048985.png" alt="">
+</figure>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Unity-网络开发（三）
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>大小端模式 什么是大小端模式 大端模式 是指数据的高字节保存在内存的低地址中
+而数据的低字节保存在内存的高地址中
+这样的存储模式有点儿类似于把数据当作字符串顺序处理
+地址由小向大增加，数据从高位往低位放
+符合人类的阅读习惯
+小端模式 是指数据的高字节保存在内存的高地址中
+而数据的低字节保存在内存的低地址中
+举例说明 十六进制数据0x11223344
+大端模式存储 11 22 33 44
+0 1 2 3
+低地址——&gt;高地址
+小端模式存储 44 33 22 11
+0 1 2 3
+低地址——&gt;高地址
+为什么有大小端模式 大小端模式其实是计算机硬件的两种存储数据的方式
+我们也可以称大小端模式为 大小端字节序
+对于我们来说，大端字节序阅读起来更加方便，为什么还要有小端字节序呢？
+原因是，计算机电路先处理低位字节，效率比较高
+计算机处理字节序的时候，不知道什么是高位字节，什么是低位字节
+它只知道按顺序读取字节，先读第一个字节，再读第二个字节
+如果是大端字节序，先读到的就是高位字节，后读到的就是低位字节
+小端字节序正好相反
+因为计算机都是从低位开始的
+所以，计算机的内部处理都是小端字节序
+但是，我们人类的读写习惯还是大端字节序
+所以，除了计算机的内部处理
+其它场合几乎都是大端字节序，比如网络传输和文件存储
+一般情况下，操作系统都是小端模式，而通讯协议都是大端模式
+但是具体的模式，还是要根据硬件平台，开发语言来决定
+主机不同，开发语言不同 可能采用的大小端模式也会不一致
+大小端模式对于我们的影响 只有读取的时候，才必须区分大小端字节序，其它情况都不用考虑
+因此对于我们来说，在网络传输当中我们传输的是字节数组
+那么我们在收到字节数组进行解析时，就需要考虑大小端的问题
+虽然TCP/IP协议规定了在网络上必须采用网络字节顺序（大端模式）
+但是具体传输时采用哪种模式，都是根据前后端语言、设备决定的
+在进行网络通讯时，前后端语言不同时，可能会造成大小端不统一
+一般情况下
+C# 和 Java/Erlang/AS3 通讯需要进行大小端转换 因为C#是小端模式 Java/Erlang/AS3是大端模式
+C# 与 C&#43;&#43;通信不需要特殊处理 他们都是小端模式
+大小端转换 判断是大小端哪种模式 print(“是否是小端模式:” &#43; BitConverter.IsLittleEndian);
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2022-08-14 22:13:47 +0800 CST'>August 14, 2022</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to Unity-网络开发（三）" href="http://localhost:1313/posts/unity/unity-%E7%BD%91%E7%BB%9C%E5%BC%80%E5%8F%91%E4%B8%89/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+<figure class="entry-cover">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211192022487.jpg" alt="">
+</figure>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Unity-UniTask
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>UniTask 为Unity提供一个高性能，0GC的async/await异步方案。
+基于值类型的UniTask&lt;T&gt;和自定义的 AsyncMethodBuilder 来实现0GC 使所有 Unity 的 AsyncOperations 和 Coroutines 可等待 基于 PlayerLoop 的任务( UniTask.Yield, UniTask.Delay, UniTask.DelayFrame, etc…) 可以替换所有协程操作 对MonoBehaviour 消息事件和 uGUI 事件进行 可等待/异步枚举 拓展 完全在 Unity 的 PlayerLoop 上运行，因此不使用Thread，并且同样能在 WebGL、wasm 等平台上运行。 带有 Channel 和 AsyncReactiveProperty的异步 LINQ， 提供一个 TaskTracker EditorWindow 以追踪所有UniTask分配来预防内存泄漏 与原生 Task/ValueTask/IValueTaskSource 高度兼容的行为 有关技术细节，请参阅博客文章：UniTask v2 — Unity 的0GC async/await 以及 异步LINQ 的使用 有关高级技巧，请参阅博客文章：通过异步装饰器模式扩展 UnityWebRequest — UniTask 的高级技术
+入门 通过UniTask/releases页面中提供的UPM 包或资产包 ( UniTask.*.*.*.unitypackage)安装。
+CSHARP// 使用UniTask所需的命名空间using Cysharp.Threading.Tasks;// 你可以返回一个形如 UniTask&lt;T&gt;(或 UniTask) 的类型，这种类型事为Unity定制的，作为替代原生Task&lt;T&gt;的轻量级方案// 为Unity集成的 0GC，快速调用，0消耗的 async/await 方案async UniTask&lt;string&gt; DemoAsync(){// 你可以等待一个Unity异步对象var asset = await Resources.LoadAsync&lt;TextAsset&gt;(&#34;foo&#34;);var txt = (await UnityWebRequest.Get(&#34;https://...&#34;).SendWebRequest()).downloadHandler.text;await SceneManager.LoadSceneAsync(&#34;scene2&#34;);// .WithCancellation 会启用取消功能，GetCancellationTokenOnDestroy 表示获取一个依赖对象生命周期的Cancel句柄，当对象被销毁时，将会调用这个Cancel句柄，从而实现取消的功能var asset2 = await Resources.LoadAsync&lt;TextAsset&gt;(&#34;bar&#34;).WithCancellation(this.GetCancellationTokenOnDestroy());// .ToUniTask 可接收一个 progress 回调以及一些配置参数，Progress.Create是IProgress&lt;T&gt;的轻量级替代方案var asset3 = await Resources.LoadAsync&lt;TextAsset&gt;(&#34;baz&#34;).ToUniTask(Progress.Create&lt;float&gt;(x =&gt; Debug.Log(x)));// 等待一个基于帧的延时操作（就像一个协程一样）await UniTask.DelayFrame(100); // yield return new WaitForSeconds/WaitForSecondsRealtime 的替代方案await UniTask.Delay(TimeSpan.FromSeconds(10), ignoreTimeScale: false);// 可以等待任何 playerloop 的生命周期(PreUpdate, Update, LateUpdate, 等...)await UniTask.Yield(PlayerLoopTiming.PreLateUpdate);// yield return null 替代方案await UniTask.Yield();await UniTask.NextFrame();// WaitForEndOfFrame 替代方案 (需要 MonoBehaviour(CoroutineRunner))await UniTask.WaitForEndOfFrame(this); // this 是一个 MonoBehaviour// yield return new WaitForFixedUpdate 替代方案，(和 UniTask.Yield(PlayerLoopTiming.FixedUpdate) 效果一样)await UniTask.WaitForFixedUpdate();// yield return WaitUntil 替代方案await UniTask.WaitUntil(() =&gt; isActive == false);// WaitUntil拓展，指定某个值改变时触发await UniTask.WaitUntilValueChanged(this, x =&gt; x.isActive);// 你可以直接 await 一个 IEnumerator 协程await FooCoroutineEnumerator();// 你可以直接 await 一个原生 taskawait Task.Run(() =&gt; 100);// 多线程示例，在此行代码后的内容都运行在一个线程池上await UniTask.SwitchToThreadPool();/* 工作在线程池上的代码 */// 转回主线程await UniTask.SwitchToMainThread();// 获取异步的 webrequestasync UniTask&lt;string&gt; GetTextAsync(UnityWebRequest req){var op = await req.SendWebRequest();return op.downloadHandler.text;}var task1 = GetTextAsync(UnityWebRequest.Get(&#34;http://google.com&#34;));var task2 = GetTextAsync(UnityWebRequest.Get(&#34;http://bing.com&#34;));var task3 = GetTextAsync(UnityWebRequest.Get(&#34;http://yahoo.com&#34;));// 构造一个async-wait，并通过元组语义轻松获取所有结果var (google, bing, yahoo) = await UniTask.WhenAll(task1, task2, task3);// WhenAll简写形式var (google2, bing2, yahoo2) = await (task1, task2, task3);// 返回一个异步值，或者你也可以使用`UniTask`(无结果), `UniTaskVoid`(协程，不可等待)return (asset as TextAsset)?.text ?? throw new InvalidOperationException(&#34;Asset not found&#34;);} UniTask 和 AsyncOperation 基础知识 UniTask 功能依赖于 C# 7.0( task-like custom async method builder feature ) 所以需要的 Unity 最低版本是Unity 2018.3 ，官方支持的最低版本是Unity 2018.4.13f1.
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2022-08-14 21:24:49 +0800 CST'>August 14, 2022</span>&nbsp;·&nbsp;<span>12 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to Unity-UniTask" href="http://localhost:1313/posts/unity/unity-unitask/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+<figure class="entry-cover">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211192048985.png" alt="">
+</figure>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Unity-网络开发（一）
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>网络基本概念 网络 网络的作用 在没有网络之前，每个人的设备（电脑等）都是彼此孤立的，网络的出现让设备之间可以相互通信
+网络是由若干设备和连接这些设备的链路构成，各种设备 间接或者直接通过介质相连
+设备之间想要进行信息传递时，将想要传递的数据编码为2进制数值便可以被有效的传输。这些数据是以电脉冲的形式进行传输的
+线缆中的电压是在高低状态之间进行变化的，因而
+二进制中1是通过产生一个正电压来传输的，二进制中0是通过产生一个负电压来传输的
+局域网 局域网（Local Area Network，简称LAN）
+是按照范围划分而来的名称，是指在某一个小区域内由多台设备互联成的计算机组，可以是家里的两台设备组成
+也可以是学校、公司里的上千台设备组成，特点是分布地区范围有限，覆盖范围一般是方圆几千米之内
+以太网 以太网是一种计算机局域网技术，是目前应用最普遍的局域网技术
+IEEE组织（电气与电子工程师协会）的IEEE 802.3标准制定了以太网的技术标准，它规定了包括物理层的连线、电子信号和介质访问层协议的内容
+说人话：
+局域网中设备的连接规范，数据的传输规范等等规则，都是基于以太网的技术标准来完成的
+所以，简单理解以太网就是网络连接的一种规则（协议）
+以太网 网络拓扑结构 概念：
+用传输媒体把计算机等各种设备互相连接起来的物理布局，是指设备互连过程中构成的几何形状
+局域网 城域网（Metropolitan Area Network，简称MAN）
+是在一个城市范围内所建立的网络通常覆盖一个城市，从几十公里到一百公里不等，可能会有多种介质用户的数量也比局域网更多
+广域网 广域网（Wide Area Network，简称WAN）
+又称外网、公网，是连接不同地区局域网或城域网设备通信的远程网，通常跨接很大的物理范围，所覆盖的范围从几十公里到几千公里，它能连接多个地区、城市和国家，形成国际性的远程网络
+注意：广域网并不等同于互联网
+互联网（因特网） 互联网，如果作为名词理解的话，就是互相联网，让各种设备处于同一网络环境下，只要设备互相连接网络了，那么设备之间就可以进行通信
+它一般泛指彼此能够通信的设备组成的网络，但是目前我们往往提到的互联网，大部分时候都是指代的因特网，你可以把互联网作为名词理解，也可以将互联网理解为因特网的代称
+互联网（internet，音译为因特网）
+又称国际网络，指的是网络与网络之间所串连成的庞大网络，这些网络以一组通用的协议（规则）相连，形成逻辑上的单一巨大国际网络。
+互联网目前已经把200多个国家和地区的大部分设备连接了起来，形成了一个遍布全世界的网络。所以在一定程度上也可以说，互联网等同于广域网，广域网包含了互联网。互联网使用的技术，在广域网上一定有，但是某些广域网的技术，互联网上不一定有比如军用的广域网，普通老百姓是不会使用的
+互联网（因特网）的本质就是人为定义的一系列协议（规则）总称为“互联网协议”
+主要功能：
+定义计算机如何接入互联网，以及接入互联网的计算机的通信标准，也就是为我们的设备定义连入标准，并且为传输的2进制数据定义一些传输规则，只要遵守这些规则来进行网络连接和数据传输，我们的各种设备就可以通过网络进行通讯，进行信息的交换
+简单理解因特网：
+它是国际上最大的互联网，所以当我们提到互联网时一般都代指因特网
+它是指当前全球最大的、开放的、有众多网络互相连接而成的特定的计算机网络
+它采用TCP/IP协议簇作为通信的规则，提供了包括万维网（WWW）、文件传输（FTP）、电子邮件（E-mail）、远程登录（Telnet）等等服务
+只要我们的设备和应用程序遵守这套因特网的互联网规则，那么我们就可以在这个庞大的网络体系当中畅游
+万维网 万维网（World Wide Web，简称WWW，也称Web、3W等）
+它是存储在因特网的计算机当中，数量巨大的文档（页面）的集合
+它是无数个网络站点和网页的集合，是构成因特网的主要部分
+我们平时用浏览器看到的内容就属于万维网，他们本质上就是一个个的文档（页面）
+如果把因特网看做是网络的基础，那么万维网就可以被看做是对因特网的应用，是利用因特网规则的一种信息传递和呈现的手段，可以认为万维网就是网站和页面的统称
+总结 网络：由若干设备和连接这些设备的链路构成，设备间可以相互通信
+局域网：指某一个小区域内由多台设备互联成的计算机组
+以太网：网络连接的一种规则，定义了连接传输规范
+城域网：是在一个城市范围内所建立的网络，几十到一百公里
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2022-05-16 15:06:06 +0800 CST'>May 16, 2022</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to Unity-网络开发（一）" href="http://localhost:1313/posts/unity/unity-%E7%BD%91%E7%BB%9C%E5%BC%80%E5%8F%91%E4%B8%80/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+<figure class="entry-cover">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211192048985.png" alt="">
+</figure>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Unity-网络开发（二）
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>网络通信 网络游戏通信方案概述 弱联网和强联网游戏 网络游戏是以C/S模型为基础进行开发的由客户端和服务端组成
+弱联网游戏：
+这种游戏不会频繁的进行数据通信，客户端和服务端之间每次连接只处理一次请求，服务端处理完客户端的请求后返回数据后就断开连接了
+强联网游戏：
+这种游戏会频繁的和服务端进行通信，会一直和服务端保持连接状态，不停的和服务器之间交换数据通过之前的知识我们知道，网络游戏是以C/S模型为基础进行开发的由客户端和服务端组成
+弱联网游戏代表：
+一般的三消类休闲游戏、卡牌游戏等都会是弱联网游戏，这些游戏的核心玩法都由客户端完成，客户端处理完成后只是告诉服务端一个结果，服务端验证结果即可，不需要随时通信
+比如：开心消消乐、刀塔传奇、我叫MT等等
+强联网游戏代表：
+一般的MMORPG（角色扮演）、MOBA（多人在线竞技游戏）、ACT（动作游戏）等等都会是强联网游戏，这些游戏的部分核心逻辑是由服务端进行处理，客户端和服务端之间不停的在同步信息
+比如：王者荣耀、守望先锋、和平精英等等
+长连接和短连接游戏 长连接和短连接游戏是按照网络游戏通信特点来划分的
+弱联网游戏——&gt;短连接游戏
+强联网游戏——&gt;长连接游戏
+短连接游戏：
+需要传输数据时，建立连接，传输数据，获得响应，断开连接
+通信特点：需要通信时再连接，通信完毕断开连接
+通信方式：HTTP超文本传输协议、HTTPS安全的超文本传输协议（他们本质上是TCP协议）
+长连接游戏：不管是否需要传输数据，客户端与服务器一直处于连接状态，除非一端主动断开，或
+者出现意外情况（客户端关闭或服务端崩溃等）
+通信特点：连接一直建立，可以实时的传输数据
+通信方式：TCP传输控制协议 或 UDP用户数据报协议
+Socket、HTTP、FTP Socket：网络套接字，是对网络中不同主机上的应用进程之间进行双向通信的端点的抽象，一个套接字就是网络上进程通信的一端，提供了应用层进程利用网络协议交换数据的机制
+主要用于制作长连接游戏（强联网游戏）
+Http/Https：(安全的)超文本传输协议，是一个简单的请求-响应协议，它通常运行在TCP协议之上，它指定了客户端可能发送给服务端什么样的信息以及得到什么样的响应。
+主要用于制作短连接游戏（弱联网游戏），也可以用来进行资源下载
+FTP：文件传输协议，是用于在网络上进行文件传输的一套标准协议，可以利用它来进行网络上资源的下载和上传。它也是基于TCP的传输，是面向连接的，为文件传输提供了可靠的保证
+网络通信基础 IP地址和端口类 #region IPAddress类 //命名空间：System.Net; //类名：IPAddress //初始化IP信息的方式 //1.用byte数组进行初始化 byte[] ipAddress = new byte[] { 118, 102, 111, 11 }; IPAddress ip1 = new IPAddress(ipAddress); //2.用long长整型进行初始化 //4字节对应的长整型 一般不建议大家使用 IPAddress ip2 = new IPAddress(0x79666F0B); //3.推荐使用的方式 使用字符串转换 IPAddress ip3 = IPAddress.Parse(&#34;118.102.111.11&#34;); //特殊IP地址 //127.0.0.1代表本机地址 //一些静态成员 //获取可用的IPv6地址 //IPAddress.IPv6Any #endregion #region IPEndPoint类 //命名空间：System.Net; //类名：IPEndPoint //IPEndPoint类将网络端点表示为IP地址和端口号，表现为IP地址和端口号的组合 //初始化方式 IPEndPoint ipPoint = new IPEndPoint(0x79666F0B, 8080); IPEndPoint ipPoint2 = new IPEndPoint(IPAddress.Parse(&#34;118.102.111.11&#34;), 8080); #endregion #region 总结 //程序表示IP信息 IPAddress ip = IPAddress.Parse(&#34;IPv4地址&#34;); //程序表示通信目标 IPEndPoint point = new IPEndPoint(ip, 8080); #endregion 域名解析 域名解析也叫域名指向、服务器设置、域名配置以及反向IP登记等等，说得简单点就是将好记的域名解析成IP，IP地址是网络上标识站点的数字地址，但是IP地址相对来说记忆困难，所以为了方便记忆，采用域名来代替IP地址标识站点地址。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2022-05-16 15:06:06 +0800 CST'>May 16, 2022</span>&nbsp;·&nbsp;<span>11 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to Unity-网络开发（二）" href="http://localhost:1313/posts/unity/unity-%E7%BD%91%E7%BB%9C%E5%BC%80%E5%8F%91%E4%BA%8C/"></a>
+</article>
+<footer class="page-footer">
+  <nav class="pagination">
+    <a class="next" href="http://localhost:1313/categories/unity/page/2/">Next&nbsp;&nbsp;»
+    </a>
+  </nav>
+</footer>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">LiuYingbo Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

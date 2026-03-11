@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Unity-移动平台相关Java语法 | LiuYingbo Blog</title>
+<meta name="keywords" content="Unity, 移动平台, Android">
+<meta name="description" content="简单了解Java语法
+环境
+Java环境：www.baidu.com
+写Java编辑器推荐是IDEA
+但是我们是Unity导出的Android项目所以还是用AndroidStudio
+变量
+Java中的有符号整型
+//1.byte(1个字节，8位，-2^7 ~ 2^7 - 1，-128 ~ 127)
+System.out.println(&#34;byte位数&#34; &#43; Byte.SIZE);
+System.out.println(&#34;byte最大值&#34; &#43; Byte.MAX_VALUE);
+System.out.println(&#34;byte最小值&#34; &#43; Byte.MIN_VALUE);
+//2.short(2个字节，16位，-2^15 ~ 2^15 - 1，-32768 ~ 32767)
+System.out.println(&#34;short位数&#34; &#43; Short.SIZE);
+System.out.println(&#34;short最大值&#34; &#43; Short.MAX_VALUE);
+System.out.println(&#34;short最小值&#34; &#43; Short.MIN_VALUE);
+//3.int(4个字节，32位，-2^31 ~ 2^31 - 1，-2,147,483,648 ~ 2,147,483,647)
+System.out.println(&#34;int位数&#34; &#43; Integer.SIZE);
+System.out.println(&#34;int最大值&#34; &#43; Integer.MAX_VALUE);
+System.out.println(&#34;int最小值&#34; &#43; Integer.MIN_VALUE);
+//4.long(8个字节，64位，-2^63 ~ 2^63 - 1，9,223,372,036,854,775,808 ~ 9,223,372,036,854,775,807)
+System.out.println(&#34;long位数&#34; &#43; Long.SIZE);
+System.out.println(&#34;long最大值&#34; &#43; Long.MAX_VALUE);
+System.out.println(&#34;long最小值&#34; &#43; Long.MIN_VALUE);
+//注意：Java最初设计中没有无符号类型
+//Java 8中添加了一些和无符号类型有关的一些方法(但是一般使用较少)
+Java中的浮点型
+//1.float(4个字节，32位)
+System.out.println(&#34;float位数&#34; &#43; Float.SIZE);
+System.out.println(&#34;float最大值&#34; &#43; Float.MAX_VALUE);
+System.out.println(&#34;float最小值&#34; &#43; Float.MIN_VALUE);
+float f = .5f;
+System.out.println(f);
+f = 1.f;
+System.out.println(f);
+//2.double(8个字节，64位)
+System.out.println(&#34;double位数&#34; &#43; Double.SIZE);
+System.out.println(&#34;double最大值&#34; &#43; Double.MAX_VALUE);
+System.out.println(&#34;double最小值&#34; &#43; Double.MIN_VALUE);
+double d = 1.5;
+Java中的其它类型
+//1.boolean(单个boolean在编译时使用int类型，这时4个字节；boolean数组时，编译时用字节数组，所以占1个字节)
+//默认值是false
+boolean b0 = true;
+boolean[] bs;
+//2.char(2个字节，16位)
+System.out.println(&#34;char位数&#34; &#43; Character.SIZE);
+char c = &#39;A&#39;;
+System.out.println(c);
+//3.String(根据字符串长度而定)
+String str = &#34;123&#34;;
+System.out.println(str);
+Java中的常量
+关键字：final">
+<meta name="author" content="LiuYingbo">
+<link rel="canonical" href="http://localhost:1313/posts/unity/unity-%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E7%9B%B8%E5%85%B3java%E8%AF%AD%E6%B3%95/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.a29c24210eb31d9ce56f669c66a35c9c51b17376b7764e336a49af7dec914cf0.css" integrity="sha256-opwkIQ6zHZzlb2acZqNcnFGxc3a3dk4zakmvfeyRTPA=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/unity/unity-%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E7%9B%B8%E5%85%B3java%E8%AF%AD%E6%B3%95/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="LiuYingbo Blog (Alt + H)">LiuYingbo Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/categories/" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives/" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">Home</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Unity-移动平台相关Java语法
+    </h1>
+    <div class="post-meta"><span title='2022-11-24 21:56:45 +0800 CST'>November 24, 2022</span>&nbsp;·&nbsp;<span>6 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span>
+
+</div>
+  </header> 
+<figure class="entry-cover">
+        <img loading="eager" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242151718.jpg" alt="">
+        
+</figure><div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e7%8e%af%e5%a2%83" aria-label="环境">环境</a></li>
+                <li>
+                    <a href="#%e5%8f%98%e9%87%8f" aria-label="变量">变量</a><ul>
+                        
+                <li>
+                    <a href="#java%e4%b8%ad%e7%9a%84%e6%9c%89%e7%ac%a6%e5%8f%b7%e6%95%b4%e5%9e%8b" aria-label="Java中的有符号整型">Java中的有符号整型</a></li>
+                <li>
+                    <a href="#java%e4%b8%ad%e7%9a%84%e6%b5%ae%e7%82%b9%e5%9e%8b" aria-label="Java中的浮点型">Java中的浮点型</a></li>
+                <li>
+                    <a href="#java%e4%b8%ad%e7%9a%84%e5%85%b6%e5%ae%83%e7%b1%bb%e5%9e%8b" aria-label="Java中的其它类型">Java中的其它类型</a></li>
+                <li>
+                    <a href="#java%e4%b8%ad%e7%9a%84%e5%b8%b8%e9%87%8f" aria-label="Java中的常量">Java中的常量</a></li>
+                <li>
+                    <a href="#%e7%b1%bb%e5%9e%8b%e8%bd%ac%e6%8d%a2" aria-label="类型转换">类型转换</a></li>
+                <li>
+                    <a href="#%e6%80%bb%e7%bb%93" aria-label="总结">总结</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e8%bf%90%e7%ae%97%e7%ac%a6%e6%9d%a1%e4%bb%b6%e8%af%ad%e5%8f%a5%e5%be%aa%e7%8e%af%e8%af%ad%e5%8f%a5%e6%95%b0%e7%bb%84" aria-label="运算符、条件语句、循环语句、数组">运算符、条件语句、循环语句、数组</a></li>
+                <li>
+                    <a href="#arrays%e9%9d%99%e6%80%81%e7%b1%bb" aria-label="Arrays静态类">Arrays静态类</a><ul>
+                        
+                <li>
+                    <a href="#%e5%a1%ab%e5%85%85%e6%9b%bf%e6%8d%a2%e6%95%b0%e7%bb%84%e5%85%83%e7%b4%a0" aria-label="填充替换数组元素">填充替换数组元素</a></li>
+                <li>
+                    <a href="#%e6%95%b0%e7%bb%84%e6%8e%92%e5%ba%8f" aria-label="数组排序">数组排序</a></li>
+                <li>
+                    <a href="#%e5%a4%8d%e5%88%b6%e6%95%b0%e7%bb%84" aria-label="复制数组">复制数组</a></li>
+                <li>
+                    <a href="#%e6%9f%a5%e8%af%a2%e6%95%b0%e7%bb%84" aria-label="查询数组">查询数组</a></li>
+                <li>
+                    <a href="#%e6%80%bb%e7%bb%93-1" aria-label="总结">总结</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%87%bd%e6%95%b0" aria-label="函数">函数</a></li>
+                <li>
+                    <a href="#%e9%9d%a2%e5%90%91%e5%af%b9%e8%b1%a1" aria-label="面向对象">面向对象</a><ul>
+                        
+                <li>
+                    <a href="#%e6%b3%a8%e6%84%8f" aria-label="注意：">注意：</a></li>
+                <li>
+                    <a href="#%e5%b0%81%e8%a3%85" aria-label="封装">封装</a></li>
+                <li>
+                    <a href="#%e7%bb%a7%e6%89%bf" aria-label="继承">继承</a><ul>
+                        
+                <li>
+                    <a href="#java%e4%b8%ad%e7%bb%a7%e6%89%bf%e5%92%8cc%e4%b8%ad%e7%9a%84%e7%9b%b8%e5%90%8c%e7%82%b9" aria-label="Java中继承和C#中的相同点">Java中继承和C#中的相同点</a></li>
+                <li>
+                    <a href="#java%e4%b8%ad-%e7%bb%a7%e6%89%bf%e7%9a%84%e5%86%99%e6%b3%95" aria-label="Java中 继承的写法">Java中 继承的写法</a></li>
+                <li>
+                    <a href="#%e4%b8%87%e7%89%a9%e4%b9%8b%e7%88%b6object%e4%b8%ad%e7%9a%84%e5%85%b3%e9%94%ae%e6%96%b9%e6%b3%95" aria-label="万物之父Object中的关键方法">万物之父Object中的关键方法</a></li>
+                <li>
+                    <a href="#instanceof%e5%85%b3%e9%94%ae%e5%ad%97" aria-label="instanceof关键字">instanceof关键字</a></li>
+                <li>
+                    <a href="#final%e5%85%b3%e9%94%ae%e5%ad%97" aria-label="final关键字">final关键字</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%a4%9a%e6%80%81" aria-label="多态">多态</a><ul>
+                        
+                <li>
+                    <a href="#java%e4%b8%ad%e7%9a%84vob" aria-label="Java中的vob">Java中的vob</a></li>
+                <li>
+                    <a href="#%e6%8a%bd%e8%b1%a1%e7%b1%bb%e5%92%8c%e6%8a%bd%e8%b1%a1%e6%96%b9%e6%b3%95" aria-label="抽象类和抽象方法">抽象类和抽象方法</a></li>
+                <li>
+                    <a href="#%e6%8e%a5%e5%8f%a3" aria-label="接口">接口</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%8c%85" aria-label="包">包</a><ul>
+                        
+                <li>
+                    <a href="#java%e4%b8%ad%e7%9a%84%e5%8c%85%e6%98%af%e4%bb%80%e4%b9%88" aria-label="Java中的包是什么？">Java中的包是什么？</a></li>
+                <li>
+                    <a href="#%e5%8c%85%e5%90%8d%e8%a7%84%e5%88%99" aria-label="包名规则">包名规则</a></li></ul>
+                </li>
+                <li>
+                    <a href="#java%e4%b8%ad%e7%9a%84%e5%86%85%e9%83%a8%e7%b1%bb" aria-label="Java中的内部类">Java中的内部类</a><ul>
+                        
+                <li>
+                    <a href="#%e5%8c%bf%e5%90%8d%e5%86%85%e9%83%a8%e7%b1%bb" aria-label="匿名内部类">匿名内部类</a></li></ul>
+                </li>
+                <li>
+                    <a href="#string%e5%92%8cstringbuilder" aria-label="String和StringBuilder">String和StringBuilder</a></li>
+                <li>
+                    <a href="#%e6%b3%9b%e5%9e%8b" aria-label="泛型">泛型</a><ul>
+                        
+                <li>
+                    <a href="#java%e4%b8%ad%e7%9a%84%e6%b3%9b%e5%9e%8b%e4%b8%ad%e7%9a%84%e7%b1%bb%e5%9e%8b%e9%80%9a%e9%85%8d%e7%ac%a6-" aria-label="Java中的泛型中的类型通配符 ?">Java中的泛型中的类型通配符 ?</a></li></ul>
+                </li>
+                <li>
+                    <a href="#collection%e6%8e%a5%e5%8f%a3" aria-label="Collection接口">Collection接口</a><ul>
+                        
+                <li>
+                    <a href="#arraylist%e5%92%8clinkedlist%e7%b1%bb" aria-label="ArrayList和LinkedList类">ArrayList和LinkedList类</a></li>
+                <li>
+                    <a href="#hashset%e5%92%8ctreeset%e7%9a%84%e5%8c%ba%e5%88%ab" aria-label="HashSet和TreeSet的区别">HashSet和TreeSet的区别</a></li></ul>
+                </li>
+                <li>
+                    <a href="#map%e6%8e%a5%e5%8f%a3" aria-label="Map接口">Map接口</a><ul>
+                        
+                <li>
+                    <a href="#map%e6%8e%a5%e5%8f%a3%e4%b8%ad%e7%9a%84%e6%96%b9%e6%b3%95" aria-label="Map接口中的方法">Map接口中的方法</a></li>
+                <li>
+                    <a href="#hashmap%e5%92%8ctreemap%e4%b9%8b%e9%97%b4%e7%9a%84%e5%8c%ba%e5%88%ab" aria-label="HashMap和TreeMap之间的区别">HashMap和TreeMap之间的区别</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%bc%82%e5%b8%b8%e6%8d%95%e8%8e%b7" aria-label="异常捕获">异常捕获</a></li>
+                <li>
+                    <a href="#lambda%e8%a1%a8%e8%be%be%e5%bc%8f" aria-label="lambda表达式">lambda表达式</a></li>
+                <li>
+                    <a href="#java%e5%b8%b8%e7%94%a8%e7%b1%bb%e5%ba%93" aria-label="Java常用类库">Java常用类库</a><ul>
+                        
+                <li>
+                    <a href="#%e5%b8%b8%e7%94%a8%e7%b1%bb%e5%ba%93%e6%8c%87%e4%bb%80%e4%b9%88" aria-label="常用类库指什么？">常用类库指什么？</a></li>
+                <li>
+                    <a href="#%e5%8f%98%e9%87%8f%e7%9a%84%e5%8c%85%e8%a3%85%e7%b1%bb" aria-label="变量的包装类">变量的包装类</a><ul>
+                        
+                <li>
+                    <a href="#number%e7%b1%bb" aria-label="Number类">Number类</a></li>
+                <li>
+                    <a href="#integer%e7%b1%bb" aria-label="Integer类">Integer类</a></li>
+                <li>
+                    <a href="#double%e7%b1%bb" aria-label="Double类">Double类</a></li>
+                <li>
+                    <a href="#boolean%e7%b1%bb" aria-label="Boolean类">Boolean类</a></li>
+                <li>
+                    <a href="#character%e7%b1%bb" aria-label="Character类">Character类</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%a4%a7%e6%95%b0%e6%8d%ae%e7%b1%bb" aria-label="大数据类">大数据类</a><ul>
+                        
+                <li>
+                    <a href="#biginteger" aria-label="BigInteger">BigInteger</a></li>
+                <li>
+                    <a href="#bigdecimal" aria-label="BigDecimal">BigDecimal</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%95%b0%e5%ad%a6%e8%ae%a1%e7%ae%97%e7%b1%bb" aria-label="数学计算类">数学计算类</a><ul>
+                        
+                <li>
+                    <a href="#math%e7%b1%bb" aria-label="Math类">Math类</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e9%9a%8f%e6%9c%ba%e6%95%b0%e7%b1%bb" aria-label="随机数类">随机数类</a></li>
+                <li>
+                    <a href="#%e5%85%b6%e4%bb%96%e7%b1%bb" aria-label="其他类">其他类</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p><strong>简单</strong>了解Java语法</p>
+<h2 id="环境">环境<a hidden class="anchor" aria-hidden="true" href="#环境">#</a></h2>
+<p>Java环境：www.baidu.com</p>
+<p>写Java编辑器推荐是IDEA</p>
+<p>但是我们是Unity导出的Android项目所以还是用AndroidStudio</p>
+<h2 id="变量">变量<a hidden class="anchor" aria-hidden="true" href="#变量">#</a></h2>
+<h3 id="java中的有符号整型">Java中的有符号整型<a hidden class="anchor" aria-hidden="true" href="#java中的有符号整型">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">//1.byte(1个字节，8位，-2^7 ~ 2^7 - 1，-128 ~ 127)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;byte位数&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Byte</span><span class="p">.</span><span class="na">SIZE</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;byte最大值&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Byte</span><span class="p">.</span><span class="na">MAX_VALUE</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;byte最小值&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Byte</span><span class="p">.</span><span class="na">MIN_VALUE</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//2.short(2个字节，16位，-2^15 ~ 2^15 - 1，-32768 ~ 32767)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;short位数&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Short</span><span class="p">.</span><span class="na">SIZE</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;short最大值&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Short</span><span class="p">.</span><span class="na">MAX_VALUE</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;short最小值&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Short</span><span class="p">.</span><span class="na">MIN_VALUE</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//3.int(4个字节，32位，-2^31 ~ 2^31 - 1，-2,147,483,648 ~ 2,147,483,647)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;int位数&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Integer</span><span class="p">.</span><span class="na">SIZE</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;int最大值&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Integer</span><span class="p">.</span><span class="na">MAX_VALUE</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;int最小值&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Integer</span><span class="p">.</span><span class="na">MIN_VALUE</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//4.long(8个字节，64位，-2^63 ~ 2^63 - 1，9,223,372,036,854,775,808 ~ 9,223,372,036,854,775,807)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;long位数&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Long</span><span class="p">.</span><span class="na">SIZE</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;long最大值&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Long</span><span class="p">.</span><span class="na">MAX_VALUE</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;long最小值&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Long</span><span class="p">.</span><span class="na">MIN_VALUE</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//注意：Java最初设计中没有无符号类型</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//Java 8中添加了一些和无符号类型有关的一些方法(但是一般使用较少)</span><span class="w">
+</span></span></span></code></pre></div><h3 id="java中的浮点型">Java中的浮点型<a hidden class="anchor" aria-hidden="true" href="#java中的浮点型">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Java" data-lang="Java"><span class="line"><span class="cl"><span class="c1">//1.float(4个字节，32位)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;float位数&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Float</span><span class="p">.</span><span class="na">SIZE</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;float最大值&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Float</span><span class="p">.</span><span class="na">MAX_VALUE</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;float最小值&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Float</span><span class="p">.</span><span class="na">MIN_VALUE</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kt">float</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">.</span><span class="na">5f</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">f</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">1</span><span class="p">.</span><span class="na">f</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">f</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//2.double(8个字节，64位)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;double位数&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Double</span><span class="p">.</span><span class="na">SIZE</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;double最大值&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Double</span><span class="p">.</span><span class="na">MAX_VALUE</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;double最小值&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Double</span><span class="p">.</span><span class="na">MIN_VALUE</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kt">double</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">1</span><span class="p">.</span><span class="na">5</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div><h3 id="java中的其它类型">Java中的其它类型<a hidden class="anchor" aria-hidden="true" href="#java中的其它类型">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Java" data-lang="Java"><span class="line"><span class="cl"><span class="c1">//1.boolean(单个boolean在编译时使用int类型，这时4个字节；boolean数组时，编译时用字节数组，所以占1个字节)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//默认值是false</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kt">boolean</span><span class="w"> </span><span class="n">b0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kt">boolean</span><span class="o">[]</span><span class="w"> </span><span class="n">bs</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//2.char(2个字节，16位)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;char位数&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Character</span><span class="p">.</span><span class="na">SIZE</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">&#39;A&#39;</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">c</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//3.String(根据字符串长度而定)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">String</span><span class="w"> </span><span class="n">str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;123&#34;</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">str</span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><h3 id="java中的常量">Java中的常量<a hidden class="anchor" aria-hidden="true" href="#java中的常量">#</a></h3>
+<p>关键字：final</p>
+<p>特点：必须初始化，不能被修改</p>
+<h3 id="类型转换">类型转换<a hidden class="anchor" aria-hidden="true" href="#类型转换">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Java" data-lang="Java"><span class="line"><span class="cl"><span class="c1">//1.隐式转换：低级（字节少的）到高级（字节多的）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//记住一句话 大容器 可以装 小容器 不需要我们去处理</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//byte——&gt;short——&gt;char——&gt;int——&gt;long——&gt;float——&gt;double</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kt">byte</span><span class="w"> </span><span class="n">b2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">111</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kt">short</span><span class="w"> </span><span class="n">s2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b2</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//2.显示转换：括号强转，高级到低级会丢失精度或者报错</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kt">int</span><span class="w"> </span><span class="n">i3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">40000</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">s2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">short</span><span class="p">)</span><span class="w"> </span><span class="n">i3</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">s2</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kt">float</span><span class="w"> </span><span class="n">f2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">2</span><span class="p">.</span><span class="na">5f</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">i3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">f2</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">i3</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//3.字符串转数值 包装类中的parse相关方法</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">i3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Integer</span><span class="p">.</span><span class="na">parseInt</span><span class="p">(</span><span class="s">&#34;101&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">2</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">i3</span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><h3 id="总结">总结<a hidden class="anchor" aria-hidden="true" href="#总结">#</a></h3>
+<p>Java的变量类型和C#非常的类似</p>
+<p>其中需要注意的是</p>
+<p>1.Java中没有专门的无符号类型</p>
+<p>2.Java中的常量关键字和C#不一样</p>
+<p>3.一些关键字和方法写法不同</p>
+<p>其它的变量相关操作表现和C#中极奇相似</p>
+<h2 id="运算符条件语句循环语句数组">运算符、条件语句、循环语句、数组<a hidden class="anchor" aria-hidden="true" href="#运算符条件语句循环语句数组">#</a></h2>
+<p>Java和C#基本一样</p>
+<p>就把它当做C#来写即可</p>
+<h2></h2>
+<h2 id="arrays静态类">Arrays静态类<a hidden class="anchor" aria-hidden="true" href="#arrays静态类">#</a></h2>
+<p>Arrays类是什么</p>
+<p>Arrays类是Java提供的一个专门对数组进行操作的类</p>
+<p>它提供了很多静态方法，共我们对数组进行处理</p>
+<p>比如排序、查找、填充等等方法</p>
+<p>使用它 需要导入java.util.Arrays包（类似C#中的命名空间）</p>
+<h3 id="填充替换数组元素">填充替换数组元素<a hidden class="anchor" aria-hidden="true" href="#填充替换数组元素">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Java" data-lang="Java"><span class="line"><span class="cl"><span class="c1">//Arrays.fill 方法可以帮助我们对数组进行填充</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//它有两个重载</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//1.Arrays.fill(数组,填充值)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kt">int</span><span class="w"> </span><span class="n">arr</span><span class="o">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="o">[</span><span class="n">5</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">arr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">n</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Arrays</span><span class="p">.</span><span class="na">fill</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">5</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;***************&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">arr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">n</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//2.Arrays.fill(数组,填充起始位置(包括),填充结束位置(不包括),填充值)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Arrays</span><span class="p">.</span><span class="na">fill</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">4</span><span class="p">,</span><span class="w"> </span><span class="n">1</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;***************&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">arr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">n</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Arrays</span><span class="p">.</span><span class="na">fill</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">arr</span><span class="p">.</span><span class="na">length</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;***************&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">arr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">n</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="数组排序">数组排序<a hidden class="anchor" aria-hidden="true" href="#数组排序">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Java" data-lang="Java"><span class="line"><span class="cl"><span class="c1">//Arrays.sort(数组) 方法可以对数组进行默认的升序排序</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">arr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="o">[]</span><span class="p">{</span><span class="n">4</span><span class="p">,</span><span class="n">3</span><span class="p">,</span><span class="n">6</span><span class="p">,</span><span class="n">1</span><span class="p">,</span><span class="n">2</span><span class="p">,</span><span class="n">8</span><span class="p">,</span><span class="n">1</span><span class="p">};</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Arrays</span><span class="p">.</span><span class="na">sort</span><span class="p">(</span><span class="n">arr</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;***************&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">arr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">n</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="复制数组">复制数组<a hidden class="anchor" aria-hidden="true" href="#复制数组">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Java" data-lang="Java"><span class="line"><span class="cl"><span class="c1">//1.Arrays.copyOf(数组，复制长度) 方法可以赋值指定数组的指定长度</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//若长度 小于传入数组，则截取；若长度 大于传入数组，则用默认值填充</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">arr2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Arrays</span><span class="p">.</span><span class="na">copyOf</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">10</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;***************&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">arr2</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">n</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//2.Arrays.copyOfRange(数组，开始复制索引（包括），赋值的最后索引位置（不包括）)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">arr2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Arrays</span><span class="p">.</span><span class="na">copyOfRange</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">4</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;***************&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">arr2</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">n</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="查询数组">查询数组<a hidden class="anchor" aria-hidden="true" href="#查询数组">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Java" data-lang="Java"><span class="line"><span class="cl"><span class="c1">//Arrays.binarySearch(数组，搜索元素)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//注意：由于binarySearch内部是对数组进行二分查找</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//所以使用前必须对数组进行排序</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Arrays</span><span class="p">.</span><span class="na">sort</span><span class="p">(</span><span class="n">arr</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//一定该记住 使用该API之前 一定概要排序</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//如果数组当中没有想要寻找的元素 那么返回值为负数</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kt">int</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Arrays</span><span class="p">.</span><span class="na">binarySearch</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">1</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;***************&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">index</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//Arrays.binarySearch(数组，开始索引(包括)，结束索引(不包括)，搜索元素)</span><span class="w">
+</span></span></span></code></pre></div><h3 id="总结-1">总结<a hidden class="anchor" aria-hidden="true" href="#总结-1">#</a></h3>
+<p>Java中如果相对数组进行填充、替换、排序、复制、查询等操作</p>
+<p>我们可以使用Arrays类中的静态方法</p>
+<p>填充替换：fill</p>
+<p>排序：sort</p>
+<p>复制：copyOf、copyOfRange</p>
+<p>查询：binarySearch</p>
+<h2 id="函数">函数<a hidden class="anchor" aria-hidden="true" href="#函数">#</a></h2>
+<p>Java中函数和C#中函数的使用基本一致</p>
+<p>函数的声明、重载、使用等就按照C#中的基础规则使用即可</p>
+<p>主要区别：</p>
+<p>1.Java中没有ref和out关键字</p>
+<p>2.Java中可变参数写法有些许不同</p>
+<p>3.Java中函数参数没有默认参数用法</p>
+<p>4.Java中没有结构体，所以不存在结构体语句块</p>
+<p>5.Java中一般使用驼峰命名法  myName（驼峰命名法）  MyName(帕斯卡命名法)</p>
+<h2 id="面向对象">面向对象<a hidden class="anchor" aria-hidden="true" href="#面向对象">#</a></h2>
+<p>概念：万物皆对象，用程序来抽象（形容）对象，用面向对象的思想来编程</p>
+<p>面向对象三大特性：封装、继承、多态</p>
+<p>面向对象是一种编程范式</p>
+<p>面向对象编程语言的编程思想和使用几乎是一致的</p>
+<p>使用C#中的面向对象编程思想去写Java即可</p>
+<p>Java中也是通过class类去封装对象的</p>
+<h3 id="注意">注意：<a hidden class="anchor" aria-hidden="true" href="#注意">#</a></h3>
+<p>Java中没有C#中的</p>
+<p>1.成员属性（有类似自动生成的get、set方法）</p>
+<p>2.析构函数（有类似的finalize函数）</p>
+<p>3.索引器</p>
+<p>4.运算符重载</p>
+<h3 id="封装">封装<a hidden class="anchor" aria-hidden="true" href="#封装">#</a></h3>
+<p>Java中的类声明和使用和C#中基本一模一样</p>
+<h3 id="继承">继承<a hidden class="anchor" aria-hidden="true" href="#继承">#</a></h3>
+<h4 id="java中继承和c中的相同点">Java中继承和C#中的相同点<a hidden class="anchor" aria-hidden="true" href="#java中继承和c中的相同点">#</a></h4>
+<p>1.类与类之间只能单继承</p>
+<p>2.万物之父都是Object</p>
+<p>3.遵循里氏替换原则(可以父类装子类对象)</p>
+<h4 id="java中-继承的写法">Java中 继承的写法<a hidden class="anchor" aria-hidden="true" href="#java中-继承的写法">#</a></h4>
+<p>//关键字：extends</p>
+<h4 id="万物之父object中的关键方法">万物之父Object中的关键方法<a hidden class="anchor" aria-hidden="true" href="#万物之父object中的关键方法">#</a></h4>
+<p>1.getClass():类似C#中的getType()</p>
+<p>Father f = new Father();</p>
+<p>System.out.println(f.getClass());</p>
+<p>2.toString():将对象以字符串形式返回</p>
+<p>3.equals():比较两个对象的内部内容，而==是判断引用地址是否相等</p>
+<p>父子类的上下转换（里氏替换原则）</p>
+<p>1.子类自动向上转换</p>
+<p><code>Father f2 = new Son();</code></p>
+<p>2.父类强制向下转换</p>
+<p><code>Son s = (Son)f2;</code></p>
+<h4 id="instanceof关键字">instanceof关键字<a hidden class="anchor" aria-hidden="true" href="#instanceof关键字">#</a></h4>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Java" data-lang="Java"><span class="line"><span class="cl"><span class="c1">//用于判断对象类型，类似C#中的is关键字</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span><span class="n">f2</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">Father</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;是Father类&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span><span class="n">f2</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">Son</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Son</span><span class="w"> </span><span class="n">s2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">Son</span><span class="p">)</span><span class="n">f2</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;是Son类&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h4 id="final关键字">final关键字<a hidden class="anchor" aria-hidden="true" href="#final关键字">#</a></h4>
+<p>类似C#中的密封关键字</p>
+<p>让变量无法被修改（常量）</p>
+<p>让函数无法被重写</p>
+<p>让类无法被继承</p>
+<h3 id="多态">多态<a hidden class="anchor" aria-hidden="true" href="#多态">#</a></h3>
+<h4 id="java中的vob">Java中的vob<a hidden class="anchor" aria-hidden="true" href="#java中的vob">#</a></h4>
+<p>Java中没有vo关键字，也就是virtual(虚函数)和override(重写)</p>
+<p>我们如果要重写基类的方法，直接在子类中实现同名方法即可</p>
+<p>它会直接覆盖父类方法！！</p>
+<p>Java中有类似 base 的关键字 super</p>
+<p>重写时Java会自动补全一个@Override</p>
+<p>它类似于注释，可有可无，主要是用来帮助我们阅读代码</p>
+<h4 id="抽象类和抽象方法">抽象类和抽象方法<a hidden class="anchor" aria-hidden="true" href="#抽象类和抽象方法">#</a></h4>
+<p>Java中的抽象类和抽象方法使用和C#中基本一致</p>
+<p>关键字：abstract</p>
+<p>抽象类不能被实例化</p>
+<p>抽象方法在抽象类中声明，必须被实现</p>
+<h4 id="接口">接口<a hidden class="anchor" aria-hidden="true" href="#接口">#</a></h4>
+<p>1.Java中接口中方法默认(只能)为public</p>
+<p>2.Java中接口可以声明字段，但是默认(只能)是static和final的，也就是静态常量</p>
+<p>3.Java中继承接口的关键字是implements，一般写在继承类之后</p>
+<p>4.继承多个接口用逗号分隔</p>
+<p>5.Java中不存在显示实现接口，重写不同接口的同名方式时，&ldquo;两个接口共享&rdquo;</p>
+<h2 id="包">包<a hidden class="anchor" aria-hidden="true" href="#包">#</a></h2>
+<h3 id="java中的包是什么">Java中的包是什么？<a hidden class="anchor" aria-hidden="true" href="#java中的包是什么">#</a></h3>
+<p>Java中的包（package）类似C#中的命名空间</p>
+<p>主要用于解决类名冲突</p>
+<p>同名类做不同逻辑时</p>
+<p>可以将两个类放到两个不同的包中</p>
+<h3 id="包名规则">包名规则<a hidden class="anchor" aria-hidden="true" href="#包名规则">#</a></h3>
+<p>多人完成，版权属于发起者</p>
+<p>indi.发起这名.项目名.模块名&hellip;.</p>
+<p>独立完成，公开，版权属于个人</p>
+<p>pers.个人名.项目名.模块名</p>
+<p>独立完成，非公开，版权属于个人</p>
+<p>priv.个人名.项目名.模块名</p>
+<p>团队研发，版权属于团队</p>
+<p>team.团队名.项目名.模块名</p>
+<p>公司研发，版权属于公司</p>
+<p>com.公司名.项目名.模块名</p>
+<p>注意：Java中规定包名统一用小写，用.分割</p>
+<h2 id="java中的内部类">Java中的内部类<a hidden class="anchor" aria-hidden="true" href="#java中的内部类">#</a></h2>
+<p>Java中的内部类的使用和C#中不同</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Java" data-lang="Java"><span class="line"><span class="cl"><span class="c1">//1.Java中的内部类在外部使用时必须伴随包裹它的外部类的出现而出现</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//  声明语法为</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//  外部类 outer = new 外部类();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//  外部类.内部类 inner = outer.new 内部类();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Outer</span><span class="w"> </span><span class="n">outer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Outer</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Outer</span><span class="p">.</span><span class="na">Inner</span><span class="w"> </span><span class="n">inner</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">outer</span><span class="p">.</span><span class="na">new</span><span class="w"> </span><span class="nf">Inner</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">inner</span><span class="p">.</span><span class="na">Test</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//2.外部类中的所有内容（包括私有）都可以直接在内部类中使用</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//3.内部类和外部类中的同名成员，通过this 和 外部类.this来区分</span><span class="w">
+</span></span></span></code></pre></div><h3 id="匿名内部类">匿名内部类<a hidden class="anchor" aria-hidden="true" href="#匿名内部类">#</a></h3>
+<p>匿名内部类，在声明一个类对象时临时拓展该对象</p>
+<p>但是拓展的内容一般是基于外部类的</p>
+<p>注意：</p>
+<p>1.不能写构造方法</p>
+<p>2.不能定义静态成员</p>
+<p>3.一般基于外部类已有方法实现内容</p>
+<p>4.如果匿名类创建的对象不记录，用完一次后会马上被销毁</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Java" data-lang="Java"><span class="line"><span class="cl"><span class="n">Outer</span><span class="w"> </span><span class="n">outer2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Outer</span><span class="p">(){</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">Eat</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;吃东西&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">Speak</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;说话&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">};</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">outer2</span><span class="p">.</span><span class="na">Eat</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">outer2</span><span class="p">.</span><span class="na">Speak</span><span class="p">();</span><span class="w">
+</span></span></span></code></pre></div><h2 id="string和stringbuilder">String和StringBuilder<a hidden class="anchor" aria-hidden="true" href="#string和stringbuilder">#</a></h2>
+<p>Java中String在使用上和C#类似，但是需要注意以下两点区别</p>
+<p>1.直接赋值字符串，如果字符串相同，则指向同一引用;new String，即使字符串相同引用也不同</p>
+<p>2.Java中字符串比较使用equals，用==号是比较的引用地址</p>
+<p>Java中的StringBuilder的使用和作用和C#中基本一致</p>
+<p>如果项目中的字符串会频繁修改，建议使用StringBuilder</p>
+<h2 id="泛型">泛型<a hidden class="anchor" aria-hidden="true" href="#泛型">#</a></h2>
+<p>Java中泛型使用的基本规则和C#中一致</p>
+<p>泛型可以代表一切类型，主要使用上就是泛型类和泛型方法</p>
+<h3 id="java中的泛型中的类型通配符-">Java中的泛型中的类型通配符 ?<a hidden class="anchor" aria-hidden="true" href="#java中的泛型中的类型通配符-">#</a></h3>
+<p>泛型类名称&lt;? extends 类名&gt; 变量名 = null;</p>
+<p>? extends 类名 表示类未知，需要使用该泛型对象时，可以单独实例化</p>
+<p><code>TestT&lt;?&gt; obj2 = null;</code></p>
+<h2 id="collection接口">Collection接口<a hidden class="anchor" aria-hidden="true" href="#collection接口">#</a></h2>
+<p>Java中的集合类就类似C#中的List和Dictionary的存在</p>
+<p>主要用于批量存储对象，并且可以动态添加，动态删除</p>
+<p><img alt="image-20221217234153008" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202212172341179.png"></p>
+<p>Collection接口中的方法</p>
+<p>1.add(E e) 添加元素</p>
+<p>2.remove(Object o) 移除元素</p>
+<p>3.clear() 清空元素</p>
+<p>4.isEmpty() 是否为空</p>
+<p>5.iterator() 获取迭代器，可以用于遍历</p>
+<p>6.size() 集合中元素个数</p>
+<p>7.contains() 判断元素是否存在</p>
+<p>8.toArray() 将容器中元素转为数组</p>
+<h3 id="arraylist和linkedlist类">ArrayList和LinkedList类<a hidden class="anchor" aria-hidden="true" href="#arraylist和linkedlist类">#</a></h3>
+<p>两者方法上的使用完全一致，因为他们继承相同的接口</p>
+<p>ArrayList本质是数组，是顺序存储</p>
+<p>LinkedList本质是链表，是链式存储</p>
+<h3 id="hashset和treeset的区别">HashSet和TreeSet的区别<a hidden class="anchor" aria-hidden="true" href="#hashset和treeset的区别">#</a></h3>
+<p>相同点：他们都不允许存储重复的元素，如果传入重复的只会记录一个</p>
+<p>他们相对上节课的ArrayList和LinkedList最大的使用区别就是他们可以去重</p>
+<p>都不能像ArrayList和LinkedList通过索引获取或修改元素</p>
+<p>不同点：他们的底层数据结构不同，HashSet底层结构是哈希表，TreeSet底层结构是树</p>
+<p>TreeSet是有序排列的（会自动将加入元素进行排序），HashSet不一定有序</p>
+<p>TreeSet相对HashSet由于多继承了接口，所以有更多的方法可以使用</p>
+<p>注意：TreeSet具有排序功能</p>
+<p>元素是数字时，按照大小升序排列</p>
+<p>元素是字符串时，按照字符的编码值升序排列</p>
+<p>元素是自定义类时，可以继承Comparable接口 重载其中的方法</p>
+<p>特别是compareTo方法，它用于制定排序规则</p>
+<h2 id="map接口">Map接口<a hidden class="anchor" aria-hidden="true" href="#map接口">#</a></h2>
+<p>Map集合类似C#中的Dictionary字典</p>
+<p>以键值对形式存储数据</p>
+<p><img alt="image-20221217235027997" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202212172350034.png"></p>
+<h3 id="map接口中的方法">Map接口中的方法<a hidden class="anchor" aria-hidden="true" href="#map接口中的方法">#</a></h3>
+<p>1.put(K key, V value) 添加键值对</p>
+<p>2.containsKey(Object key) 判断是否存在键</p>
+<p>3.containsValue(Object value) 判断是否存在值</p>
+<p>4.get(Object key) 如果存在key，则返回对应值，否则返回null</p>
+<p>5.keySet() 返回该集合中的所有key对象形成的Set集合</p>
+<p>6.values() 返回该集合中所有value对象形成的Collection集合</p>
+<p>7.size() 键值对 对数</p>
+<p>8.isEmpty() 是否为空</p>
+<p>9.remove(Object key) 根据键移除</p>
+<p>10.clear() 清空容器</p>
+<h3 id="hashmap和treemap之间的区别">HashMap和TreeMap之间的区别<a hidden class="anchor" aria-hidden="true" href="#hashmap和treemap之间的区别">#</a></h3>
+<p>相同点：他们都是以键值对形式存储数据，方法使用基本相同</p>
+<p>不同点：</p>
+<p>1.HashMap允许有null键和null值（但是必须保持键的唯一性）TreeMap不允许键为空</p>
+<p>2.TreeMap中的映射关系具有一定的顺序，它会帮助我们进行排序因此在添加、删除、定位映射关系时，效率较HashMap差</p>
+<p>3.HashMap数据结构基于哈希表，TreeMap数据结构基于树</p>
+<p>在实际使用时，建议都使用HashMap，除非需要排序的Map时才用TreeMap</p>
+<h2 id="异常捕获">异常捕获<a hidden class="anchor" aria-hidden="true" href="#异常捕获">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Java" data-lang="Java"><span class="line"><span class="cl"><span class="n">Java中的异常捕获和C</span><span class="err">#</span><span class="n">中使用基本一致</span><span class="w"> </span><span class="n">需要时直接使用即可</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">try</span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">//需要进行异常捕获的代码块</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">NullPointerException</span><span class="w"> </span><span class="n">ex</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">//ex.getMessage()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">//捕获异常信息</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">ArrayIndexOutOfBoundsException</span><span class="w"> </span><span class="n">ex</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">//ex.getMessage()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">//捕获异常信息</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">ex</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">//ex.getMessage()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">//捕获异常信息</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">finally</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">//不管之前的代码块是否发生异常</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">//finally中的内容都将执行</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">//注意：以下几种情况下finally中内容不会执行</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">//1.finally 语句块中发生异常</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">//2.在finally之前执行了System.exit()退出程序</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">//3.程序所在的线程销毁</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">//4.关闭CPU</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Java中的常见异常类</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//NullPointerException:空指针异常</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//IOException:输入输出异常</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//FileNotFoundException:文件为找到异常</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//ArrayIndexOutOfBoundsException:数组越界异常</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//NegativeArraySizeException:数组元素个数为负数抛出异常</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//ClassCastException:类型转化异常</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//ArithmeticException:算数异常</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//ArrayStoreException:数组包含不兼容的值抛出的异常</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//ClassNotFoundException:未找到相应类异常</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//等等</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Java中自定义异常</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//继承Exception异常基类</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//实现一个有参构造函数</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//通过throw关键字自己抛出异常对象</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">try</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">3</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">0</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">MyException</span><span class="w"> </span><span class="n">ex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">MyException</span><span class="p">(</span><span class="s">&#34;数组容量不合法&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">ex</span><span class="p">.</span><span class="na">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">throw</span><span class="w"> </span><span class="n">ex</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">ints</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">MyException</span><span class="w"> </span><span class="n">ex</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">ex</span><span class="p">.</span><span class="na">getMessage</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&#34;；数组容量为：&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ex</span><span class="p">.</span><span class="na">i</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">finally</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;异常捕获结束&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">方法中抛出异常</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//如果某个方法可能发生异常，但是又不想再方法内处理这个异常</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//想在调用这个方法的外部进行处理</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//可以使用throws关键字在声明方法时抛出可能的异常</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//多个异常可以使用逗号分割</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//那么外部调用该方法时，发生对应异常时即可进行处理</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//注意：</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//继承时，覆盖有抛异常的方法时，该方法必须抛出相同的异常或者异常的子类</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//如果父类中方法抛出多个异常，那么子类的覆盖方法必须抛出那些异常的子集，不能抛出新异常</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">try</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Test</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">NegativeArraySizeException</span><span class="w"> </span><span class="n">ex</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;容量为负了&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">ArrayIndexOutOfBoundsException</span><span class="w"> </span><span class="n">ex</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;索引越界&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="lambda表达式">lambda表达式<a hidden class="anchor" aria-hidden="true" href="#lambda表达式">#</a></h2>
+<p><strong>Java中的lambda表达式和C#中区别很大</strong></p>
+<p><strong>Java中没有委托和事件</strong></p>
+<p><strong>只有通过函数式接口来存储lambda表达式来进行使用</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Java" data-lang="Java"><span class="line"><span class="cl"><span class="n">Java中</span><span class="w"> </span><span class="n">lambda表达式语法</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//基本结构：</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//(参数)-&gt;{代码块}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//基于基本结构的写法：</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//1. ()-&gt;{代码块}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//2. ()-&gt;结果表达式（相当于返回值）;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//3. (参数)-&gt;{代码块}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//4. 参数-&gt;{代码块}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//5. 参数-&gt;结果表达式（相当于返回值）;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//6. (参数1,参数2,参数3...)-&gt;{代码块}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//7. (参数1,参数2,参数3...)-&gt;结果表达式（相当于返回值）;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">用于装载lambda表达式的函数式接口</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//函数式接口指仅仅包含一个抽象方法的接口</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//声明函数式接口后，我们可以用以下语法来使用lambda表达式</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//接口名 变量名 = lambda表达式</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//注意：</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//lambda表达式的结构必须和函数式接口中声明的方法一致（返回值，参数数量）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">ITest</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">()</span><span class="o">-&gt;</span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">1</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">i2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">2</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">i2</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">};</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">t</span><span class="p">.</span><span class="na">Test</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">ITest2</span><span class="w"> </span><span class="n">t2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span><span class="o">-&gt;</span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">a</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">b</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">};</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">t2</span><span class="p">.</span><span class="na">Test</span><span class="p">(</span><span class="n">10</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;123&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kt">int</span><span class="w"> </span><span class="n">value1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">10</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">lambda表达式调用外部变量</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//1.无法更改局部变量的值</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">//2.可以更改外部类的成员变量的值</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">()</span><span class="o">-&gt;</span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">value2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">100</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">value2</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">};</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">t</span><span class="p">.</span><span class="na">Test</span><span class="p">());</span><span class="w">
+</span></span></span></code></pre></div><h2 id="java常用类库">Java常用类库<a hidden class="anchor" aria-hidden="true" href="#java常用类库">#</a></h2>
+<h3 id="常用类库指什么">常用类库指什么？<a hidden class="anchor" aria-hidden="true" href="#常用类库指什么">#</a></h3>
+<p>常用类库主要指Java中为了提升我们的开发效率</p>
+<p>预先就已经写好的一些包，这些包中提供了很多常用类</p>
+<p>目的是方便开发人员的使用，而无需再自己去实现</p>
+<p>主要有以下内容</p>
+<p>1.变量类型的包装类 Integer、Double、Boolean、Character、Number等</p>
+<p>2.存储较大数据的 BigInteger类和BigDecimal类</p>
+<p>3.数学计算类 Math</p>
+<p>4.随机数类 Random</p>
+<p>等等</p>
+<p>本节课，我主要给大家指明方向，由于这些知识只是API的使用</p>
+<p>所以对于这些类的常用方法我只会提及，不会举例</p>
+<p>了解他们提供的方法名，基本就知道如何使用了</p>
+<h3 id="变量的包装类">变量的包装类<a hidden class="anchor" aria-hidden="true" href="#变量的包装类">#</a></h3>
+<h4 id="number类">Number类<a hidden class="anchor" aria-hidden="true" href="#number类">#</a></h4>
+<p>它是Byte Integer Short Long Float Double类的父类</p>
+<p>主要方法：</p>
+<p>byteValue()  以byte形式返回指定的数值</p>
+<p>intValue()   以int形式返回指定的数值</p>
+<p>floatValue() 以float形式返回指定的数值</p>
+<p>shortValue() 以short形式返回指定的数值</p>
+<p>longValue()  以long形式返回指定的数值</p>
+<p>doubleValue()  以double形式返回指定的数值</p>
+<p>所有继承Number类的子类都具备以上方法</p>
+<h4 id="integer类">Integer类<a hidden class="anchor" aria-hidden="true" href="#integer类">#</a></h4>
+<p>它和Byte、Short、Long三个封装类方法基本相同</p>
+<p>区别就是封装的是不同的数据类型</p>
+<p>主要方法：</p>
+<p>parseInt(String str)                  将字符串转数值</p>
+<p>toString()                            将数值转字符串</p>
+<p>toBinaryString(int i)                 以二进制无符号整数形式返回一个整数参数的字符串表示形式</p>
+<p>toHexString(int i)                    以十六进制无符号整数形式返回一个整数参数的字符串表示形式</p>
+<p>toOctalString(int i)                  以八进制无符号整数形式返回一个整数参数的字符串表示形式</p>
+<p>equals(Object integerObj)             比较两个对象是否相等</p>
+<p>compareTo(Integer anotherInteger)     比较两个Integer对象，相等返回0；调用函数对象小于传入对象，返回负数；反之，返回正数</p>
+<h4 id="double类">Double类<a hidden class="anchor" aria-hidden="true" href="#double类">#</a></h4>
+<p>它和Float类的方法基本相同</p>
+<p>区别就是封装的是不同的数据类型</p>
+<p>主要方法：</p>
+<p>parseDouble(String str)               将字符串转数值</p>
+<p>toString()                            将数值转字符串</p>
+<p>isNaN()                               如果该double值不是数字，返回true，否则返回false</p>
+<p>compareTo(Double d)                   和Integer类中方法作用一致</p>
+<p>equals(Object doubleObj)              和Integer类中方法作用一致</p>
+<p>toHexString(double d)                 返回double参数的十六进制字符串表示形式</p>
+<h4 id="boolean类">Boolean类<a hidden class="anchor" aria-hidden="true" href="#boolean类">#</a></h4>
+<p>equals(Object obj)                    和Integer类中方法作用一致</p>
+<p>parseBoolean(String s)                将字符串转Boolean</p>
+<p>toString()                            将数值转字符串</p>
+<p>valueOf(String s)                     返回一个用指定的字符串表示的boolean值</p>
+<h4 id="character类">Character类<a hidden class="anchor" aria-hidden="true" href="#character类">#</a></h4>
+<p>compareTo(Character anotherCharacter) 比较两个Character对象，若两个对象相等则返回0</p>
+<p>equals(Object obj)                    和Integer类中方法作用一致</p>
+<p>toString()                            转字符串</p>
+<p>toUpperCase(char ch)                  将字符转大写</p>
+<p>toLowerCase(char ch)                  将字符转小写</p>
+<p>isUpperCase(char ch)                  判断字符是否是大写</p>
+<p>isLowerCase(char ch)                  判断字符是否是小写</p>
+<p>isLetter(char ch)                     判断字符是否是字母</p>
+<p>isDigit(char ch)                      判断字符是否为数字</p>
+<h3 id="大数据类">大数据类<a hidden class="anchor" aria-hidden="true" href="#大数据类">#</a></h3>
+<h4 id="biginteger">BigInteger<a hidden class="anchor" aria-hidden="true" href="#biginteger">#</a></h4>
+<p>该类主要用于存储任意大小的整数，也就是说它可以表示任何大小的整数值而不会丢失信息</p>
+<p>因为传统的整形类型都有最大最小区间，而该类没有，主要用于存储大数据</p>
+<p>主要方法：</p>
+<p>add(BigInteger val)               加法</p>
+<p>subtract(BigInteger val)          减法</p>
+<p>multiply(BigInteger val)          乘法</p>
+<p>divide(BigInteger val)            除法</p>
+<p>remainder(BigInteger val)         取余</p>
+<p>pow(int exponent)                 计算exponent次方</p>
+<p>negate()                          取反</p>
+<p>shiftLeft(int n)                  左移n位</p>
+<p>shiftRight(int n)                 右移n位</p>
+<p>and(BigInterger val)              位与</p>
+<p>or(BigInteger val)                位或</p>
+<p>compareTo(BigInteger val)         比较，类似Integer中</p>
+<p>equals(Object x)                  判断数值是否相等</p>
+<p>min(BigInteger val)               取最小</p>
+<p>max(BigInteger val)               取最大、</p>
+<h4 id="bigdecimal">BigDecimal<a hidden class="anchor" aria-hidden="true" href="#bigdecimal">#</a></h4>
+<p>该类和BigInteger用于表示大数据，但是它主要用于表示浮点数（有小数点的数值）</p>
+<p>它的主要方法和BigInteger类似</p>
+<h3 id="数学计算类">数学计算类<a hidden class="anchor" aria-hidden="true" href="#数学计算类">#</a></h3>
+<h4 id="math类">Math类<a hidden class="anchor" aria-hidden="true" href="#math类">#</a></h4>
+<p>提供众多数学函数方法，方便我们进行数学计算</p>
+<p>主要包含三角函数、指数函数、取整函数、最大值、最小值、平均值等等</p>
+<p>这些方法都是静态方法，都通过Math点出使用</p>
+<p>主要方法：</p>
+<p>三角函数</p>
+<p>sin(double a)                         正弦</p>
+<p>cos(double a)                         余弦</p>
+<p>tan(double a)                         正切</p>
+<p>asin(double a)                        反正弦</p>
+<p>acos(double a)                        反余弦</p>
+<p>atan(double a)                        反正切</p>
+<p>toRadians(double angdeg)              角度转弧度</p>
+<p>toDegrees(double angrad)              弧度转角度</p>
+<p>指数</p>
+<p>exp(double a)                         获取e的a次方</p>
+<p>log(double a)                         取自然对数</p>
+<p>log10(double a)                       取底数为10的a的对数</p>
+<p>sqrt(double a)                        取a的平方根</p>
+<p>cbrt(double a)                        取a的立方根</p>
+<p>pow(double a, double b)               取a的b次方</p>
+<p>取整</p>
+<p>ceil(double a)                        向上取整</p>
+<p>floor(double a)                       向下取整</p>
+<p>rint(double a)                        返回与a最接近的整数，如果有两个，取偶数</p>
+<p>round(float a)                        将参数a加上0.5后返回与其最近的整数</p>
+<p>rount(double a)                       将参数a加上0.5后返回与其最近的整数，然后强转为Long</p>
+<p>其他</p>
+<p>max(参数1，参数2)                      最大值</p>
+<p>min(参数1，参数2)                      最小值</p>
+<p>abs(参数)                             绝对值</p>
+<h3 id="随机数类">随机数类<a hidden class="anchor" aria-hidden="true" href="#随机数类">#</a></h3>
+<p>Random</p>
+<p>用于生成随机数的类</p>
+<p>主要方法：</p>
+<p>Random r = new Random();              以当前系统时间作为随机数生成器种子</p>
+<p>Random r = new Random(seedValue);     自己设置随机数种子</p>
+<p>nextInt()                             返回一个随机整数</p>
+<p>nextInt(int n)                        返回大于等于0且小于n的随机整数</p>
+<p>nextLong()                            返回一个随机长整型</p>
+<p>nextBoolean()                         返回一个随机布尔值</p>
+<p>nextFloat()                           返回一个随机单精度浮点</p>
+<p>nextDouble()                          返回一个随机双精度浮点</p>
+<p>nextGaussian()                        返回一个概率密度为高斯分步的双精度浮点</p>
+<h3 id="其他类">其他类<a hidden class="anchor" aria-hidden="true" href="#其他类">#</a></h3>
+<p>Data：日期类 获取日期时间相关方法</p>
+<p>Calendar：日历类 比起Date更加国际化</p>
+<p>System:系统类 有获取当前时间的方法</p>
+<p>等等</p>
+<p>总结</p>
+<p>Java中提供了很多现成的类和方法供我们使用，对他们产生印象，当自己开发时有类似需求时，直接使用他们，可以提升我们的开发效率</p>
+<p>因为无需我们自己去实现对应逻辑，直接使用即可</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/unity/">Unity</a></li>
+      <li><a href="http://localhost:1313/tags/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0/">移动平台</a></li>
+      <li><a href="http://localhost:1313/tags/android/">Android</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/%E8%AF%AD%E6%B3%95/c-linq/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>C# LINQ</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/unity/unity-%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E7%9B%B8%E5%85%B3android/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Unity-移动平台相关Android</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-移动平台相关Java语法 on x"
+            href="https://x.com/intent/tweet/?text=Unity-%e7%a7%bb%e5%8a%a8%e5%b9%b3%e5%8f%b0%e7%9b%b8%e5%85%b3Java%e8%af%ad%e6%b3%95&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E7%25A7%25BB%25E5%258A%25A8%25E5%25B9%25B3%25E5%258F%25B0%25E7%259B%25B8%25E5%2585%25B3java%25E8%25AF%25AD%25E6%25B3%2595%2f&amp;hashtags=Unity%2c%e7%a7%bb%e5%8a%a8%e5%b9%b3%e5%8f%b0%2cAndroid">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-移动平台相关Java语法 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E7%25A7%25BB%25E5%258A%25A8%25E5%25B9%25B3%25E5%258F%25B0%25E7%259B%25B8%25E5%2585%25B3java%25E8%25AF%25AD%25E6%25B3%2595%2f&amp;title=Unity-%e7%a7%bb%e5%8a%a8%e5%b9%b3%e5%8f%b0%e7%9b%b8%e5%85%b3Java%e8%af%ad%e6%b3%95&amp;summary=Unity-%e7%a7%bb%e5%8a%a8%e5%b9%b3%e5%8f%b0%e7%9b%b8%e5%85%b3Java%e8%af%ad%e6%b3%95&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E7%25A7%25BB%25E5%258A%25A8%25E5%25B9%25B3%25E5%258F%25B0%25E7%259B%25B8%25E5%2585%25B3java%25E8%25AF%25AD%25E6%25B3%2595%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-移动平台相关Java语法 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E7%25A7%25BB%25E5%258A%25A8%25E5%25B9%25B3%25E5%258F%25B0%25E7%259B%25B8%25E5%2585%25B3java%25E8%25AF%25AD%25E6%25B3%2595%2f&title=Unity-%e7%a7%bb%e5%8a%a8%e5%b9%b3%e5%8f%b0%e7%9b%b8%e5%85%b3Java%e8%af%ad%e6%b3%95">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-移动平台相关Java语法 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E7%25A7%25BB%25E5%258A%25A8%25E5%25B9%25B3%25E5%258F%25B0%25E7%259B%25B8%25E5%2585%25B3java%25E8%25AF%25AD%25E6%25B3%2595%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-移动平台相关Java语法 on whatsapp"
+            href="https://api.whatsapp.com/send?text=Unity-%e7%a7%bb%e5%8a%a8%e5%b9%b3%e5%8f%b0%e7%9b%b8%e5%85%b3Java%e8%af%ad%e6%b3%95%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E7%25A7%25BB%25E5%258A%25A8%25E5%25B9%25B3%25E5%258F%25B0%25E7%259B%25B8%25E5%2585%25B3java%25E8%25AF%25AD%25E6%25B3%2595%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-移动平台相关Java语法 on telegram"
+            href="https://telegram.me/share/url?text=Unity-%e7%a7%bb%e5%8a%a8%e5%b9%b3%e5%8f%b0%e7%9b%b8%e5%85%b3Java%e8%af%ad%e6%b3%95&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E7%25A7%25BB%25E5%258A%25A8%25E5%25B9%25B3%25E5%258F%25B0%25E7%259B%25B8%25E5%2585%25B3java%25E8%25AF%25AD%25E6%25B3%2595%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-移动平台相关Java语法 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=Unity-%e7%a7%bb%e5%8a%a8%e5%b9%b3%e5%8f%b0%e7%9b%b8%e5%85%b3Java%e8%af%ad%e6%b3%95&u=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E7%25A7%25BB%25E5%258A%25A8%25E5%25B9%25B3%25E5%258F%25B0%25E7%259B%25B8%25E5%2585%25B3java%25E8%25AF%25AD%25E6%25B3%2595%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">LiuYingbo Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

@@ -6,13 +6,27 @@
     <description>Recent content in Categories on LiuYingbo Blog</description>
     <generator>Hugo -- 0.155.2</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 24 Nov 2022 22:49:16 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 08 Feb 2026 22:48:15 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/categories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Unity</title>
+      <link>http://localhost:1313/categories/unity/</link>
+      <pubDate>Sun, 08 Feb 2026 22:48:15 +0800</pubDate>
+      <guid>http://localhost:1313/categories/unity/</guid>
+      <description></description>
+    </item>
     <item>
       <title>C#</title>
       <link>http://localhost:1313/categories/c%23/</link>
       <pubDate>Thu, 24 Nov 2022 22:49:16 +0000</pubDate>
       <guid>http://localhost:1313/categories/c%23/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>数据结构与算法</title>
+      <link>http://localhost:1313/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/</link>
+      <pubDate>Fri, 25 Feb 2022 12:41:43 +0800</pubDate>
+      <guid>http://localhost:1313/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/</guid>
       <description></description>
     </item>
     <item>

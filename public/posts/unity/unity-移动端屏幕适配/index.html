@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Unity-移动端屏幕适配 | LiuYingbo Blog</title>
+<meta name="keywords" content="Unity, 移动平台, Android">
+<meta name="description" content="开始之前的重要信息
+本教程的标签之⼀是初学者，但这不是完全初学者的教程。
+虽然您不必是专业的 C# 编码⼈员，但我希望您熟悉 C#，以便您可以根据⾃⼰的需要编辑脚本。
+如何修复不同屏幕尺⼨的差距
+移动游戏开发的⼀个⼤问题是游戏中的空⽩空间和资产之间的差距。在⼤多数情况下，这是游戏背景和空⽩区域的问题。
+例如，让我们看⼀下这个场景：
+
+如您所⻅，这是“游戏”选项卡的屏幕截图，该场景使⽤的参考分辨率是全⾼清，例如
+1920×1080。
+从上图中我们可以看到设置没有任何问题，⼀切都在它应该在的地⽅。但是，这是 Unity
+编辑器的预览，让我们来看看游戏在真实设备上的样⼦。
+这是在分辨率为 1920×1080 的 iPhone 6 Plus 上预览游戏的效果：
+
+这是游戏在分辨率为 1334×750 的 iPhone 7 上的样⼦：
+
+这是游戏在分辨率为 1280×720 的三星 Galaxy A5 上的样⼦：
+
+如您所⻅，我们的游戏在 Unity 编辑器和上述设备上看起来是⼀样的。这⾥的问题是我们只在分辨率为1920×1080或以下的设备上测试了游戏，让我们来看看我们的游戏在分辨率更⾼的设备上的表现。
+这是游戏在分辨率为 2436×1125 的 iPhone 11 Pro 上的样⼦：
+
+⻢上，您会注意到⼿机的左右两侧有缝隙。背景不够⻓，⽆法填补这些空⽩，这就是为什么您会看到空⽩区域或 Unity 相机的蓝⾊。
+接下来，这就是游戏在分辨率为 3120×1440 的华为 Mate 20 Pro 上的样⼦：
+
+这就是游戏在分辨率为 3040×1440 的三星 Galaxy Note 10&#43; 上的样⼦：
+
+我们在 iPhone 11 Pro 上遇到了同样的问题，在华为 Mate 20 Pro 和三星 Galaxy Note 10&#43; 上也遇到了同样的问题。当然，在其他⼿机上我们也会遇到同样的问题。">
+<meta name="author" content="LiuYingbo">
+<link rel="canonical" href="http://localhost:1313/posts/unity/unity-%E7%A7%BB%E5%8A%A8%E7%AB%AF%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.a29c24210eb31d9ce56f669c66a35c9c51b17376b7764e336a49af7dec914cf0.css" integrity="sha256-opwkIQ6zHZzlb2acZqNcnFGxc3a3dk4zakmvfeyRTPA=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/unity/unity-%E7%A7%BB%E5%8A%A8%E7%AB%AF%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="LiuYingbo Blog (Alt + H)">LiuYingbo Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/categories/" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives/" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">Home</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Unity-移动端屏幕适配
+      <span class="entry-hint" title="Draft">
+        <svg xmlns="http://www.w3.org/2000/svg" height="35" viewBox="0 -960 960 960" fill="currentColor">
+          <path
+            d="M160-410v-60h300v60H160Zm0-165v-60h470v60H160Zm0-165v-60h470v60H160Zm360 580v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q9 9 13 20t4 22q0 11-4.5 22.5T862.09-380L643-160H520Zm300-263-37-37 37 37ZM580-220h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
+        </svg>
+      </span>
+    </h1>
+    <div class="post-meta"><span>5 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span>
+
+</div>
+  </header> 
+<figure class="entry-cover">
+        <img loading="eager" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242151718.jpg" alt="">
+        
+</figure><div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%bc%80%e5%a7%8b%e4%b9%8b%e5%89%8d%e7%9a%84%e9%87%8d%e8%a6%81%e4%bf%a1%e6%81%af" aria-label="开始之前的重要信息">开始之前的重要信息</a></li>
+                <li>
+                    <a href="#%e5%a6%82%e4%bd%95%e4%bf%ae%e5%a4%8d%e4%b8%8d%e5%90%8c%e5%b1%8f%e5%b9%95%e5%b0%ba%e7%9a%84%e5%b7%ae%e8%b7%9d" aria-label="如何修复不同屏幕尺⼨的差距">如何修复不同屏幕尺⼨的差距</a></li>
+                <li>
+                    <a href="#%e7%bc%a9%e6%94%be%e8%83%8c%e6%99%af%e4%bb%a5%e9%80%82%e5%90%88%e6%89%80%e6%9c%89%e5%b1%8f%e5%b9%95%e5%b0%ba" aria-label="缩放背景以适合所有屏幕尺⼨">缩放背景以适合所有屏幕尺⼨</a></li>
+                <li>
+                    <a href="#%e6%88%91%e7%9a%84%e6%b8%b8%e6%88%8f%e5%af%b9%e8%b1%a1%e5%9c%a8%e5%93%aa" aria-label="我的游戏对象在哪⾥？">我的游戏对象在哪⾥？</a></li>
+                <li>
+                    <a href="#%e5%9c%a8%e5%b1%8f%e5%b9%95%e4%b8%8a%e9%94%9a%e5%ae%9a%e6%b8%b8%e6%88%8f%e5%af%b9%e8%b1%a1" aria-label="在屏幕上锚定游戏对象">在屏幕上锚定游戏对象</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h1 id="开始之前的重要信息">开始之前的重要信息<a hidden class="anchor" aria-hidden="true" href="#开始之前的重要信息">#</a></h1>
+<p>本教程的标签之⼀是初学者，但这不是完全初学者的教程。</p>
+<p>虽然您不必是专业的 C# 编码⼈员，但我希望您熟悉 C#，以便您可以根据⾃⼰的需要编辑脚本。</p>
+<h1 id="如何修复不同屏幕尺的差距">如何修复不同屏幕尺⼨的差距<a hidden class="anchor" aria-hidden="true" href="#如何修复不同屏幕尺的差距">#</a></h1>
+<p>移动游戏开发的⼀个⼤问题是游戏中的空⽩空间和资产之间的差距。在⼤多数情况下，这是游戏背景和空⽩区域的问题。</p>
+<p>例如，让我们看⼀下这个场景：</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202301301902387.jpg"></p>
+<p>如您所⻅，这是“游戏”选项卡的屏幕截图，该场景使⽤的参考分辨率是全⾼清，例如</p>
+<p>1920×1080。</p>
+<p>从上图中我们可以看到设置没有任何问题，⼀切都在它应该在的地⽅。但是，这是 Unity</p>
+<p>编辑器的预览，让我们来看看游戏在真实设备上的样⼦。</p>
+<p>这是在分辨率为 1920×1080 的 iPhone 6 Plus 上预览游戏的效果：</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202301301902958.jpg"></p>
+<p>这是游戏在分辨率为 1334×750 的 iPhone 7 上的样⼦：</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202301301902310.jpg"></p>
+<p>这是游戏在分辨率为 1280×720 的三星 Galaxy A5 上的样⼦：</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202301301903830.jpg"></p>
+<p>如您所⻅，我们的游戏在 Unity 编辑器和上述设备上看起来是⼀样的。这⾥的问题是我们只在分辨率为1920×1080或以下的设备上测试了游戏，让我们来看看我们的游戏在分辨率更⾼的设备上的表现。</p>
+<p>这是游戏在分辨率为 2436×1125 的 iPhone 11 Pro 上的样⼦：</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202301301903901.jpg"></p>
+<p>⻢上，您会注意到⼿机的左右两侧有缝隙。背景不够⻓，⽆法填补这些空⽩，这就是为什么您会看到空⽩区域或 Unity 相机的蓝⾊。</p>
+<p>接下来，这就是游戏在分辨率为 3120×1440 的华为 Mate 20 Pro 上的样⼦：</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202301301903242.jpg"></p>
+<p>这就是游戏在分辨率为 3040×1440 的三星 Galaxy Note 10+ 上的样⼦：</p>
+<p><img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202301301903136.jpg"></p>
+<p>我们在 iPhone 11 Pro 上遇到了同样的问题，在华为 Mate 20 Pro 和三星 Galaxy Note 10+ 上也遇到了同样的问题。当然，在其他⼿机上我们也会遇到同样的问题。</p>
+<p>那么解决⽅法是什么？</p>
+<h1 id="缩放背景以适合所有屏幕尺">缩放背景以适合所有屏幕尺⼨<a hidden class="anchor" aria-hidden="true" href="#缩放背景以适合所有屏幕尺">#</a></h1>
+<p>正如我在本文开头所说的那样，在创建移动游戏时，最困难的任务是让您的游戏在所有屏幕尺⼨上看起来都⼀样。</p>
+<p>因为有如此多的设备具有不同的屏幕尺⼨和纵横比，所以很难让您的游戏在所有这些屏幕和纵横比上看起来都⼀样，但当然，解决这个问题并非不可能。</p>
+<p>我们解决此问题的⽅法之⼀是使⽤⼀个脚本，该脚本将根据设备的屏幕宽度和⾼度缩放背景：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="k">class</span> <span class="nc">ScaleToFitScreen</span> <span class="p">:</span> <span class="n">MonoBehaviour</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">SpriteRenderer</span> <span class="n">sr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="k">void</span> <span class="n">Start</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">sr</span> <span class="p">=</span> <span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">SpriteRenderer</span><span class="p">&gt;();</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// world height is always camera&#39;s orthographicSize * 2</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">float</span> <span class="n">worldScreenHeight</span> <span class="p">=</span> <span class="n">Camera</span><span class="p">.</span><span class="n">main</span><span class="p">.</span><span class="n">orthographicSize</span> <span class="p">*</span> <span class="m">2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// world width is calculated by diving world height with screen heigh</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// then multiplying it with screen width</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">float</span> <span class="n">worldScreenWidth</span> <span class="p">=</span> <span class="n">worldScreenHeight</span> <span class="p">/</span> <span class="n">Screen</span><span class="p">.</span><span class="n">height</span> <span class="p">*</span> <span class="n">Screen</span><span class="p">.</span><span class="n">width</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// to scale the game object we divide the world screen width with the</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// size x of the sprite, and we divide the world screen height with the</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// size y of the sprite</span>
+</span></span><span class="line"><span class="cl">        <span class="n">transform</span><span class="p">.</span><span class="n">localScale</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Vector3</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl"> <span class="p">}</span> <span class="c1">// class</span>
+</span></span></code></pre></div><p>要了解脚本在做什么，我们需要了解屏幕宽度和⾼度以及世界宽度和⾼度之间的差异。</p>
+<p>当我们使⽤ Screen.width 或 Screen.height 时，我们会得到设备屏幕的宽度和⾼度信息。因此，如果游戏在分辨率为 1920×1080 的设备上运⾏，Screen.width 将返回 1920， Screen.height 将返回 1080。</p>
+<p>但是，如果您尝试将这些数字⽤作游戏中精灵的比例值，那么精灵看起来会很奇怪，因为它会异常调整⼤⼩。</p>
+<p>所以我们需要做的是将屏幕分辨率的宽度和⾼度值转换为 Unity 的屏幕宽度和⾼度的单位值。我们在上述课程的第 12 ⾏和第 16 ⾏执⾏的计算就是这样做的。</p>
+<p>要使此脚本起作⽤，您需要将其附加到场景中的背景游戏对象。让我们来看看我们的游戏现在在我们在第⼀次初始测试中有差距的相同设备上的样⼦，从分辨率为 2436×1125 的</p>
+<p>iPhone 11 Pro 开始：</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202301301901158.jpg"></p>
+<p>您会注意到我们两侧的蓝⾊间隙现在消失了，因为背景正在缩放以适应设备的屏幕尺⼨，同时保持像素清晰的分辨率。</p>
+<p>现在让我们看看我们的游戏在分辨率为3120×1440的华为Mate 20 Pro上的效果：</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202301301907790.jpg"></p>
+<p>同样，我们⼀开始的差距现在已经消失了。最后，这是我们的游戏在分辨率为</p>
+<p>3040×1440 的三星 Galaxy Note 10+ 上的样⼦：</p>
+<p><a href="https://awesometuts.com/wp-content/uploads/2021/11/Img-10.jpg.webp"><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202301301901230.jpg"></a></p>
+<p>不出所料，我们之前的差距现在已经消失了。但是，我们现在有⼀个不同的问题。</p>
+<h1 id="我的游戏对象在哪">我的游戏对象在哪⾥？<a hidden class="anchor" aria-hidden="true" href="#我的游戏对象在哪">#</a></h1>
+<p>为了说明我们现在遇到的问题，我将使⽤ 3040×1440 作为参考分辨率重新设计游戏。</p>
+<p>当我说重新设计游戏时，我的意思是我将使⽤上述分辨率作为参考分辨率来安排游戏中的游戏元素。</p>
+<p>这是游戏现在在“游戏”选项卡预览中的样⼦：</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202301301907490.jpg"></p>
+<p>如果我们在分辨率为 3040×1440 的 Samsung Galaxy Note 10+ 上运⾏游戏，我们将看不到游戏有什么不同：</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202301301907241.jpg"></p>
+<p>但是如果我们在分辨率较低的设备上运⾏游戏会发⽣什么，比如 iPhone 6 Plus，分辨率为 1920×1080？</p>
+<p>好吧，让我们测试⼀下，看看结果：</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202301301908509.jpg"></p>
+<p>现在你会注意到侧⾯的游戏元素被剪掉了。您可以在左侧部分看到⼀个游戏元素，⽽在右侧您⼏乎看不到另⼀个游戏元素剩下的部分：</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202301301908772.jpg"></p>
+<p>这就是为什么你不能只使⽤参考分辨率设计你的游戏并保持原样，因为⼀旦你的游戏在比你设计游戏的分辨率更⾼或更低的分辨率下玩，⼀些游戏元素就会被从屏幕上切掉，有时屏幕的两侧会有空隙，正如我们在⽬前的⽰例中看到的那样。</p>
+<p>那么解决⽅法是什么？</p>
+<h1 id="在屏幕上锚定游戏对象">在屏幕上锚定游戏对象<a hidden class="anchor" aria-hidden="true" href="#在屏幕上锚定游戏对象">#</a></h1>
+<p>正如您可以假设的那样，与我们解决背景差距问题的⽅式相同，我们将解决我们游戏元素的锚定问题，那就是使⽤⼀个脚本，具体来说是使⽤两个脚本。</p>
+<p>第⼀个脚本称为 CameraViewportHandler：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="na">[ExecuteInEditMode]</span>
+</span></span><span class="line"><span class="cl"><span class="na">[RequireComponent(typeof(Camera))]</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="k">class</span> <span class="nc">CameraViewportHandler</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span> 
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kd">enum</span> <span class="n">Constraint</span> <span class="p">{</span> <span class="n">Landscape</span><span class="p">,</span> <span class="n">Portrait</span> <span class="p">}</span> 
+</span></span><span class="line"><span class="cl">    <span class="cp">#region</span> <span class="n">FIELDS</span> 
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">Color</span> <span class="n">wireColor</span> <span class="p">=</span> <span class="n">Color</span><span class="p">.</span><span class="n">white</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">float</span> <span class="n">UnitsSize</span> <span class="p">=</span> <span class="m">1</span><span class="p">;</span> <span class="c1">// size of your scene in unity units</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">Constraint</span> <span class="n">constraint</span> <span class="p">=</span> <span class="n">Constraint</span><span class="p">.</span><span class="n">Portrait</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kd">static</span> <span class="n">CameraViewportHandler</span> <span class="n">Instance</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="k">new</span> <span class="n">Camera</span> <span class="n">camera</span><span class="p">;</span> <span class="kd">public</span> <span class="kt">bool</span> <span class="n">executeInUpdate</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kt">float</span> <span class="n">_width</span><span class="p">;</span> <span class="kd">private</span> <span class="kt">float</span> <span class="n">_height</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">    <span class="c1">//*** bottom screen private Vector3 _bl;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">Vector3</span> <span class="n">_bc</span><span class="p">;</span> <span class="kd">private</span> <span class="n">Vector3</span> <span class="n">_br</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="cs">////*** middle screen private Vector3 _ml;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">Vector3</span> <span class="n">_mc</span><span class="p">;</span> <span class="kd">private</span> <span class="n">Vector3</span> <span class="n">_mr</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">    <span class="c1">//*** top screen private Vector3 _tl;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">Vector3</span> <span class="n">_tc</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">Vector3</span> <span class="n">_tr</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">    <span class="cp">#endregion</span>
+</span></span><span class="line"><span class="cl">    <span class="cp">#region</span> <span class="n">PROPERTIES</span> 
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">float</span> <span class="n">Width</span> <span class="p">{</span> <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_width</span><span class="p">;</span> <span class="p">}</span> <span class="p">}</span> 
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">float</span> <span class="n">Height</span> <span class="p">{</span> <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_height</span><span class="p">;</span> <span class="p">}</span> <span class="p">}</span> <span class="c1">// helper points:</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">Vector3</span> <span class="n">BottomLeft</span> <span class="p">{</span> <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_bl</span><span class="p">;</span> <span class="p">}</span> <span class="p">}</span> 
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">Vector3</span> <span class="n">BottomCenter</span> <span class="p">{</span> <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_bc</span><span class="p">;</span> <span class="p">}</span> <span class="p">}</span> 
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">Vector3</span> <span class="n">BottomRight</span> <span class="p">{</span> <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_br</span><span class="p">;</span> <span class="p">}</span> <span class="p">}</span> 
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">Vector3</span> <span class="n">MiddleLeft</span> <span class="p">{</span> <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_ml</span><span class="p">;</span> <span class="p">}</span> <span class="p">}</span> 
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">Vector3</span> <span class="n">MiddleCenter</span> <span class="p">{</span> <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_mc</span><span class="p">;</span> <span class="p">}</span> <span class="p">}</span> 
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">Vector3</span> <span class="n">MiddleRight</span> <span class="p">{</span> <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_mr</span><span class="p">;</span> <span class="p">}</span> <span class="p">}</span> 
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">Vector3</span> <span class="n">TopLeft</span> <span class="p">{</span> <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_tl</span><span class="p">;</span> <span class="p">}</span> <span class="p">}</span> 
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">Vector3</span> <span class="n">TopCenter</span> <span class="p">{</span> <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_tc</span><span class="p">;</span> <span class="p">}</span> <span class="p">}</span> 
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">Vector3</span> <span class="n">TopRight</span> <span class="p">{</span> <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_tr</span><span class="p">;</span> <span class="p">}</span> <span class="p">}</span> 
+</span></span><span class="line"><span class="cl">    <span class="cp">#endregion</span>
+</span></span><span class="line"><span class="cl">    <span class="cp">#region</span> <span class="n">METHODS</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="k">void</span> <span class="n">Awake</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">camera</span> <span class="p">=</span> <span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">Camera</span><span class="p">&gt;();</span> <span class="n">Instance</span> <span class="p">=</span> <span class="k">this</span><span class="p">;</span> <span class="n">ComputeResolution</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> 
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="k">void</span> <span class="n">ComputeResolution</span><span class="p">()</span> 
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">float</span> <span class="n">leftX</span><span class="p">,</span> <span class="n">rightX</span><span class="p">,</span> <span class="n">topY</span><span class="p">,</span> <span class="n">bottomY</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">constraint</span> <span class="p">==</span> <span class="n">Constraint</span><span class="p">.</span><span class="n">Landscape</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">camera</span><span class="p">.</span><span class="n">orthographicSize</span> <span class="p">=</span> <span class="m">1f</span> <span class="p">/</span> <span class="n">camera</span><span class="p">.</span><span class="n">aspect</span> <span class="p">*</span> <span class="n">UnitsSize</span> <span class="p">/</span> <span class="m">2f</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">camera</span><span class="p">.</span><span class="n">orthographicSize</span> <span class="p">=</span> <span class="n">UnitsSize</span> <span class="p">/</span> <span class="m">2f</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span> 
+</span></span><span class="line"><span class="cl">        <span class="n">_height</span> <span class="p">=</span> <span class="m">2f</span> <span class="p">*</span> <span class="n">camera</span><span class="p">.</span><span class="n">orthographicSize</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">        <span class="n">_width</span> <span class="p">=</span> <span class="n">_height</span> <span class="p">*</span> <span class="n">camera</span><span class="p">.</span><span class="n">aspect</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">        <span class="kt">float</span> <span class="n">cameraX</span><span class="p">,</span> <span class="n">cameraY</span><span class="p">;</span> <span class="n">cameraX</span> <span class="p">=</span> <span class="n">camera</span><span class="p">.</span><span class="n">transform</span><span class="p">.</span><span class="n">position</span><span class="p">.</span><span class="n">x</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">        <span class="n">cameraY</span> <span class="p">=</span> <span class="n">camera</span><span class="p">.</span><span class="n">transform</span><span class="p">.</span><span class="n">position</span><span class="p">.</span><span class="n">y</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">        <span class="n">leftX</span> <span class="p">=</span> <span class="n">cameraX</span> <span class="p">-</span> <span class="n">_width</span> <span class="p">/</span> <span class="m">2</span><span class="p">;</span> <span class="n">rightX</span> <span class="p">=</span> <span class="n">cameraX</span> <span class="p">+</span> <span class="n">_width</span> <span class="p">/</span> <span class="m">2</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">        <span class="n">topY</span> <span class="p">=</span> <span class="n">cameraY</span> <span class="p">+</span> <span class="n">_height</span> <span class="p">/</span> <span class="m">2</span><span class="p">;</span> <span class="n">bottomY</span> <span class="p">=</span> <span class="n">cameraY</span> <span class="p">-</span> <span class="n">_height</span> <span class="p">/</span> <span class="m">2</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">        <span class="c1">//*** bottom</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_bl</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Vector3</span><span class="p">(</span><span class="n">leftX</span><span class="p">,</span> <span class="n">bottomY</span><span class="p">,</span> <span class="m">0</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl">        <span class="n">_bc</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Vector3</span><span class="p">(</span><span class="n">cameraX</span><span class="p">,</span> <span class="n">bottomY</span><span class="p">,</span> <span class="m">0</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl">        <span class="n">_br</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Vector3</span><span class="p">(</span><span class="n">rightX</span><span class="p">,</span> <span class="n">bottomY</span><span class="p">,</span> <span class="m">0</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl">        <span class="c1">//*** middle</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_ml</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Vector3</span><span class="p">(</span><span class="n">leftX</span><span class="p">,</span> <span class="n">cameraY</span><span class="p">,</span> <span class="m">0</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl">        <span class="n">_mc</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Vector3</span><span class="p">(</span><span class="n">cameraX</span><span class="p">,</span> <span class="n">cameraY</span><span class="p">,</span> <span class="m">0</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl">        <span class="n">_mr</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Vector3</span><span class="p">(</span><span class="n">rightX</span><span class="p">,</span> <span class="n">cameraY</span><span class="p">,</span> <span class="m">0</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl">        <span class="c1">//*** top</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_tl</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Vector3</span><span class="p">(</span><span class="n">leftX</span><span class="p">,</span> <span class="n">topY</span><span class="p">,</span> <span class="m">0</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl">        <span class="n">_tc</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Vector3</span><span class="p">(</span><span class="n">cameraX</span><span class="p">,</span> <span class="n">topY</span><span class="p">,</span> <span class="m">0</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl">        <span class="n">_tr</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Vector3</span><span class="p">(</span><span class="n">rightX</span><span class="p">,</span> <span class="n">topY</span><span class="p">,</span> <span class="m">0</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="k">void</span> <span class="n">Update</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl"><span class="cp">#if</span> <span class="n">UNITY_EDITOR</span> 
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="n">executeInUpdate</span><span class="p">)</span> <span class="n">ComputeResolution</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="cp">#endif</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">void</span> <span class="n">OnDrawGizmos</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Gizmos</span><span class="p">.</span><span class="n">color</span> <span class="p">=</span> <span class="n">wireColor</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">        <span class="n">Matrix4x4</span> <span class="n">temp</span> <span class="p">=</span> <span class="n">Gizmos</span><span class="p">.</span><span class="n">matrix</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">        <span class="n">Gizmos</span><span class="p">.</span><span class="n">matrix</span> <span class="p">=</span> <span class="n">Matrix4x4</span><span class="p">.</span><span class="n">TRS</span><span class="p">(</span><span class="n">transform</span><span class="p">.</span><span class="n">position</span><span class="p">,</span> <span class="n">transform</span><span class="p">.</span><span class="n">rotation</span><span class="p">,</span> <span class="n">Vector3</span><span class="p">.</span><span class="n">one</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">camera</span><span class="p">.</span><span class="n">orthographic</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="kt">float</span> <span class="n">spread</span> <span class="p">=</span> <span class="n">camera</span><span class="p">.</span><span class="n">farClipPlane</span> <span class="p">-</span> <span class="n">camera</span><span class="p">.</span><span class="n">nearClipPlane</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">            <span class="kt">float</span> <span class="n">center</span> <span class="p">=</span> <span class="p">(</span><span class="n">camera</span><span class="p">.</span><span class="n">farClipPlane</span> <span class="p">+</span> <span class="n">camera</span><span class="p">.</span><span class="n">nearClipPlane</span><span class="p">)</span> <span class="p">*</span> <span class="m">0.5f</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">            <span class="n">Gizmos</span><span class="p">.</span><span class="n">DrawWireCube</span><span class="p">(</span><span class="k">new</span> <span class="n">Vector3</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="n">center</span><span class="p">),</span> <span class="k">new</span> <span class="n">Vector3</span><span class="p">(</span><span class="n">camera</span><span class="p">.</span><span class="n">orthographicSize</span> <span class="p">*</span> <span class="m">2</span> <span class="p">*</span> <span class="n">camera</span><span class="p">.</span><span class="n">aspect</span><span class="p">,</span> <span class="n">camera</span><span class="p">.</span><span class="n">orthographicSize</span> <span class="p">*</span> <span class="m">2</span><span class="p">,</span> <span class="n">spread</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">Gizmos</span><span class="p">.</span><span class="n">DrawFrustum</span><span class="p">(</span><span class="n">Vector3</span><span class="p">.</span><span class="n">zero</span><span class="p">,</span> <span class="n">camera</span><span class="p">.</span><span class="n">fieldOfView</span><span class="p">,</span> <span class="n">camera</span><span class="p">.</span><span class="n">farClipPlane</span><span class="p">,</span> <span class="n">camera</span><span class="p">.</span><span class="n">nearClipPlane</span><span class="p">,</span> <span class="n">camera</span><span class="p">.</span><span class="n">aspect</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span> 
+</span></span><span class="line"><span class="cl">        <span class="n">Gizmos</span><span class="p">.</span><span class="n">matrix</span> <span class="p">=</span> <span class="n">temp</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> 
+</span></span><span class="line"><span class="cl">    <span class="cp">#endregion</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="c1">// class</span>
+</span></span></code></pre></div><p>该脚本将根据游戏是横向模式还是纵向模式以及单位⼤⼩变量来计算相机的正交⼤⼩。您可以在类的检查器选项卡中设置所有这些值：</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202301301925585.jpg"></p>
+<p>单位⼤⼩将根据您的游戏⽽有所不同，因此请务必检查从 10 到 20 之间的范围开始的不同值。</p>
+<p>您可以选中 Execute In Update 复选框以使脚本在 Update 中执⾏，同时您在 Unity 编辑器中以立即查看您所做的更改，但您将在运⾏游戏时看到真实结果。</p>
+<p>如果我再次在 iPhone 6 Plus 上测试游戏，我们会看到同样的结果：</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202301301925406.jpg"></p>
+<p>这样做的原因是因为 CameraViewportHandler 将确保相机的 Orthographic Size 是有序的，⽆论我们在哪种屏幕尺⼨上玩游戏，但我们需要结合 CameraViewportHandler 使⽤另⼀个脚本来将我们的游戏对象定位在屏幕上正确。</p>
+<p>该脚本称为 AnchorGameObject：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System.Collections</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="na">[ExecuteInEditMode]</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="k">class</span> <span class="nc">AnchorGameObject</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kd">enum</span> <span class="n">AnchorType</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">BottomLeft</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">        <span class="n">BottomCenter</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">        <span class="n">BottomRight</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">        <span class="n">MiddleLeft</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">        <span class="n">MiddleCenter</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">        <span class="n">MiddleRight</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">        <span class="n">TopLeft</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">        <span class="n">TopCenter</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">        <span class="n">TopRight</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">};</span> 
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">bool</span> <span class="n">executeInUpdate</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">AnchorType</span> <span class="n">anchorType</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">Vector3</span> <span class="n">anchorOffset</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">    <span class="n">IEnumerator</span> <span class="n">updateAnchorRoutine</span><span class="p">;</span> <span class="c1">//Coroutine handle so we don&#39;t start it if it&#39;s already running</span>
+</span></span><span class="line"><span class="cl">                                     
+</span></span><span class="line"><span class="cl">    <span class="c1">// Use this for initialization</span>
+</span></span><span class="line"><span class="cl">    <span class="k">void</span> <span class="n">Start</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">updateAnchorRoutine</span> <span class="p">=</span> <span class="n">UpdateAnchorAsync</span><span class="p">();</span> 
+</span></span><span class="line"><span class="cl">        <span class="n">StartCoroutine</span><span class="p">(</span><span class="n">updateAnchorRoutine</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cs">/// &lt;summary&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="cs">/// Coroutine to update the anchor only once CameraFit.Instance is not null.</span>
+</span></span><span class="line"><span class="cl">    <span class="cs">/// &lt;/summary&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">IEnumerator</span> <span class="n">UpdateAnchorAsync</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">uint</span> <span class="n">cameraWaitCycles</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">while</span> <span class="p">(</span><span class="n">CameraViewportHandler</span><span class="p">.</span><span class="n">Instance</span> <span class="p">==</span> <span class="kc">null</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="p">++</span><span class="n">cameraWaitCycles</span><span class="p">;</span> <span class="k">yield</span> <span class="k">return</span> <span class="k">new</span> <span class="n">WaitForEndOfFrame</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">cameraWaitCycles</span> <span class="p">&gt;</span> <span class="m">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">print</span><span class="p">(</span><span class="kt">string</span><span class="p">.</span><span class="n">Format</span><span class="p">(</span><span class="s">&#34;CameraAnchor found CameraFit instance after waiting {0} frame(s). &#34;</span> <span class="p">+</span> <span class="s">&#34;You might want to check that CameraFit has an earlie execution order.&#34;</span><span class="p">,</span> <span class="n">cameraWaitCycles</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span> 
+</span></span><span class="line"><span class="cl">        <span class="n">UpdateAnchor</span><span class="p">();</span> 
+</span></span><span class="line"><span class="cl">        <span class="n">updateAnchorRoutine</span> <span class="p">=</span> <span class="kc">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">void</span> <span class="n">UpdateAnchor</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">switch</span> <span class="p">(</span><span class="n">anchorType</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">case</span> <span class="n">AnchorType</span><span class="p">.</span><span class="n">BottomLeft</span><span class="p">:</span> <span class="n">SetAnchor</span><span class="p">(</span><span class="n">CameraViewportHandler</span><span class="p">.</span><span class="n">Instance</span><span class="p">.</span><span class="n">BottomLeft</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl">                <span class="k">break</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">            <span class="k">case</span> <span class="n">AnchorType</span><span class="p">.</span><span class="n">BottomCenter</span><span class="p">:</span> <span class="n">SetAnchor</span><span class="p">(</span><span class="n">CameraViewportHandler</span><span class="p">.</span><span class="n">Instance</span><span class="p">.</span><span class="n">BottomCenter</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl">                <span class="k">break</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">            <span class="k">case</span> <span class="n">AnchorType</span><span class="p">.</span><span class="n">BottomRight</span><span class="p">:</span> <span class="n">SetAnchor</span><span class="p">(</span><span class="n">CameraViewportHandler</span><span class="p">.</span><span class="n">Instance</span><span class="p">.</span><span class="n">BottomRight</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl">                <span class="k">break</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">            <span class="k">case</span> <span class="n">AnchorType</span><span class="p">.</span><span class="n">MiddleLeft</span><span class="p">:</span> <span class="n">SetAnchor</span><span class="p">(</span><span class="n">CameraViewportHandler</span><span class="p">.</span><span class="n">Instance</span><span class="p">.</span><span class="n">MiddleLeft</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl">                <span class="k">break</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">            <span class="k">case</span> <span class="n">AnchorType</span><span class="p">.</span><span class="n">MiddleCenter</span><span class="p">:</span> <span class="n">SetAnchor</span><span class="p">(</span><span class="n">CameraViewportHandler</span><span class="p">.</span><span class="n">Instance</span><span class="p">.</span><span class="n">MiddleCenter</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl">                <span class="k">break</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">            <span class="k">case</span> <span class="n">AnchorType</span><span class="p">.</span><span class="n">MiddleRight</span><span class="p">:</span> <span class="n">SetAnchor</span><span class="p">(</span><span class="n">CameraViewportHandler</span><span class="p">.</span><span class="n">Instance</span><span class="p">.</span><span class="n">MiddleRight</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl">                <span class="k">break</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">            <span class="k">case</span> <span class="n">AnchorType</span><span class="p">.</span><span class="n">TopLeft</span><span class="p">:</span> <span class="n">SetAnchor</span><span class="p">(</span><span class="n">CameraViewportHandler</span><span class="p">.</span><span class="n">Instance</span><span class="p">.</span><span class="n">TopLeft</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl">                <span class="k">break</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">            <span class="k">case</span> <span class="n">AnchorType</span><span class="p">.</span><span class="n">TopCenter</span><span class="p">:</span> <span class="n">SetAnchor</span><span class="p">(</span><span class="n">CameraViewportHandler</span><span class="p">.</span><span class="n">Instance</span><span class="p">.</span><span class="n">TopCenter</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl">                <span class="k">break</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">            <span class="k">case</span> <span class="n">AnchorType</span><span class="p">.</span><span class="n">TopRight</span><span class="p">:</span> <span class="n">SetAnchor</span><span class="p">(</span><span class="n">CameraViewportHandler</span><span class="p">.</span><span class="n">Instance</span><span class="p">.</span><span class="n">TopRight</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl">                <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> 
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">void</span> <span class="n">SetAnchor</span><span class="p">(</span><span class="n">Vector3</span> <span class="n">anchor</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Vector3</span> <span class="n">newPos</span> <span class="p">=</span> <span class="n">anchor</span> <span class="p">+</span> <span class="n">anchorOffset</span><span class="p">;</span> <span class="k">if</span> <span class="p">(!</span><span class="n">transform</span><span class="p">.</span><span class="n">position</span><span class="p">.</span><span class="n">Equals</span><span class="p">(</span><span class="n">newPos</span><span class="p">))</span> <span class="p">{</span> <span class="n">transform</span><span class="p">.</span><span class="n">position</span> <span class="p">=</span> <span class="n">newPos</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="cp">#if</span> <span class="n">UNITY_EDITOR</span> 
+</span></span><span class="line"><span class="cl"><span class="c1">// Update is called once per frame</span>
+</span></span><span class="line"><span class="cl"><span class="k">void</span> <span class="n">Update</span><span class="p">()</span> 
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">updateAnchorRoutine</span> <span class="p">==</span> <span class="kc">null</span> <span class="p">&amp;&amp;</span> <span class="n">executeInUpdate</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">updateAnchorRoutine</span> <span class="p">=</span> <span class="n">UpdateAnchorAsync</span><span class="p">();</span> 
+</span></span><span class="line"><span class="cl">            <span class="n">StartCoroutine</span><span class="p">(</span><span class="n">updateAnchorRoutine</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span> 
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="cp">#endif</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>AnchorGameObject 脚本的⼯作⽅式是使⽤第 7-18 ⾏声明的 AnchorType 以及第 59-91</p>
+<p>⾏的 CameraViewportHandler 变量来设置锚点，例如游戏对象的中⼼原点。</p>
+<p>然后您可以使⽤第 23 ⾏声明的 anchorOffset 变量来确定特定游戏对象相对于其锚点（例如中⼼原点）的偏移量。</p>
+<p>AnchorGameObject  脚本应附加到您要定位或锚定在屏幕上的游戏对象上。</p>
+<p>需要记住的⼀件事是，将此组合与这 3 个脚本结合使⽤时，您需要使⽤⼀个参考分辨率作为基本分辨率来设计游戏，您将使⽤该参考分辨率来锚定游戏对象。</p>
+<p>我将使⽤与三星 Galaxy 10+ 相同的分辨率，即 3040×1440 作为参考分辨率。</p>
+<p>⾸先，我要将脚本附加到右侧的 Altar 1 游戏对象上，并对 AnchorGameObject 脚本使⽤以下设置：</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202301301901078.jpg"></p>
+<p>这会将对象的锚点设置为右中，并将其在 X 轴上偏移 -1.5，在 Y 轴上偏移 1，这会将游戏对象定位在此处：</p>
+<p><img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202301301934468.jpg"></p>
+<p>接下来，我要将脚本附加到我的 Altar 2 游戏对象上，并为 AnchorGameObject 脚本设置以下设置：</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202301301934529.jpg"></p>
+<p>这将把游戏对象的锚点设置在左中，并在 X 轴上偏移 2，在 Y 轴上偏移 0.53，这将把游戏对象定位在这⾥：</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202301301934696.jpg"></p>
+<p>现在⽆论我们以何种分辨率玩游戏，这两个游戏对象都将停留在我们刚刚放置它们的位置。</p>
+<p>在我们测试我们的新设置之前，让我们快速看⼀下在不使⽤我们的两个脚本进⾏测试时，相同设置在分辨率为 1920×1080 的 iPhone 6 Plus 上的样⼦：</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202301301934299.jpg"></p>
+<p>现在让我们使⽤刚刚使⽤两个新脚本创建的新设置在 iPhone 6 Plus 上测试我们的游戏：</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202301301934674.jpg"></p>
+<p>现在我们的两个游戏对象并没有从屏幕上切下来，它们在游戏中清晰可⻅。</p>
+<p>⽽且⽆论您的游戏在何种分辨率下运⾏，当您将此组合与 CameraViewportHandler 和</p>
+<p>AnchorGameObject  脚本结合使⽤时，您的游戏对象将位于您最初放置它们的相同位置。</p>
+<p>现在，不⾔⽽喻，这种⽅法适⽤于静态游戏，例如所有游戏玩法都发⽣在⼀个地⽅并且屏幕（例如相机）在游戏中没有移动的游戏。</p>
+<p>如果您的游戏是动态的，例如平台游戏或塔防游戏等，您将不会遇到需要锚定游戏对象的这些问题，因为您将创建更⼤的关卡，因此⽆论摄像机在游戏中的哪个位置，它将渲染游戏那部分的关卡。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/unity/">Unity</a></li>
+      <li><a href="http://localhost:1313/tags/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0/">移动平台</a></li>
+      <li><a href="http://localhost:1313/tags/android/">Android</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/hexo/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E4%B8%80/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>GitHub&#43;Hexo 搭建个人博客（一）</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-移动端屏幕适配 on x"
+            href="https://x.com/intent/tweet/?text=Unity-%e7%a7%bb%e5%8a%a8%e7%ab%af%e5%b1%8f%e5%b9%95%e9%80%82%e9%85%8d&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E7%25A7%25BB%25E5%258A%25A8%25E7%25AB%25AF%25E5%25B1%258F%25E5%25B9%2595%25E9%2580%2582%25E9%2585%258D%2f&amp;hashtags=Unity%2c%e7%a7%bb%e5%8a%a8%e5%b9%b3%e5%8f%b0%2cAndroid">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-移动端屏幕适配 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E7%25A7%25BB%25E5%258A%25A8%25E7%25AB%25AF%25E5%25B1%258F%25E5%25B9%2595%25E9%2580%2582%25E9%2585%258D%2f&amp;title=Unity-%e7%a7%bb%e5%8a%a8%e7%ab%af%e5%b1%8f%e5%b9%95%e9%80%82%e9%85%8d&amp;summary=Unity-%e7%a7%bb%e5%8a%a8%e7%ab%af%e5%b1%8f%e5%b9%95%e9%80%82%e9%85%8d&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E7%25A7%25BB%25E5%258A%25A8%25E7%25AB%25AF%25E5%25B1%258F%25E5%25B9%2595%25E9%2580%2582%25E9%2585%258D%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-移动端屏幕适配 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E7%25A7%25BB%25E5%258A%25A8%25E7%25AB%25AF%25E5%25B1%258F%25E5%25B9%2595%25E9%2580%2582%25E9%2585%258D%2f&title=Unity-%e7%a7%bb%e5%8a%a8%e7%ab%af%e5%b1%8f%e5%b9%95%e9%80%82%e9%85%8d">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-移动端屏幕适配 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E7%25A7%25BB%25E5%258A%25A8%25E7%25AB%25AF%25E5%25B1%258F%25E5%25B9%2595%25E9%2580%2582%25E9%2585%258D%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-移动端屏幕适配 on whatsapp"
+            href="https://api.whatsapp.com/send?text=Unity-%e7%a7%bb%e5%8a%a8%e7%ab%af%e5%b1%8f%e5%b9%95%e9%80%82%e9%85%8d%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E7%25A7%25BB%25E5%258A%25A8%25E7%25AB%25AF%25E5%25B1%258F%25E5%25B9%2595%25E9%2580%2582%25E9%2585%258D%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-移动端屏幕适配 on telegram"
+            href="https://telegram.me/share/url?text=Unity-%e7%a7%bb%e5%8a%a8%e7%ab%af%e5%b1%8f%e5%b9%95%e9%80%82%e9%85%8d&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E7%25A7%25BB%25E5%258A%25A8%25E7%25AB%25AF%25E5%25B1%258F%25E5%25B9%2595%25E9%2580%2582%25E9%2585%258D%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-移动端屏幕适配 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=Unity-%e7%a7%bb%e5%8a%a8%e7%ab%af%e5%b1%8f%e5%b9%95%e9%80%82%e9%85%8d&u=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E7%25A7%25BB%25E5%258A%25A8%25E7%25AB%25AF%25E5%25B1%258F%25E5%25B9%2595%25E9%2580%2582%25E9%2585%258D%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">LiuYingbo Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

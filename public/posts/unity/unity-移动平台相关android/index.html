@@ -1,0 +1,1863 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Unity-移动平台相关Android | LiuYingbo Blog</title>
+<meta name="keywords" content="Unity, 移动平台, Android">
+<meta name="description" content="Android发布流程
+Unity2019及以上
+发布Android准备工作
+通过UnityHub安装Android平台相关工具
+1.Android构建支持
+2.Android SDK（安卓软件开发工具包）、NDKTools（本地开发工具包）
+3.OpenJDK（Java开发工具包）
+注意：Unity支持Android 5.1及以上版本
+Unity2019以下版本
+1.Android构建支持工具安装（Unity提供下载,安装时需要关闭Unity）
+2.JDK（Java开发工具包）（网络下载） JDK 必须是版本 8
+https://www.oracle.com/java/technologies/downloads/#jdk18-windows
+3.NDK (本地开发工具包)（网络下载）NDK 版本必须是 Unity2018——r16b, Unity2017——r13d
+注意：NDK是可选的工具，如果之后要发il2cpp的应用程序，那么NDK是必须的，如果是Mono可以不使用它
+https://blog.csdn.net/momo0853/article/details/73898066
+https://developer.android.google.cn/ndk/downloads/#lts-downloads
+4.Android SDK（安卓软件开发工具包）（网络下载或通过AndroidStudio下载）
+建议通过AndroidStudio下载
+https://developer.android.com/studio
+安装AndroidStudio后 通过它来安装AndroidSDK
+5.Java环境变量配置
+我的电脑——&gt;系统属性——&gt;查找——&gt;系统环境变量——&gt;环境变量
+5-1:JAVA_HOME: 变量值为JDK在你电脑上的安装路径
+安装好后可以利用%JAVA_HOME%作为JDK安装目录的统一引用路径
+5-2:Path: 编辑Path属性，在原变量后追加 %JAVA_HOME%\bin;%JAVA_HOME%\jre\bin
+5-3:CLASSPATH: 变量值为 .;%JAVA_HOME%\lib\dt.jar;%JAVA_HOME%\lib\tools.jar
+发布前必修改的设置
+在File —— Build Setting —— Player Setting中修改
+1.公司名
+2.游戏项目名
+3.版本号
+4.默认图标
+5.Other Settings —— Package Name（必须修改设置）
+6.Other Settings —— Minimum APILevel
+Unity发布参数
+Build Settings 参数
+
+Texture Compression
+纹理压缩
+设置发布后的纹理压缩格式">
+<meta name="author" content="LiuYingbo">
+<link rel="canonical" href="http://localhost:1313/posts/unity/unity-%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E7%9B%B8%E5%85%B3android/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.a29c24210eb31d9ce56f669c66a35c9c51b17376b7764e336a49af7dec914cf0.css" integrity="sha256-opwkIQ6zHZzlb2acZqNcnFGxc3a3dk4zakmvfeyRTPA=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/unity/unity-%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E7%9B%B8%E5%85%B3android/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="LiuYingbo Blog (Alt + H)">LiuYingbo Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/categories/" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives/" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">Home</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Unity-移动平台相关Android
+    </h1>
+    <div class="post-meta"><span title='2022-09-01 15:06:06 +0800 CST'>September 1, 2022</span>&nbsp;·&nbsp;<span>9 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span>
+
+</div>
+  </header> 
+<figure class="entry-cover">
+        <img loading="eager" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242151718.jpg" alt="">
+        
+</figure><div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#android%e5%8f%91%e5%b8%83%e6%b5%81%e7%a8%8b" aria-label="Android发布流程">Android发布流程</a><ul>
+                        
+                <li>
+                    <a href="#unity2019%e5%8f%8a%e4%bb%a5%e4%b8%8a" aria-label="Unity2019及以上">Unity2019及以上</a></li>
+                <li>
+                    <a href="#unity2019%e4%bb%a5%e4%b8%8b%e7%89%88%e6%9c%ac" aria-label="Unity2019以下版本">Unity2019以下版本</a></li>
+                <li>
+                    <a href="#%e5%8f%91%e5%b8%83%e5%89%8d%e5%bf%85%e4%bf%ae%e6%94%b9%e7%9a%84%e8%ae%be%e7%bd%ae" aria-label="发布前必修改的设置">发布前必修改的设置</a></li></ul>
+                </li>
+                <li>
+                    <a href="#unity%e5%8f%91%e5%b8%83%e5%8f%82%e6%95%b0" aria-label="Unity发布参数">Unity发布参数</a><ul>
+                        
+                <li>
+                    <a href="#build-settings-%e5%8f%82%e6%95%b0" aria-label="Build Settings 参数">Build Settings 参数</a><ul>
+                        
+                <li>
+                    <a href="#texture-compression" aria-label="Texture Compression">Texture Compression</a></li>
+                <li>
+                    <a href="#etc2-fallback" aria-label="ETC2 fallback">ETC2 fallback</a></li>
+                <li>
+                    <a href="#export-project" aria-label="Export Project">Export Project</a></li>
+                <li>
+                    <a href="#symlink-sources" aria-label="Symlink Sources">Symlink Sources</a></li>
+                <li>
+                    <a href="#build-app-bundle-google-play" aria-label="Build App Bundle (Google Play)">Build App Bundle (Google Play)</a></li>
+                <li>
+                    <a href="#create-symbolszip" aria-label="Create symbols.zip">Create symbols.zip</a></li>
+                <li>
+                    <a href="#run-device" aria-label="Run Device">Run Device</a></li>
+                <li>
+                    <a href="#build-to-device" aria-label="Build to Device">Build to Device</a></li>
+                <li>
+                    <a href="#development-build" aria-label="Development Build">Development Build</a></li>
+                <li>
+                    <a href="#autoconnect-profiler" aria-label="Autoconnect Profiler">Autoconnect Profiler</a></li>
+                <li>
+                    <a href="#deep-profiling" aria-label="Deep Profiling">Deep Profiling</a></li>
+                <li>
+                    <a href="#script-debugging" aria-label="Script Debugging">Script Debugging</a></li>
+                <li>
+                    <a href="#compression-method" aria-label="Compression Method">Compression Method</a></li>
+                <li>
+                    <a href="#max-texture-size" aria-label="Max Texture Size">Max Texture Size</a></li>
+                <li>
+                    <a href="#texture-compression-1" aria-label="Texture Compression">Texture Compression</a></li></ul>
+                </li>
+                <li>
+                    <a href="#player-settings%e7%9b%b8%e5%85%b3" aria-label="Player Settings相关">Player Settings相关</a><ul>
+                        
+                <li>
+                    <a href="#player-%e5%9f%ba%e7%a1%80%e8%ae%be%e7%bd%ae" aria-label="Player 基础设置">Player 基础设置</a></li>
+                <li>
+                    <a href="#icon-%e5%9b%be%e6%a0%87%e8%ae%be%e7%bd%ae" aria-label="Icon 图标设置">Icon 图标设置</a></li>
+                <li>
+                    <a href="#resolution-and-presentation-%e5%88%86%e8%be%a8%e7%8e%87%e5%92%8c%e6%bc%94%e7%a4%ba%e8%ae%be%e7%bd%ae" aria-label="Resolution and Presentation 分辨率和演示设置">Resolution and Presentation 分辨率和演示设置</a><ul>
+                        
+                <li>
+                    <a href="#fullscreen-mode" aria-label="Fullscreen Mode">Fullscreen Mode</a></li>
+                <li>
+                    <a href="#resizable-window" aria-label="Resizable Window">Resizable Window</a></li>
+                <li>
+                    <a href="#hide-navigation-bar" aria-label="Hide Navigation Bar">Hide Navigation Bar</a></li>
+                <li>
+                    <a href="#render-outside-safe-area" aria-label="Render outside safe area">Render outside safe area</a></li>
+                <li>
+                    <a href="#optimized-frame-pacing" aria-label="Optimized frame Pacing">Optimized frame Pacing</a></li></ul>
+                </li>
+                <li>
+                    <a href="#resolution-scaling%e5%88%86%e8%be%a8%e7%8e%87%e7%bc%a9%e6%94%be" aria-label="Resolution Scaling分辨率缩放">Resolution Scaling分辨率缩放</a><ul>
+                        
+                <li>
+                    <a href="#resolution-scaling-mode" aria-label="Resolution Scaling Mode">Resolution Scaling Mode</a></li>
+                <li>
+                    <a href="#reset-resolution-on-window-resize" aria-label="Reset resolution on window resize:">Reset resolution on window resize:</a></li>
+                <li>
+                    <a href="#blit-type" aria-label="Blit Type：">Blit Type：</a></li></ul>
+                </li>
+                <li>
+                    <a href="#supported-aspect-ratio%e6%94%af%e6%8c%81%e7%9a%84%e7%ba%b5%e6%a8%aa%e6%af%94" aria-label="Supported Aspect Ratio：支持的纵横比">Supported Aspect Ratio：支持的纵横比</a><ul>
+                        
+                <li>
+                    <a href="#aspect-ratio-mode" aria-label="Aspect Ratio Mode：">Aspect Ratio Mode：</a></li>
+                <li>
+                    <a href="#default-orientation" aria-label="Default Orientation：">Default Orientation：</a></li>
+                <li>
+                    <a href="#use-32-bit-display-buffer" aria-label="Use 32-bit Display Buffer：">Use 32-bit Display Buffer：</a></li>
+                <li>
+                    <a href="#disable-depth-and-stencil" aria-label="Disable Depth and Stencil：">Disable Depth and Stencil：</a></li>
+                <li>
+                    <a href="#render-over-native-ui" aria-label="Render Over Native UI：">Render Over Native UI：</a></li>
+                <li>
+                    <a href="#show-loading-indicator" aria-label="Show Loading Indicator：">Show Loading Indicator：</a></li></ul>
+                </li>
+                <li>
+                    <a href="#splash-image" aria-label="Splash Image:">Splash Image:</a><ul>
+                        
+                <li>
+                    <a href="#virtual-reality-splash-image" aria-label="Virtual Reality Splash Image:">Virtual Reality Splash Image:</a></li>
+                <li>
+                    <a href="#show-splash-screen" aria-label="Show Splash Screen：">Show Splash Screen：</a></li>
+                <li>
+                    <a href="#preview" aria-label="Preview：">Preview：</a></li>
+                <li>
+                    <a href="#splash-style" aria-label="Splash Style：">Splash Style：</a></li>
+                <li>
+                    <a href="#animation" aria-label="Animation:">Animation:</a></li>
+                <li>
+                    <a href="#background%e8%83%8c%e6%99%af%e7%9b%b8%e5%85%b3" aria-label="BackGround：背景相关">BackGround：背景相关</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#othersetting%e7%9b%b8%e5%85%b3" aria-label="OtherSetting相关">OtherSetting相关</a><ul>
+                        
+                <li>
+                    <a href="#rendering%e6%b8%b2%e6%9f%93%e8%ae%be%e7%bd%ae" aria-label="Rendering渲染设置">Rendering渲染设置</a><ul>
+                        
+                <li>
+                    <a href="#unity%e7%a8%8b%e5%ba%8f%e5%91%98%e5%bf%85%e4%ba%86%e8%a7%a3%e7%9a%84%e5%9b%be%e5%bd%a2%e7%a8%8b%e5%ba%8f%e6%8e%a5%e5%8f%a3" aria-label="Unity程序员必了解的图形程序接口">Unity程序员必了解的图形程序接口</a><ul>
+                        
+                <li>
+                    <a href="#openglopen-graphics-library" aria-label="OpenGL（Open Graphics Library）">OpenGL（Open Graphics Library）</a></li>
+                <li>
+                    <a href="#opengl-esopengl-for-embedded-systems" aria-label="OpenGL ES（OpenGL for Embedded Systems）">OpenGL ES（OpenGL for Embedded Systems）</a></li>
+                <li>
+                    <a href="#vulkan" aria-label="Vulkan">Vulkan</a></li>
+                <li>
+                    <a href="#directxdirect-extension" aria-label="Directx（Direct eXtension）">Directx（Direct eXtension）</a></li>
+                <li>
+                    <a href="#webglweb-graphics-library" aria-label="WebGL（Web Graphics Library）">WebGL（Web Graphics Library）</a></li>
+                <li>
+                    <a href="#metal" aria-label="Metal">Metal</a></li></ul>
+                </li>
+                <li>
+                    <a href="#color-space%e8%89%b2%e5%bd%a9%e7%a9%ba%e9%97%b4" aria-label="Color Space：色彩空间">Color Space：色彩空间</a></li>
+                <li>
+                    <a href="#%e4%bb%80%e4%b9%88%e6%98%afvulkan" aria-label="什么是Vulkan？">什么是Vulkan？</a></li>
+                <li>
+                    <a href="#auto-graphics-api%e8%87%aa%e5%8a%a8%e5%9b%be%e5%bd%a2%e6%8e%a5%e5%8f%a3%e5%bb%ba%e8%ae%ae%e9%80%89%e6%8b%a9%e8%87%aa%e5%8a%a8" aria-label="Auto Graphics API:自动图形接口（建议选择自动）">Auto Graphics API:自动图形接口（建议选择自动）</a></li>
+                <li>
+                    <a href="#color-gamut-%e8%89%b2%e5%9f%9f" aria-label="Color Gamut: 色域">Color Gamut: 色域</a></li>
+                <li>
+                    <a href="#multithreaded-rendering%e5%a4%9a%e7%ba%bf%e7%a8%8b%e6%b8%b2%e6%9f%93" aria-label="Multithreaded Rendering：多线程渲染">Multithreaded Rendering：多线程渲染</a></li>
+                <li>
+                    <a href="#static-batching%e9%9d%99%e6%80%81%e6%89%b9%e5%a4%84%e7%90%86" aria-label="Static Batching：静态批处理">Static Batching：静态批处理</a></li>
+                <li>
+                    <a href="#dynamic-batching%e5%8a%a8%e6%80%81%e6%89%b9%e5%a4%84%e7%90%86" aria-label="Dynamic Batching：动态批处理">Dynamic Batching：动态批处理</a></li>
+                <li>
+                    <a href="#compute-skinning%e8%ae%a1%e7%ae%97%e8%92%99%e7%9a%ae" aria-label="Compute Skinning：计算蒙皮">Compute Skinning：计算蒙皮</a></li>
+                <li>
+                    <a href="#graphics-jobsexperimental%e5%9b%be%e5%bd%a2%e4%bd%9c%e4%b8%9a" aria-label="Graphics Jobs(Experimental)：图形作业">Graphics Jobs(Experimental)：图形作业</a></li>
+                <li>
+                    <a href="#%e5%90%af%e7%94%a8%e5%90%8eunity%e5%b0%86%e6%b8%b2%e6%9f%93%e5%be%aa%e7%8e%af%e7%9a%84%e5%9b%be%e5%bd%a2%e4%bb%bb%e5%8a%a1%e7%a7%bb%e5%88%b0%e5%85%b6%e5%ae%83cpu%e5%86%85%e6%a0%b8%e4%b8%8a%e8%bf%90%e8%a1%8c%e7%9a%84%e5%b7%a5%e4%bd%9c%e7%ba%bf%e7%a8%8b%e5%8f%af%e4%bb%a5%e5%87%8f%e5%b0%91%e5%9c%a8%e4%b8%bb%e7%ba%bf%e7%a8%8b%e4%b8%8a%e8%8a%b1%e8%b4%b9%e7%9a%84%e6%97%b6%e9%97%b4" aria-label="启用后，Unity将渲染循环的图形任务移到其它CPU内核上运行的工作线程，可以减少在主线程上花费的时间">启用后，Unity将渲染循环的图形任务移到其它CPU内核上运行的工作线程，可以减少在主线程上花费的时间</a></li>
+                <li>
+                    <a href="#texture-compression-format%e7%ba%b9%e7%90%86%e5%8e%8b%e7%bc%a9%e6%a0%bc%e5%bc%8f" aria-label="Texture compression format：纹理压缩格式">Texture compression format：纹理压缩格式</a></li>
+                <li>
+                    <a href="#normal-map-encoding%e6%b3%95%e7%ba%bf%e5%9c%b0%e5%9b%be%e7%bc%96%e7%a0%81" aria-label="Normal Map Encoding：法线地图编码">Normal Map Encoding：法线地图编码</a></li>
+                <li>
+                    <a href="#lightmap-encoding%e5%85%89%e7%85%a7%e8%b4%b4%e5%9b%be%e7%bc%96%e7%a0%81" aria-label="Lightmap Encoding：光照贴图编码">Lightmap Encoding：光照贴图编码</a></li>
+                <li>
+                    <a href="#lightmap-streaming%e5%85%89%e7%85%a7%e8%b4%b4%e5%9b%be%e6%b5%81" aria-label="Lightmap Streaming：光照贴图流">Lightmap Streaming：光照贴图流</a></li>
+                <li>
+                    <a href="#frame-timing-stats%e5%b8%a7%e6%97%b6%e5%ba%8f%e7%bb%9f%e8%ae%a1" aria-label="Frame Timing Stats：帧时序统计">Frame Timing Stats：帧时序统计</a></li>
+                <li>
+                    <a href="#opengl" aria-label="OpenGL:">OpenGL:</a></li>
+                <li>
+                    <a href="#virtual-texturing%e8%99%9a%e6%8b%9f%e7%ba%b9%e7%90%86" aria-label="Virtual Texturing：虚拟纹理">Virtual Texturing：虚拟纹理</a></li>
+                <li>
+                    <a href="#shader-precision-model%e7%9d%80%e8%89%b2%e5%99%a8%e7%b2%be%e5%ba%a6%e6%a8%a1%e5%9e%8b" aria-label="Shader Precision model：着色器精度模型">Shader Precision model：着色器精度模型</a></li>
+                <li>
+                    <a href="#360-stereo-capture360-%e5%ba%a6%e7%ab%8b%e4%bd%93%e6%8d%95%e6%8d%89" aria-label="360 Stereo Capture：360 度立体捕捉">360 Stereo Capture：360 度立体捕捉</a></li></ul>
+                </li>
+                <li>
+                    <a href="#vulkan-setting" aria-label="Vulkan Setting">Vulkan Setting</a><ul>
+                        
+                <li>
+                    <a href="#srgb-write-mode-srgb-%e5%86%99%e5%85%a5%e6%a8%a1%e5%bc%8f" aria-label="SRGB Write Mode: SRGB 写入模式">SRGB Write Mode: SRGB 写入模式</a></li>
+                <li>
+                    <a href="#number-of-swapchain-buffers-%e4%ba%a4%e6%8d%a2%e9%93%be%e7%bc%93%e5%86%b2%e5%8c%ba%e6%95%b0%e9%87%8f" aria-label="Number of swapchain buffers: 交换链缓冲区数量">Number of swapchain buffers: 交换链缓冲区数量</a></li>
+                <li>
+                    <a href="#acquire-swapchain-image-late-as-possible%e5%b0%bd%e5%8f%af%e8%83%bd%e6%99%9a%e7%9a%84%e8%8e%b7%e5%8f%96%e4%ba%a4%e6%8d%a2%e9%93%be%e5%9b%be%e5%83%8f" aria-label="Acquire swapchain image late as possible：尽可能晚的获取交换链图像">Acquire swapchain image late as possible：尽可能晚的获取交换链图像</a></li>
+                <li>
+                    <a href="#recycle-command-buffers%e5%9b%9e%e6%94%b6%e5%91%bd%e4%bb%a4%e7%bc%93%e5%86%b2%e5%8c%ba" aria-label="Recycle command buffers：回收命令缓冲区">Recycle command buffers：回收命令缓冲区</a></li>
+                <li>
+                    <a href="#apply-display-rotation-during-rendering" aria-label="Apply display rotation during rendering：">Apply display rotation during rendering：</a></li></ul>
+                </li>
+                <li>
+                    <a href="#identification%e8%ba%ab%e4%bb%bd%e8%af%81%e6%98%8e" aria-label="Identification：身份证明">Identification：身份证明</a><ul>
+                        
+                <li>
+                    <a href="#override-default-package-name%e6%98%af%e5%90%a6%e8%a6%86%e7%9b%96%e9%bb%98%e8%ae%a4%e5%8c%85%e5%90%8d%e7%a7%b0" aria-label="Override Default Package Name：是否覆盖默认包名称">Override Default Package Name：是否覆盖默认包名称</a></li>
+                <li>
+                    <a href="#package-name%e8%bd%af%e4%bb%b6%e5%8c%85%e5%90%8d" aria-label="Package Name：软件包名">Package Name：软件包名</a></li>
+                <li>
+                    <a href="#version%e7%89%88%e6%9c%ac%e5%8f%b7" aria-label="Version：版本号">Version：版本号</a></li>
+                <li>
+                    <a href="#bundle-version-code%e5%86%85%e9%83%a8%e7%89%88%e6%9c%ac%e5%8f%b7" aria-label="Bundle Version Code：内部版本号">Bundle Version Code：内部版本号</a></li>
+                <li>
+                    <a href="#minimum-api-level%e6%9c%80%e4%bd%8eapi%e7%ba%a7%e5%88%ab" aria-label="Minimum API Level：最低API级别">Minimum API Level：最低API级别</a></li>
+                <li>
+                    <a href="#target-api-level%e7%9b%ae%e6%a0%87api%e7%ba%a7%e5%88%ab" aria-label="Target API Level：目标API级别">Target API Level：目标API级别</a></li></ul>
+                </li>
+                <li>
+                    <a href="#configuration%e9%85%8d%e7%bd%ae" aria-label="Configuration：配置">Configuration：配置</a><ul>
+                        
+                <li>
+                    <a href="#scripting-backend%e8%84%9a%e6%9c%ac%e5%90%8e%e7%ab%af" aria-label="Scripting Backend：脚本后端">Scripting Backend：脚本后端</a></li>
+                <li>
+                    <a href="#api-compatibility-levelapi%e5%85%bc%e5%ae%b9%e6%80%a7%e7%ba%a7%e5%88%ab" aria-label="Api Compatibility Level：API兼容性级别">Api Compatibility Level：API兼容性级别</a></li>
+                <li>
+                    <a href="#c-compiler-configurationc%e7%bc%96%e8%af%91%e5%99%a8%e9%85%8d%e7%bd%ae" aria-label="C&#43;&#43; Compiler Configuration：C&#43;&#43;编译器配置">C++ Compiler Configuration：C++编译器配置</a></li>
+                <li>
+                    <a href="#use-incremental-gc%e4%bd%bf%e7%94%a8%e5%a2%9e%e9%87%8fgc" aria-label="Use incremental GC：使用增量GC">Use incremental GC：使用增量GC</a></li>
+                <li>
+                    <a href="#assembly-version-validation%e7%a8%8b%e5%ba%8f%e9%9b%86%e7%89%88%e6%9c%ac%e9%aa%8c%e8%af%81" aria-label="Assembly Version Validation：程序集版本验证">Assembly Version Validation：程序集版本验证</a></li>
+                <li>
+                    <a href="#mute-other-audio-sources%e5%b0%86%e5%85%b6%e5%ae%83%e9%9f%b3%e9%a2%91%e6%ba%90%e9%9d%99%e9%9f%b3" aria-label="Mute Other Audio Sources：将其它音频源静音">Mute Other Audio Sources：将其它音频源静音</a></li>
+                <li>
+                    <a href="#target-architectures%e7%9b%ae%e6%a0%87%e4%bd%93%e7%b3%bb%e7%bb%93%e6%9e%84" aria-label="Target Architectures：目标体系结构">Target Architectures：目标体系结构</a></li>
+                <li>
+                    <a href="#split-apks-by-target-architecture%e6%8c%89%e7%9b%ae%e6%a0%87%e6%9e%b6%e6%9e%84%e6%8b%86%e5%88%86apk%e5%ae%9e%e9%aa%8c%e6%80%a7%e5%8a%9f%e8%83%bd" aria-label="Split APKs by target architecture：按目标架构拆分APK（实验性功能）">Split APKs by target architecture：按目标架构拆分APK（实验性功能）</a></li>
+                <li>
+                    <a href="#target-devices%e7%9b%ae%e6%a0%87%e8%ae%be%e5%a4%87" aria-label="Target Devices：目标设备">Target Devices：目标设备</a></li>
+                <li>
+                    <a href="#install-location%e5%ae%89%e8%a3%85%e4%bd%8d%e7%bd%ae" aria-label="Install Location：安装位置">Install Location：安装位置</a></li>
+                <li>
+                    <a href="#internet-access%e4%ba%92%e8%81%94%e7%bd%91%e6%8e%a5%e5%85%a5" aria-label="Internet Access：互联网接入">Internet Access：互联网接入</a></li>
+                <li>
+                    <a href="#write-permission%e5%86%99%e5%85%a5%e6%9d%83%e9%99%90" aria-label="Write Permission：写入权限">Write Permission：写入权限</a></li>
+                <li>
+                    <a href="#filter-touches-when-obscured%e9%81%ae%e6%8c%a1%e6%97%b6%e8%bf%87%e6%bb%a4%e8%a7%a6%e6%91%b8" aria-label="Filter Touches When Obscured：遮挡时过滤触摸">Filter Touches When Obscured：遮挡时过滤触摸</a></li>
+                <li>
+                    <a href="#sustained-performance-mode%e6%8c%81%e7%bb%ad%e6%80%a7%e8%83%bd%e6%a8%a1%e5%bc%8f" aria-label="Sustained Performance Mode：持续性能模式">Sustained Performance Mode：持续性能模式</a></li>
+                <li>
+                    <a href="#low-accuracy-location%e4%bd%8e%e7%b2%be%e5%ba%a6%e5%ae%9a%e4%bd%8d" aria-label="Low Accuracy Location：低精度定位">Low Accuracy Location：低精度定位</a></li>
+                <li>
+                    <a href="#chrome-os-input-emulation" aria-label="Chrome OS Input Emulation：">Chrome OS Input Emulation：</a></li>
+                <li>
+                    <a href="#android-tv-compatibility%e5%ae%89%e5%8d%93%e7%94%b5%e8%a7%86%e5%85%bc%e5%ae%b9%e6%80%a7" aria-label="Android TV Compatibility：安卓电视兼容性">Android TV Compatibility：安卓电视兼容性</a></li>
+                <li>
+                    <a href="#warn-about-app-bundle-size%e8%ad%a6%e5%91%8a%e5%ba%94%e7%94%a8%e7%a8%8b%e5%ba%8f%e5%8c%85%e7%9a%84%e5%a4%a7%e5%b0%8f" aria-label="Warn about App Bundle size：警告应用程序包的大小">Warn about App Bundle size：警告应用程序包的大小</a></li>
+                <li>
+                    <a href="#active-input-handling%e6%b4%bb%e5%8a%a8%e8%be%93%e5%85%a5%e5%a4%84%e7%90%86" aria-label="Active Input Handling：活动输入处理">Active Input Handling：活动输入处理</a></li></ul>
+                </li>
+                <li>
+                    <a href="#script-compilation%e8%84%9a%e6%9c%ac%e7%bc%96%e8%af%91" aria-label="Script Compilation：脚本编译">Script Compilation：脚本编译</a><ul>
+                        
+                <li>
+                    <a href="#scripting-define-symbols%e8%84%9a%e6%9c%ac%e5%ae%9a%e4%b9%89%e7%ac%a6%e5%8f%b7" aria-label="Scripting Define Symbols：脚本定义符号">Scripting Define Symbols：脚本定义符号</a><ul>
+                        
+                <li>
+                    <a href="#unity%e6%9c%89%e5%86%85%e7%bd%ae%e7%9a%84%e8%84%9a%e6%9c%ac%e7%ac%a6%e5%8f%b7" aria-label="Unity有内置的脚本符号">Unity有内置的脚本符号</a></li>
+                <li>
+                    <a href="#%e5%b9%b3%e5%8f%b0%e8%84%9a%e6%9c%ac%e7%ac%a6%e5%8f%b7" aria-label="平台脚本符号">平台脚本符号</a></li>
+                <li>
+                    <a href="#%e7%bc%96%e8%be%91%e5%99%a8%e7%89%88%e6%9c%ac%e8%84%9a%e6%9c%ac%e7%ac%a6%e5%8f%b7" aria-label="编辑器版本脚本符号">编辑器版本脚本符号</a></li>
+                <li>
+                    <a href="#%e5%85%b6%e5%ae%83%e8%84%9a%e6%9c%ac%e7%ac%a6%e5%8f%b7" aria-label="其它脚本符号">其它脚本符号</a></li></ul>
+                </li>
+                <li>
+                    <a href="#additional-compiler-arguments%e5%85%b6%e5%ae%83%e7%bc%96%e8%af%91%e5%99%a8%e5%8f%82%e6%95%b0" aria-label="Additional Compiler Arguments：其它编译器参数">Additional Compiler Arguments：其它编译器参数</a></li>
+                <li>
+                    <a href="#suppress-common-warnings%e7%a6%81%e6%ad%a2%e6%98%be%e7%a4%ba%e5%b8%b8%e8%a7%81%e8%ad%a6%e5%91%8a" aria-label="Suppress Common Warnings：禁止显示常见警告">Suppress Common Warnings：禁止显示常见警告</a></li>
+                <li>
+                    <a href="#allow" aria-label="Allow &lsquo;unsafe&rsquo; Code：允许使用“不安全”代码">Allow &lsquo;unsafe&rsquo; Code：允许使用“不安全”代码</a></li>
+                <li>
+                    <a href="#use-deterministic-compilation%e4%bd%bf%e7%94%a8%e7%a1%ae%e5%ae%9a%e6%80%a7%e7%bc%96%e8%af%91" aria-label="Use Deterministic Compilation：使用确定性编译">Use Deterministic Compilation：使用确定性编译</a><ul>
+                        
+                <li>
+                    <a href="#enable-roslyn-analyzers%e5%90%af%e7%94%a8%e7%bd%97%e6%96%af%e6%9e%97%e5%88%86%e6%9e%90%e5%99%a8" aria-label="Enable Roslyn Analyzers：启用罗斯林分析器">Enable Roslyn Analyzers：启用罗斯林分析器</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#optimization%e4%bc%98%e5%8c%96" aria-label="Optimization：优化">Optimization：优化</a><ul>
+                        
+                <li>
+                    <a href="#prebake-collision-meshes%e9%a2%84%e7%83%98%e7%84%99%e7%a2%b0%e6%92%9e%e5%88%b0%e7%bd%91%e6%a0%bc" aria-label="Prebake Collision Meshes：预烘焙碰撞到网格">Prebake Collision Meshes：预烘焙碰撞到网格</a></li>
+                <li>
+                    <a href="#keep-loaded-shaders-alive%e4%bf%9d%e6%8c%81%e5%8a%a0%e8%bd%bd%e7%9a%84%e7%9d%80%e8%89%b2%e5%99%a8%e7%9a%84%e6%b4%bb%e5%8a%a8%e7%8a%b6%e6%80%81" aria-label="Keep Loaded Shaders Alive：保持加载的着色器的活动状态">Keep Loaded Shaders Alive：保持加载的着色器的活动状态</a></li></ul>
+                </li>
+                <li>
+                    <a href="#preloaded-assets%e9%a2%84%e8%a3%85%e8%b5%84%e6%ba%90" aria-label="Preloaded Assets：预装资源">Preloaded Assets：预装资源</a><ul>
+                        
+                <li>
+                    <a href="#strip-engine-code%e5%89%a5%e7%a6%bb%e5%bc%95%e6%93%8e%e4%bb%a3%e7%a0%81" aria-label="Strip Engine Code：剥离引擎代码">Strip Engine Code：剥离引擎代码</a></li>
+                <li>
+                    <a href="#managed-stripping-level%e7%ae%a1%e7%90%86%e5%89%a5%e7%a6%bb%e6%b0%b4%e5%b9%b3" aria-label="Managed Stripping Level：管理剥离水平">Managed Stripping Level：管理剥离水平</a></li>
+                <li>
+                    <a href="#enable-internal-profiler%e5%90%af%e7%94%a8%e5%86%85%e9%83%a8%e6%8e%a2%e6%9f%a5%e5%99%a8%e5%b7%b2%e7%bb%8f%e5%bc%83%e7%94%a8%e7%9a%84%e5%8a%9f%e8%83%bd" aria-label="Enable Internal Profiler：启用内部探查器，已经弃用的功能">Enable Internal Profiler：启用内部探查器，已经弃用的功能</a></li></ul>
+                </li>
+                <li>
+                    <a href="#vertex-compression%e9%a1%b6%e7%82%b9%e5%8e%8b%e7%bc%a9" aria-label="Vertex Compression：顶点压缩">Vertex Compression：顶点压缩</a><ul>
+                        
+                <li>
+                    <a href="#optimize-mesh-data%e4%bc%98%e5%8c%96%e7%bd%91%e6%a0%bc%e6%95%b0%e6%8d%ae" aria-label="Optimize Mesh Data：优化网格数据">Optimize Mesh Data：优化网格数据</a></li>
+                <li>
+                    <a href="#texture-mipmap-stripping%e8%b4%b4%e5%9b%be%e7%ba%b9%e7%90%86%e5%89%a5%e7%a6%bb" aria-label="Texture MipMap Stripping：贴图纹理剥离">Texture MipMap Stripping：贴图纹理剥离</a></li>
+                <li>
+                    <a href="#stack-trace%e5%a0%86%e6%a0%88%e8%b7%9f%e8%b8%aa" aria-label="Stack Trace：堆栈跟踪">Stack Trace：堆栈跟踪</a></li>
+                <li>
+                    <a href="#legacy%e4%bb%a5%e5%89%8d%e7%9a%84%e5%86%85%e5%ae%b9" aria-label="Legacy：以前的内容">Legacy：以前的内容</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#publishing-settings" aria-label="Publishing Settings">Publishing Settings</a><ul>
+                        
+                <li>
+                    <a href="#%e5%89%8d%e8%a8%80" aria-label="前言">前言</a><ul>
+                        
+                <li>
+                    <a href="#android-%e4%b8%ad%e7%9a%84%e7%ad%be%e5%90%8d%e6%98%af%e4%bb%80%e4%b9%88" aria-label="Android 中的签名是什么？">Android 中的签名是什么？</a></li>
+                <li>
+                    <a href="#android-%e5%ba%94%e7%94%a8%e7%a8%8b%e5%ba%8f%e6%b8%85%e5%8d%95%e6%98%af%e4%bb%80%e4%b9%88" aria-label="Android 应用程序清单是什么？">Android 应用程序清单是什么？</a></li>
+                <li>
+                    <a href="#gradle-%e6%98%af%e4%bb%80%e4%b9%88" aria-label="Gradle 是什么？">Gradle 是什么？</a></li>
+                <li>
+                    <a href="#proguard-%e5%92%8c-r8-%e6%98%af%e4%bb%80%e4%b9%88" aria-label="ProGuard 和 R8 是什么？">ProGuard 和 R8 是什么？</a></li></ul>
+                </li>
+                <li>
+                    <a href="#keystore-manager%e5%af%86%e9%92%a5%e7%ae%a1%e7%90%86%e5%99%a8" aria-label="Keystore Manager：密钥管理器">Keystore Manager：密钥管理器</a></li>
+                <li>
+                    <a href="#project-keystore%e9%a1%b9%e7%9b%ae%e5%af%86%e9%92%a5%e5%ba%93" aria-label="Project Keystore：项目密钥库">Project Keystore：项目密钥库</a></li>
+                <li>
+                    <a href="#project-key%e9%a1%b9%e7%9b%ae%e5%af%86%e9%92%a5" aria-label="Project Key：项目密钥">Project Key：项目密钥</a></li>
+                <li>
+                    <a href="#build%e6%9e%84%e5%bb%ba%e7%9b%b8%e5%85%b3" aria-label="Build：构建相关">Build：构建相关</a><ul>
+                        
+                <li>
+                    <a href="#custom-main-manifest%e8%87%aa%e5%ae%9a%e4%b9%89%e4%b8%bb%e6%b8%85%e5%8d%95%e6%96%87%e4%bb%b6" aria-label="Custom Main Manifest：自定义主清单文件">Custom Main Manifest：自定义主清单文件</a></li>
+                <li>
+                    <a href="#custom-launcher-manifest%e8%87%aa%e5%ae%9a%e4%b9%89%e5%90%af%e5%8a%a8%e5%99%a8%e6%b8%85%e5%8d%95" aria-label="Custom Launcher Manifest：自定义启动器清单">Custom Launcher Manifest：自定义启动器清单</a></li>
+                <li>
+                    <a href="#custom-main-gradle-template%e8%87%aa%e5%ae%9a%e4%b9%89%e4%b8%bbgradle%e6%9e%84%e5%bb%ba%e6%a8%a1%e6%9d%bf" aria-label="Custom Main Gradle Template：自定义主Gradle构建模板">Custom Main Gradle Template：自定义主Gradle构建模板</a></li>
+                <li>
+                    <a href="#custom-launcher-gradle-template%e8%87%aa%e5%ae%9a%e4%b9%89%e5%90%af%e5%8a%a8%e5%99%a8gradle%e6%9e%84%e5%bb%ba%e6%a8%a1%e6%9d%bf" aria-label="Custom Launcher Gradle Template：自定义启动器Gradle构建模板">Custom Launcher Gradle Template：自定义启动器Gradle构建模板</a></li>
+                <li>
+                    <a href="#custom-base-gradle-template%e8%87%aa%e5%ae%9a%e4%b9%89%e5%9f%ba%e7%a1%80gradle%e6%9e%84%e5%bb%ba%e6%a8%a1%e6%9d%bf" aria-label="Custom Base Gradle Template：自定义基础Gradle构建模板">Custom Base Gradle Template：自定义基础Gradle构建模板</a></li>
+                <li>
+                    <a href="#custom-gradle-properties-template%e8%87%aa%e5%ae%9a%e4%b9%89%e5%b1%9e%e6%80%a7gradle%e6%9e%84%e5%bb%ba%e6%a8%a1%e6%9d%bf" aria-label="Custom Gradle Properties Template：自定义属性Gradle构建模板">Custom Gradle Properties Template：自定义属性Gradle构建模板</a></li>
+                <li>
+                    <a href="#custom-proguard-file%e8%87%aa%e5%ae%9a%e4%b9%89proguard%e6%96%87%e4%bb%b6" aria-label="Custom Proguard File：自定义Proguard文件">Custom Proguard File：自定义Proguard文件</a></li></ul>
+                </li>
+                <li>
+                    <a href="#minify%e4%bb%a3%e7%a0%81%e6%b7%b7%e6%b7%86%e5%92%8c%e7%bc%a9%e5%b0%8f%e7%9b%b8%e5%85%b3" aria-label="Minify：代码混淆和缩小相关">Minify：代码混淆和缩小相关</a></li>
+                <li>
+                    <a href="#split-application-binary%e6%8b%86%e5%88%86%e5%ba%94%e7%94%a8%e7%a8%8b%e5%ba%8f%e4%ba%8c%e8%bf%9b%e5%88%b6%e6%96%87%e4%bb%b6" aria-label="Split Application Binary：拆分应用程序二进制文件">Split Application Binary：拆分应用程序二进制文件</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#unity%e6%89%93%e5%8c%85android" aria-label="Unity打包Android">Unity打包Android</a><ul>
+                        
+                <li>
+                    <a href="#unity%e5%af%bc%e5%87%baapk" aria-label="Unity导出APk">Unity导出APk</a></li>
+                <li>
+                    <a href="#unity%e5%af%bc%e5%87%baandroid-studio%e8%83%bd%e5%a4%9f%e6%89%93%e5%bc%80%e7%9a%84%e5%b7%a5%e7%a8%8b" aria-label="Unity导出Android Studio能够打开的工程">Unity导出Android Studio能够打开的工程</a><ul>
+                        
+                <li>
+                    <a href="#%e5%9c%a8android-studio%e4%b8%ad%e6%89%93%e5%bc%80unity%e5%af%bc%e5%87%ba%e7%9a%84%e5%b7%a5%e7%a8%8b" aria-label="在Android Studio中打开Unity导出的工程">在Android Studio中打开Unity导出的工程</a></li>
+                <li>
+                    <a href="#%e4%bd%bf%e7%94%a8android-studio%e7%94%9f%e6%88%90%e5%ba%94%e7%94%a8%e7%a8%8b%e5%ba%8fapk" aria-label="使用Android Studio生成应用程序apk">使用Android Studio生成应用程序apk</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#android%e8%b0%83%e8%af%95%e7%9b%b8%e5%85%b3" aria-label="Android调试相关">Android调试相关</a><ul>
+                        
+                <li>
+                    <a href="#unity%e8%bf%9b%e8%a1%8c%e5%ae%89%e5%8d%93%e7%9c%9f%e6%9c%ba%e8%b0%83%e8%af%95" aria-label="Unity进行安卓真机调试">Unity进行安卓真机调试</a><ul>
+                        
+                <li>
+                    <a href="#%e8%b0%83%e8%af%95%e6%8c%87%e7%9a%84%e6%98%af%e4%bb%80%e4%b9%88" aria-label="调试指的是什么？">调试指的是什么？</a></li>
+                <li>
+                    <a href="#%e5%87%86%e5%a4%87%e6%b5%8b%e8%af%95%e7%94%a8%e5%ae%89%e5%8d%93%e6%89%8b%e6%9c%ba" aria-label="准备测试用安卓手机">准备测试用安卓手机</a></li>
+                <li>
+                    <a href="#%e5%9c%a8unity%e4%b8%ad%e8%bf%9b%e8%a1%8c%e8%b0%83%e8%af%95%e7%9b%b8%e5%85%b3%e8%ae%be%e7%bd%ae" aria-label="在Unity中进行调试相关设置">在Unity中进行调试相关设置</a></li>
+                <li>
+                    <a href="#unity%e8%bf%9e%e6%8e%a5%e5%ae%89%e5%8d%93%e7%9c%9f%e6%9c%ba%e8%bf%9b%e8%a1%8c%e9%a1%b9%e7%9b%ae%e8%b0%83%e8%af%95" aria-label="Unity连接安卓真机进行项目调试">Unity连接安卓真机进行项目调试</a></li></ul>
+                </li>
+                <li>
+                    <a href="#unity-remote" aria-label="Unity Remote">Unity Remote</a><ul>
+                        
+                <li>
+                    <a href="#remote%e6%98%af%e4%bb%80%e4%b9%88" aria-label="Remote是什么？">Remote是什么？</a></li>
+                <li>
+                    <a href="#%e8%8e%b7%e5%8f%96%e5%92%8c%e4%bd%bf%e7%94%a8unity-remote" aria-label="获取和使用Unity Remote">获取和使用Unity Remote</a></li></ul>
+                </li>
+                <li>
+                    <a href="#android-logcat" aria-label="Android Logcat">Android Logcat</a><ul>
+                        
+                <li>
+                    <a href="#android-logcat%e6%98%af%e4%bb%80%e4%b9%88" aria-label="Android Logcat是什么？">Android Logcat是什么？</a></li>
+                <li>
+                    <a href="#%e5%a6%82%e4%bd%95%e4%bd%bf%e7%94%a8android-logcat%e5%b7%a5%e5%85%b7" aria-label="如何使用Android Logcat工具">如何使用Android Logcat工具</a></li>
+                <li>
+                    <a href="#android-logcat%e7%aa%97%e5%8f%a3%e5%9f%ba%e7%a1%80%e7%9f%a5%e8%af%86" aria-label="Android Logcat窗口基础知识">Android Logcat窗口基础知识</a><ul>
+                        
+                <li>
+                    <a href="#a%e5%b7%a5%e5%85%b7%e6%a0%8f" aria-label="A：工具栏">A：工具栏</a><ul>
+                        
+                <li>
+                    <a href="#auto-run%e8%87%aa%e5%8a%a8%e8%bf%90%e8%a1%8c" aria-label="Auto Run：自动运行">Auto Run：自动运行</a></li>
+                <li>
+                    <a href="#no-device%e8%ae%be%e5%a4%87%e9%80%89%e6%8b%a9%e5%99%a8" aria-label="No device：设备选择器">No device：设备选择器</a></li>
+                <li>
+                    <a href="#no-filter%e8%bf%87%e6%bb%a4%e9%80%89%e6%8b%a9%e5%99%a8" aria-label="No Filter：过滤选择器">No Filter：过滤选择器</a></li>
+                <li>
+                    <a href="#%e8%bf%87%e6%bb%a4%e8%be%93%e5%85%a5%e6%a1%86" aria-label="过滤输入框">过滤输入框</a></li>
+                <li>
+                    <a href="#filter-options%e8%bf%87%e6%bb%a4%e5%99%a8%e9%80%89%e9%a1%b9" aria-label="Filter Options：过滤器选项">Filter Options：过滤器选项</a></li>
+                <li>
+                    <a href="#reconnect%e9%87%8d%e6%96%b0%e8%bf%9e%e6%8e%a5" aria-label="Reconnect：重新连接">Reconnect：重新连接</a></li>
+                <li>
+                    <a href="#disconnect%e6%96%ad%e5%bc%80%e5%92%8c%e8%ae%be%e5%a4%87%e7%9a%84%e8%bf%9e%e6%8e%a5" aria-label="Disconnect：断开和设备的连接">Disconnect：断开和设备的连接</a></li>
+                <li>
+                    <a href="#clear%e6%b8%85%e9%99%a4%e6%b6%88%e6%81%af%e5%88%97%e8%a1%a8%e4%b8%ad%e7%9a%84%e6%b6%88%e6%81%af%e6%97%a5%e5%bf%97" aria-label="Clear：清除消息列表中的消息日志">Clear：清除消息列表中的消息日志</a></li>
+                <li>
+                    <a href="#tools%e5%b7%a5%e5%85%b7%e7%9b%b8%e5%85%b3" aria-label="Tools：工具相关">Tools：工具相关</a></li></ul>
+                </li>
+                <li>
+                    <a href="#b%e6%b6%88%e6%81%af%e6%97%a5%e5%bf%97" aria-label="B：消息日志">B：消息日志</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%b1%8f%e5%b9%95%e6%8d%95%e8%8e%b7%e5%b7%a5%e5%85%b7" aria-label="屏幕捕获工具">屏幕捕获工具</a></li>
+                <li>
+                    <a href="#%e5%a0%86%e6%a0%88%e8%b7%9f%e8%b8%aa%e5%ae%9e%e7%94%a8%e5%b7%a5%e5%85%b7" aria-label="堆栈跟踪实用工具">堆栈跟踪实用工具</a><ul>
+                        
+                <li>
+                    <a href="#%e5%a0%86%e6%a0%88%e8%b7%9f%e8%b8%aa%e5%ae%9e%e7%94%a8%e5%b7%a5%e5%85%b7%e7%9a%84%e4%bd%bf%e7%94%a8" aria-label="堆栈跟踪实用工具的使用">堆栈跟踪实用工具的使用</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%86%85%e5%ad%98%e7%aa%97%e5%8f%a3%e5%b7%a5%e5%85%b7" aria-label="内存窗口工具">内存窗口工具</a></li></ul>
+                </li>
+                <li>
+                    <a href="#android-debug-brige" aria-label="Android Debug Brige">Android Debug Brige</a><ul>
+                        
+                <li>
+                    <a href="#%e5%a6%82%e4%bd%95%e4%bd%bf%e7%94%a8adb" aria-label="如何使用ADB？">如何使用ADB？</a></li>
+                <li>
+                    <a href="#%e5%85%b3%e9%94%ae%e6%8c%87%e4%bb%a4" aria-label="关键指令">关键指令</a></li></ul>
+                </li>
+                <li>
+                    <a href="#android-studio%e4%b8%ad%e8%b0%83%e8%af%95%e5%ba%94%e7%94%a8%e7%a8%8b%e5%ba%8f" aria-label="Android Studio中调试应用程序">Android Studio中调试应用程序</a><ul>
+                        
+                <li>
+                    <a href="#%e5%9b%9e%e9%a1%beunity%e5%af%bc%e5%87%baandroid-studio%e5%b7%a5%e7%a8%8b" aria-label="回顾Unity导出Android Studio工程">回顾Unity导出Android Studio工程</a></li>
+                <li>
+                    <a href="#%e5%9c%a8android-studio%e4%b8%ad%e8%b0%83%e8%af%95%e5%ba%94%e7%94%a8%e7%a8%8b%e5%ba%8f" aria-label="在Android Studio中调试应用程序">在Android Studio中调试应用程序</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="android发布流程">Android发布流程<a hidden class="anchor" aria-hidden="true" href="#android发布流程">#</a></h2>
+<h3 id="unity2019及以上">Unity2019及以上<a hidden class="anchor" aria-hidden="true" href="#unity2019及以上">#</a></h3>
+<p>发布Android准备工作</p>
+<p>通过UnityHub安装Android平台相关工具</p>
+<p>1.Android构建支持</p>
+<p>2.Android SDK（安卓软件开发工具包）、NDKTools（本地开发工具包）</p>
+<p>3.OpenJDK（Java开发工具包）</p>
+<p>注意：Unity支持Android 5.1及以上版本</p>
+<h3 id="unity2019以下版本">Unity2019以下版本<a hidden class="anchor" aria-hidden="true" href="#unity2019以下版本">#</a></h3>
+<p>1.Android构建支持工具安装（Unity提供下载,安装时需要关闭Unity）</p>
+<p>2.JDK（Java开发工具包）（网络下载） JDK 必须是版本 8</p>
+<p><a href="https://www.oracle.com/java/technologies/downloads/#jdk18-windows">https://www.oracle.com/java/technologies/downloads/#jdk18-windows</a></p>
+<p>3.NDK (本地开发工具包)（网络下载）NDK 版本必须是 Unity2018——r16b, Unity2017——r13d</p>
+<p>注意：NDK是可选的工具，如果之后要发il2cpp的应用程序，那么NDK是必须的，如果是Mono可以不使用它</p>
+<p><a href="https://blog.csdn.net/momo0853/article/details/73898066">https://blog.csdn.net/momo0853/article/details/73898066</a></p>
+<p><a href="https://developer.android.google.cn/ndk/downloads/#lts-downloads">https://developer.android.google.cn/ndk/downloads/#lts-downloads</a></p>
+<p>4.Android SDK（安卓软件开发工具包）（网络下载或通过AndroidStudio下载）</p>
+<p>建议通过AndroidStudio下载</p>
+<p><a href="https://developer.android.com/studio">https://developer.android.com/studio</a></p>
+<p>安装AndroidStudio后 通过它来安装AndroidSDK</p>
+<p>5.Java环境变量配置</p>
+<p>我的电脑——&gt;系统属性——&gt;查找——&gt;系统环境变量——&gt;环境变量</p>
+<p>5-1:JAVA_HOME: 变量值为JDK在你电脑上的安装路径</p>
+<p>安装好后可以利用%JAVA_HOME%作为JDK安装目录的统一引用路径</p>
+<p>5-2:Path: 编辑Path属性，在原变量后追加 %JAVA_HOME%\bin;%JAVA_HOME%\jre\bin</p>
+<p>5-3:CLASSPATH: 变量值为 .;%JAVA_HOME%\lib\dt.jar;%JAVA_HOME%\lib\tools.jar</p>
+<h3 id="发布前必修改的设置">发布前必修改的设置<a hidden class="anchor" aria-hidden="true" href="#发布前必修改的设置">#</a></h3>
+<p>在File —— Build Setting —— Player Setting中修改</p>
+<p>1.公司名</p>
+<p>2.游戏项目名</p>
+<p>3.版本号</p>
+<p>4.默认图标</p>
+<p>5.Other Settings —— Package Name（必须修改设置）</p>
+<p>6.Other Settings —— Minimum APILevel</p>
+<h2 id="unity发布参数">Unity发布参数<a hidden class="anchor" aria-hidden="true" href="#unity发布参数">#</a></h2>
+<h3 id="build-settings-参数">Build Settings 参数<a hidden class="anchor" aria-hidden="true" href="#build-settings-参数">#</a></h3>
+<p><img alt="image-20220901221824489" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242133874.png"></p>
+<h4 id="texture-compression"><strong>Texture Compression</strong><a hidden class="anchor" aria-hidden="true" href="#texture-compression">#</a></h4>
+<p><strong>纹理压缩</strong>
+<strong>设置发布后的纹理压缩格式</strong></p>
+<p><img alt="image-20220901221934763" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242133057.png"></p>
+<p>**Use Player Settings: 使用在播放器设置中设置的纹理压缩格式
+ETC：使用ETC格式
+ETC2：使用ETC2格式
+ASTC：使用ASTC格式
+DXT：使用DXT格式
+PVRTC：使用PVRTC格式</p>
+<p>了解格式详细信息：https://docs.unity.cn/cn/2021.3/Manual/class-TextureImporterOverride.html#android</p>
+<p>注意：对于安卓ETC2是常用的压缩格式，支持透明通道。但是对于老设备不支持ETC2，可以使用ETC。
+我们可以统一设置为ETC2，在下方的ETC2 fallback中设置，如果不支持ETC2，使用哪种压缩方式**</p>
+<h4 id="etc2-fallback"><strong>ETC2 fallback</strong><a hidden class="anchor" aria-hidden="true" href="#etc2-fallback">#</a></h4>
+<p><strong>ETC2回退</strong>
+<strong>当Unity用于不支持ETC2的安卓设备时的RGBA纹理格式</strong></p>
+<p><img alt="image-20220901222221490" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242133278.png"></p>
+<p>32-bit：32位
+以全分辨率存储RGBA纹理，使用32位存储每个像素，质量最高，内存占用最多</p>
+<p>16-bit：16位
+以全分辨率存储RGBA纹理，使用16位存储每个像素，质量较低，纹理可能会丢失有价值的颜色信息，内存占用相对较少</p>
+<p>32-bit, half resolution：32位，半分辨率
+以半分辨率存储RGBA纹理，使用32位存储每个像素，由于是半分辨率，纹理会变得模糊，内存占用较小</p>
+<p>注意：如果使用的不是ETC2压缩，大多数压缩格式，使用32-bit备用
+取决于GPU支持什么</p>
+<h4 id="export-project"><strong>Export Project</strong><a hidden class="anchor" aria-hidden="true" href="#export-project">#</a></h4>
+<p><strong>导出项目</strong>
+<strong>勾选后，不会发布成apk，而是会将Unity项目导出为可以导入Android Studio的Gradle项目</strong></p>
+<h4 id="symlink-sources">Symlink Sources<a hidden class="anchor" aria-hidden="true" href="#symlink-sources">#</a></h4>
+<p>符号链接源
+当勾选Exprot Project时，才能勾选此选项。
+决定是否在Unity和导出的Gradle项目之间共享Java和Kotlin源文件
+启用后，对于测试和迭代Java和Kotlin代码很有用，如果你重新导出Unity项目，你在导出的项目对之前的Java和Kotlin源文件的任何更改都会保留</p>
+<p>如果你想导出后进行二次开发，建议勾选此选项</p>
+<h4 id="build-app-bundle-google-play">Build App Bundle (Google Play)<a hidden class="anchor" aria-hidden="true" href="#build-app-bundle-google-play">#</a></h4>
+<p>构建应用捆绑包
+是否将应用程序作为Android应用捆绑包（AAB）
+启用，发布出去是一个AAB（可以配合安卓进行二次开发）
+禁用，发布出去是一个APK（直接就是一个可安装的应用程序）</p>
+<h4 id="create-symbolszip"><strong>Create symbols.zip</strong><a hidden class="anchor" aria-hidden="true" href="#create-symbolszip">#</a></h4>
+<p><strong>创建 符号压缩文件</strong>
+<strong>符号文件可以帮助我们调试应用程序</strong>
+<strong>Unity会生成一个包含本机Unity库的符号文件的包</strong>
+<strong>它包含一个表，将活动内存地址转换为我们可以使用的信息，比如方法名，我们可以利用符号包来检测调试应用程序的信息</strong>**</p>
+<p><img alt="image-20220901222330411" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242133225.png"></p>
+<p><strong>Disabled：不生成</strong>
+<strong>Public：Unity生成一个公共符号为程序打包</strong>
+<strong>公共符号文件包含将函数地址解析为人类可读字符串的信息，包小于调试符号的包</strong>
+<strong>Debugging：Unity生成一个调试符号为程序打包</strong>
+<strong>包含完整的调试信息和符号表，可以用来解析堆栈、将本机调试器附加到应用程序调试代码</strong></p>
+<h4 id="run-device"><strong>Run Device</strong><a hidden class="anchor" aria-hidden="true" href="#run-device">#</a></h4>
+<p><strong>运行的设备</strong>
+<strong>指定在哪个附加设备上测试生成</strong>
+<strong>如果你连接了新设备或在列表中没有看到连接的设备</strong>
+<strong>点击刷新Refresh</strong></p>
+<h4 id="build-to-device"><strong>Build to Device</strong><a hidden class="anchor" aria-hidden="true" href="#build-to-device">#</a></h4>
+<p><strong>构建到设备</strong>
+<strong>不创建完整的构建，而是将发生修改的单个文件直接部署到设备上</strong>
+<strong>相对来说更加快速，方便调试</strong></p>
+<h4 id="development-build"><strong>Development Build</strong><a hidden class="anchor" aria-hidden="true" href="#development-build">#</a></h4>
+<p><strong>开发模式构建</strong>
+<strong>是否包含脚本调试符号和性能分析器到你的项目中，如果你想要调试应用程序，请选择该选项</strong></p>
+<h4 id="autoconnect-profiler"><strong>Autoconnect Profiler</strong><a hidden class="anchor" aria-hidden="true" href="#autoconnect-profiler">#</a></h4>
+<p><strong>自动连接分析器</strong>
+<strong>是否自动将分析器连接到生成的应用程序</strong></p>
+<h4 id="deep-profiling"><strong>Deep Profiling</strong><a hidden class="anchor" aria-hidden="true" href="#deep-profiling">#</a></h4>
+<p><strong>深度剖析</strong>
+<strong>是否启用深度剖析在分析器中，可以让分析器能够检测应用程序中每个函数调用，从而返回更加详细的分析数据</strong>
+<strong>注意：该选项会降低脚本的执行速度</strong></p>
+<h4 id="script-debugging"><strong>Script Debugging</strong><a hidden class="anchor" aria-hidden="true" href="#script-debugging">#</a></h4>
+<p><strong>是否允许调试应用程序的脚本文件</strong></p>
+<p><img alt="image-20220901223243427" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242133607.png"></p>
+<p><strong>Wait For Managed Debugger</strong>
+<strong>是否等待托管调试器</strong>
+<strong>程序在运行脚本代码之前是否等待调试器连接</strong></p>
+<h4 id="compression-method">Compression Method<a hidden class="anchor" aria-hidden="true" href="#compression-method">#</a></h4>
+<p>压缩方法
+Unity在构建时压缩项目中数据的方式</p>
+<p><img alt="image-20220901223442983" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242134820.png"></p>
+<p>Default：默认使用ZIP，压缩效果略好于LZ4和LZ4HC，但是数据解压速度较慢
+LZ4：使用LZ4，这时一种快速压缩格式，相对ZIP可以显著提高Unity应用程序的加载时间
+LZ4HC：LZ4的高压缩版本，构建速度较慢，但是对于发布版本会产生更好的结果，相对ZIP可以显著提高应用程序加载时间</p>
+<h4 id="max-texture-size">Max Texture Size<a hidden class="anchor" aria-hidden="true" href="#max-texture-size">#</a></h4>
+<p>最大的纹理大小
+用于本地开发时导入纹理的最大尺寸
+减小最大纹理大小可以加快资源导入和平台切换</p>
+<h4 id="texture-compression-1">Texture Compression<a hidden class="anchor" aria-hidden="true" href="#texture-compression-1">#</a></h4>
+<p>纹理压缩
+选择下面两个选项，可以加快资源导入和平台切换</p>
+<p>No Override：使用默认设置
+Force Fast Compressor：强制快速压缩
+Force Uncompressed：强制解压缩</p>
+<h3 id="player-settings相关"><strong>Player Settings相关</strong><a hidden class="anchor" aria-hidden="true" href="#player-settings相关">#</a></h3>
+<h4 id="player-基础设置">Player <strong>基础设置</strong><a hidden class="anchor" aria-hidden="true" href="#player-基础设置">#</a></h4>
+<p><img alt="image-20220901224319232" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242134900.png"></p>
+<h4 id="icon-图标设置"><strong>Icon 图标设置</strong><a hidden class="anchor" aria-hidden="true" href="#icon-图标设置">#</a></h4>
+<p><strong>设置在设备上显示的应用图标</strong></p>
+<p><strong>Adaptive：运行在Android8.0及以上版本上的设备显示的应用图标</strong>
+<strong>Round：运行在Android7.1及以上版本上的设备显示的应用图标</strong>
+<strong>Legacy icons：运行在Android7.1以下版本上的设备显示的应用图标</strong></p>
+<h4 id="resolution-and-presentation-分辨率和演示设置"><strong>Resolution and Presentation 分辨率和演示设置</strong><a hidden class="anchor" aria-hidden="true" href="#resolution-and-presentation-分辨率和演示设置">#</a></h4>
+<h5 id="fullscreen-mode">Fullscreen Mode<a hidden class="anchor" aria-hidden="true" href="#fullscreen-mode">#</a></h5>
+<p>全屏模式</p>
+<p>Fullscreen Window：
+全屏窗口（导航栏始终处于隐藏状态）
+会缩放应用程序内容，为了匹配纵横比，可能会有黑边</p>
+<p>Windowed：
+窗口模式，窗口大小取决于应用程序分辨率</p>
+<h5 id="resizable-window">Resizable Window<a hidden class="anchor" aria-hidden="true" href="#resizable-window">#</a></h5>
+<p>课调整大小的窗口</p>
+<p>设置用户是否可以调整应用程序窗口的大小</p>
+<p><img alt="image-20220901225112530" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242134540.png"></p>
+<p>此设置可以安卓和平板电脑上的应用程序中启用多窗口功能
+详情：https://developer.android.com/guide/topics/ui/multi-window#java</p>
+<h5 id="hide-navigation-bar"><strong>Hide Navigation Bar</strong><a hidden class="anchor" aria-hidden="true" href="#hide-navigation-bar">#</a></h5>
+<p><strong>是否隐藏顶部显示的导航栏</strong></p>
+<h5 id="render-outside-safe-area"><strong>Render outside safe area</strong><a hidden class="anchor" aria-hidden="true" href="#render-outside-safe-area">#</a></h5>
+<p><strong>是否应使用所有可用的屏幕控件进行渲染</strong>
+<strong>包括留海区域</strong></p>
+<h5 id="optimized-frame-pacing">Optimized frame Pacing<a hidden class="anchor" aria-hidden="true" href="#optimized-frame-pacing">#</a></h5>
+<p>是否应均匀分布帧以减小帧速率的方差，启用后体验更流程</p>
+<h4 id="resolution-scaling分辨率缩放">Resolution Scaling分辨率缩放<a hidden class="anchor" aria-hidden="true" href="#resolution-scaling分辨率缩放">#</a></h4>
+<h5 id="resolution-scaling-mode">Resolution Scaling Mode<a hidden class="anchor" aria-hidden="true" href="#resolution-scaling-mode">#</a></h5>
+<p>分辨率缩放模式</p>
+<p>Disabled：禁用
+不应用分辨率缩放，应用程序呈现为设备的本机屏幕分辨率</p>
+<p>Fixed DPI：使用API应用分辨率缩放，使用此选项可优化性能和电池寿命</p>
+<p>Target DPI：如果设备的本机屏幕DPI高于设置的值，Unity将降低应用程序的分辨率以匹配此设置
+计算方式：
+Min（Target DPI * Factor / Screen DPI，1）
+其中Factor是在Quality质量设置中设置的 Resolution Scaling Fixed DPI Factor参数</p>
+<h5 id="reset-resolution-on-window-resize">Reset resolution on window resize:<a hidden class="anchor" aria-hidden="true" href="#reset-resolution-on-window-resize">#</a></h5>
+<p>当本机窗口大小更改时，是否将屏幕分辨率设置为新的本机窗口大小
+如果分辨率缩放模式是Fixed DPI，则将重新计算分辨率</p>
+<h5 id="blit-type">Blit Type：<a hidden class="anchor" aria-hidden="true" href="#blit-type">#</a></h5>
+<p>光高类型
+是否使用Blit将最终图像呈现在屏幕上</p>
+<p>Always：总是让Unity渲染到屏幕外的缓冲区，然后使用Blit将缓冲区的内容复制到设备的帧缓冲区（这和大部分设备兼容，但比不用Blit慢）</p>
+<p>Nerver：Unity将渲染到设备操作系统提供的帧缓冲区，如果失败，会有警告信息打印到日志当中。通常比使用Blit块，但是不兼容所有设备</p>
+<p>Auto：Unity会渲染到设备操作系统提供的帧缓冲区，如果失败，会打印到日志中，并使用Blit将最终图像呈现到屏幕上</p>
+<h4 id="supported-aspect-ratio支持的纵横比">Supported Aspect Ratio：支持的纵横比<a hidden class="anchor" aria-hidden="true" href="#supported-aspect-ratio支持的纵横比">#</a></h4>
+<p>Orientation：屏幕取向</p>
+<h5 id="aspect-ratio-mode">Aspect Ratio Mode：<a hidden class="anchor" aria-hidden="true" href="#aspect-ratio-mode">#</a></h5>
+<p>指定应用程序支持的最大纵横比。</p>
+<p>如果设备的纵横比大于此纵横比，Unity会将此纵横比用于应用程序，并添加黑条，使应用程序不会拉伸</p>
+<p>Legacy Wide Screen(1.86):支持android的传统宽屏宽高比</p>
+<p>Native Aspect Ratio:支持Android本机宽高比的宽高比</p>
+<p>Custom:自定义纵横比</p>
+<p>选择自定义纵横比时可以自己设置</p>
+<h5 id="default-orientation"><strong>Default Orientation：</strong><a hidden class="anchor" aria-hidden="true" href="#default-orientation">#</a></h5>
+<p><strong>默认取向</strong></p>
+<p><strong>指定应用程序使用的屏幕方向（横屏、竖屏设置）</strong></p>
+<p><strong>Portrait：竖屏（应用程序窗口底部和屏幕底部对齐）</strong>
+<strong>Portrait Upside Down：竖屏倒置（应用程序窗口底部和屏幕顶部对齐）</strong>
+<strong>Landscape Right：右横屏（应用程序窗口右侧和屏幕底部对齐）</strong>
+<strong>Landscape Left：左横屏（应用程序窗口左侧和屏幕底部对齐）</strong>
+<strong>Auto Rotation：自动旋转，可以旋转到你允许的任意方向，在下方勾选即可</strong></p>
+<h5 id="use-32-bit-display-buffer">Use 32-bit Display Buffer：<a hidden class="anchor" aria-hidden="true" href="#use-32-bit-display-buffer">#</a></h5>
+<p>显示缓冲区是否保存32位颜色值而不是16位颜色值。</p>
+<p>如果你在后期处理效果中看到了条带效果或者需要Alpha值，请启用此设置，某些后期处理效果需要开其它，因为他们以显示缓冲区相同的格式创建渲染纹理</p>
+<h5 id="disable-depth-and-stencil">Disable Depth and Stencil：<a hidden class="anchor" aria-hidden="true" href="#disable-depth-and-stencil">#</a></h5>
+<p>是否禁用深度和模板缓冲区</p>
+<h5 id="render-over-native-ui">Render Over Native UI：<a hidden class="anchor" aria-hidden="true" href="#render-over-native-ui">#</a></h5>
+<p>在本机UI上呈现
+设置是否在Android或者IOS的本机UI上进行渲染
+如果要该设置生效，需要把相机的清楚标志设置为使用Alpha值低于1的纯色</p>
+<h5 id="show-loading-indicator">Show Loading Indicator：<a hidden class="anchor" aria-hidden="true" href="#show-loading-indicator">#</a></h5>
+<p>显示加载指示器
+指定加载指示器是否显示以及如何显示</p>
+<p>Don&rsquo;t Show:不显示加载指示条
+Large:显示大的加载指示条
+Inversed Large:显示大的加载指示条，并带有翻转颜色
+Small:显示小的加载指示条
+Inversed Small:显示小的加载指示条，并带有翻转颜色</p>
+<h4 id="splash-image">Splash Image:<a hidden class="anchor" aria-hidden="true" href="#splash-image">#</a></h4>
+<p>启动图像设置</p>
+<h5 id="virtual-reality-splash-image">Virtual Reality Splash Image:<a hidden class="anchor" aria-hidden="true" href="#virtual-reality-splash-image">#</a></h5>
+<p>虚拟现实的初始屏幕设置</p>
+<h5 id="show-splash-screen">Show Splash Screen：<a hidden class="anchor" aria-hidden="true" href="#show-splash-screen">#</a></h5>
+<p>是否显示启动图像（收费版本才能修改，免费版本不能改）</p>
+<h5 id="preview">Preview：<a hidden class="anchor" aria-hidden="true" href="#preview">#</a></h5>
+<p>预览</p>
+<h5 id="splash-style">Splash Style：<a hidden class="anchor" aria-hidden="true" href="#splash-style">#</a></h5>
+<p>启动风格</p>
+<p>Dark on Light: 暗到亮
+Light on Dark: 亮到暗</p>
+<h5 id="animation">Animation:<a hidden class="anchor" aria-hidden="true" href="#animation">#</a></h5>
+<p>启动图像动画效果</p>
+<p>Static：静态不动的
+Dolly：由小变大
+Custom：自定义</p>
+<p><strong>Draw Mode：绘制模式</strong></p>
+<p><strong>Unity Logo Below：Unity Logo显示在前</strong>
+<strong>All Sequential：所有按顺序</strong></p>
+<p><strong>Logos：可以自己添加Logo图片按顺序显示</strong></p>
+<h5 id="background背景相关">BackGround：背景相关<a hidden class="anchor" aria-hidden="true" href="#background背景相关">#</a></h5>
+<p>Overlay Opacity:
+覆盖不透明度</p>
+<p>Background Color:
+背景颜色</p>
+<p>Blur Background Image:
+模糊背景图像</p>
+<p>Background Image:
+背景图像</p>
+<p>Alternate Portrait Image:
+备选图像</p>
+<p>Static Splash Image:
+静态启动图像</p>
+<p>Scaling:
+缩放比例</p>
+<p>Center：
+居中（仅缩小）：除非图像太大，否则以原始大小绘制图像，Unity会缩小图像</p>
+<p>Scale to fit：
+缩放以适应（填充），缩放图像，使较长尺寸完全适合屏幕大小，以黑色填充两侧空白区域</p>
+<p>Scale to fit：
+缩放以适应（裁剪），缩放图像，使较短的尺寸完全适合屏幕大小，将图像裁剪为较长的维度</p>
+<h3 id="othersetting相关">OtherSetting相关<a hidden class="anchor" aria-hidden="true" href="#othersetting相关">#</a></h3>
+<h4 id="rendering渲染设置">Rendering渲染设置<a hidden class="anchor" aria-hidden="true" href="#rendering渲染设置">#</a></h4>
+<h5 id="unity程序员必了解的图形程序接口"><strong>Unity程序员必了解的图形程序接口</strong><a hidden class="anchor" aria-hidden="true" href="#unity程序员必了解的图形程序接口">#</a></h5>
+<h6 id="openglopen-graphics-library"><strong>OpenGL（Open Graphics Library）</strong><a hidden class="anchor" aria-hidden="true" href="#openglopen-graphics-library">#</a></h6>
+<p>中文翻译过来是<strong>开放图形库</strong>，它定义了一个<strong>跨平台、跨语言</strong>的编程接口规格的专业图形程序接口，可以用于3D、2D图形渲染，是一个功能强大、调用方便的底层图形库。由于它跨平台、跨语言、出现时间早，因此它的应用极其广泛！</p>
+<h6 id="opengl-esopengl-for-embedded-systems"><strong>OpenGL ES（OpenGL for Embedded Systems）</strong><a hidden class="anchor" aria-hidden="true" href="#opengl-esopengl-for-embedded-systems">#</a></h6>
+<p>中文翻译过来是<strong>用于嵌入式系统的开放图形库</strong>，它是<strong>OpenGL的子级</strong>，<strong>主要针对手机、游戏主机</strong>等嵌入式设备而设计，免授权费、跨平台、功能完善。</p>
+<p>GLES2.0、GLES3.0 指的就是OpenGL ES这套标准，他们也是Android和IOS手机上常用的图形处理标准。</p>
+<p><strong>Unity在移动平台进行图形渲染处理时，就包含了OpenGL ES方案</strong></p>
+<h6 id="vulkan"><strong>Vulkan</strong><a hidden class="anchor" aria-hidden="true" href="#vulkan">#</a></h6>
+<p>“下一代”开放的图形显示API，是与DX12能够匹敌的GPU API标准。它有一套最新的图形加速API接口，目标是提供更灵活和丰富的底层操作接口，以替代OpenGL 和 OpenGL ES接口，<strong>可****以把Vulkan看做是OpenGL的升级版</strong>，目前<strong>新版本的Unity支持使用Vulkan方案</strong>。</p>
+<h6 id="directxdirect-extension"><strong>Directx（Direct eXtension）</strong><a hidden class="anchor" aria-hidden="true" href="#directxdirect-extension">#</a></h6>
+<p>中文翻译过来是直接拓展，简称DX。它是由<strong>微软</strong>公司创建的多媒体编程接口。它<strong>不跨平台</strong>，只针对微软的相关产品，被广泛使用于Windows操作系统、xBox游戏主机的图形应用程序开发中。</p>
+<p>其中的D3D算是DX一部分，是对标OpenGL的图形程序接口</p>
+<h6 id="webglweb-graphics-library"><strong>WebGL（Web Graphics Library）</strong><a hidden class="anchor" aria-hidden="true" href="#webglweb-graphics-library">#</a></h6>
+<p>中文翻译过来是网页图形库，它是<strong>针对Web端（*<em>网页*</em>）的3D绘图协议</strong>，这个标准允许把JavaScript和OpenGL ES 2.0结合在一起，网页开发人员可以借助系统显卡在浏览器里流畅的展示3D场景和模型，可以在网页里进行3D图形开发。</p>
+<h6 id="metal"><strong>Metal</strong><a hidden class="anchor" aria-hidden="true" href="#metal">#</a></h6>
+<p>中文翻译过来是金属，它是<strong>苹果公司</strong>为游戏开发者提供的图形技术，该技术能够为3D图像提高10倍渲染性能，但是它不支持跨平台，主要针对IOS、macOS苹果自家的操作系统，只有苹果手机、电脑能够使用。</p>
+<p><strong>Windows电脑：DX、OpenGL、Vulkan</strong></p>
+<p><strong>苹果电脑：Metal、OpenGL、Vulkan</strong></p>
+<p><strong>安卓手机：OpenGL ES、Vulkan</strong></p>
+<p><strong>苹果手机：OpenGL ES、Vulkan、Metal</strong></p>
+<p><strong>网站网页：Web GL</strong></p>
+<p>如果不通过游戏引擎，我们想要在这些平台上开发游戏，那么就必须要针对不同平台学习对应的图形程序接口相关的知识。你会发现<strong>OpenGL</strong>的身影在各主流平台中都占有一席之地，由于它<strong>出现早、跨平台、跨语言</strong>，所以也是为什么在学习计算机图形学时，OpenGL是必学的内容。</p>
+<p>我们现在使用游戏引擎开发游戏，在绝大多数情况下，不需要直接和图形程序接口打交道，但是<strong>我们在Unity当中发布应用程序时</strong>，<strong>经常会看到和他们相关的一些设置</strong>，必须要了解了他们的基本概念，才能清楚我们在设置什么。</p>
+<p>这些<strong>图形程序接口</strong>还有不同的版本，比如DX10、DX11、DX12，比如OpenGL ES 2.0、OpenGL ES 3.0。<strong>不同的设备、不同的操作系统他们支持的版本也是不同的</strong>。比如我们进行手机游戏开发时，我们**可以去查询主流移动设备支持的图形程序接口的版本，来决定在发布时，对于图形程序接口版本的兼容选择****。这样才能保证我们发布的应用程序能够支持更多的移动设备。</p>
+<h5 id="color-space色彩空间"><strong>Color Space：色彩空间</strong><a hidden class="anchor" aria-hidden="true" href="#color-space色彩空间">#</a></h5>
+<p><strong>可以在此切换Unity中用于渲染的色彩空间</strong>
+<strong>Gamman（伽马）和 Linear（线性）</strong></p>
+<p><strong>区别：</strong>
+<strong>纹理倾向于保存在伽马颜色空间中，而着色器期望使用线性颜色空间</strong>
+<strong>因此，在着色器中对纹理进行采样时，基于伽马的值会导致不准确的结果</strong>
+<strong>我们可以选择线性色彩空间，然后通过纹理中的 sRGB选项决定是用伽马还是线性，勾选sRGB是伽马，取消勾选是线性</strong></p>
+<p><strong>如何选择：</strong>
+<strong>线性渲染的效果相对较好一些</strong>
+<strong>但并不是所有平台都支持线性渲染</strong>
+<strong>支持的平台为：</strong>
+<strong>Android、IOS、WebGL、Windows、Mac OS X 、Linux</strong>
+<strong>当设备不支持线性渲染时，不会退回到伽马控件，而是自动退出</strong></p>
+<p><strong>在 Android 上，线性渲染至少需要 OpenGL ES 3.0 图形 API 和 Android 4.3</strong>
+<strong>在 iOS 上，线性渲染需要 Metal 图形 API</strong>
+<strong>在 WebGL 上，线性渲染至少需要 WebGL 2.0 图形 API</strong></p>
+<p><strong>确定你的应用程序运行的主流设备是否支持，如果支持则选择线性，不支持选择伽马</strong></p>
+<p><img alt="image-20220901231129340" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242134818.png"></p>
+<p><a href="https://docs.unity.cn/cn/2021.3/Manual/LinearLighting.html">https://docs.unity.cn/cn/2021.3/Manual/LinearLighting.html</a></p>
+<h5 id="什么是vulkan"><strong>什么是Vulkan？</strong><a hidden class="anchor" aria-hidden="true" href="#什么是vulkan">#</a></h5>
+<p><strong>是一个跨平台的2D和3D绘图应用程序接口</strong>
+<strong>在2015年游戏开发者大会（GDC）上发表</strong>
+<strong>是OpenGL的下一代版本，旨在提供更低的CPU开销与更直接的GPU控制</strong></p>
+<h5 id="auto-graphics-api自动图形接口建议选择自动"><strong>Auto Graphics API:自动图形接口（建议选择自动）</strong><a hidden class="anchor" aria-hidden="true" href="#auto-graphics-api自动图形接口建议选择自动">#</a></h5>
+<p><strong>勾选：Unity会自动尝试使用对应图形API接口进行图形处理</strong>
+<strong>默认使用Vulkan，如果设备不支持Vulkan，Unity会退到GLES3.2、GLES3.1或GLES3.0</strong></p>
+<p><strong>不勾选：可以列表中自己对使用的图形API接口进行排序，设置使用优先级</strong></p>
+<p><strong>下方的副选项ES3.1、ES3.1+AEP、ES3.2是三个额外的用于配置最低OpenGL ES 3.X次要版本的</strong>
+<strong>注意：只有当GLES2不在列表中是，Unity才会讲额外的三个选项要求添加到Android应用清单中，在这种情况下，如果你的应用发布到GooglePlay应用商店，它将不会显示在不受支持的设备上</strong></p>
+<h5 id="color-gamut-色域">Color Gamut: 色域<a hidden class="anchor" aria-hidden="true" href="#color-gamut-色域">#</a></h5>
+<p>可以添加或删除 Android 平台用于渲染的色域
+色域定义了可用于给定设备（如监视器或屏幕）的可能颜色范围。sRGB 色域是默认（也是必需的）色域。当定位具有宽色域显示的设备时，请使用 DisplayP3 来利用完整的显示功能。</p>
+<p>一般的手机使用sRGB即可，如果是PC主机游戏，可以考虑添加DisplayP3</p>
+<h5 id="multithreaded-rendering多线程渲染"><strong>Multithreaded Rendering：多线程渲染</strong><a hidden class="anchor" aria-hidden="true" href="#multithreaded-rendering多线程渲染">#</a></h5>
+<p><strong>启用此选项可将图形 API 调用从 Unity 的主线程移动到单独的工作线程。这有助于提高主线程上 CPU 使用率较高的应用程序的性能。</strong></p>
+<h5 id="static-batching静态批处理"><strong>Static Batching：静态批处理</strong><a hidden class="anchor" aria-hidden="true" href="#static-batching静态批处理">#</a></h5>
+<p><strong>会将静态物体合并处理DC，提升性能</strong></p>
+<h5 id="dynamic-batching动态批处理"><strong>Dynamic Batching：动态批处理</strong><a hidden class="anchor" aria-hidden="true" href="#dynamic-batching动态批处理">#</a></h5>
+<p><strong>可以动态的合并DC，提高性能</strong>
+<strong>当可编程渲染管线（SPR）处于活动状态时，也就是启用了URP或者HDRP时，动态批处理不起作用</strong></p>
+<p><strong>在使用FairyGUI时，就需要开启它，FairyGUI的DC将得到优化</strong></p>
+<h5 id="compute-skinning计算蒙皮"><strong>Compute Skinning：计算蒙皮</strong><a hidden class="anchor" aria-hidden="true" href="#compute-skinning计算蒙皮">#</a></h5>
+<p><strong>启用此选项可启用 DX11/ES3 GPU 计算蒙皮，从而释放 CPU 资源</strong></p>
+<p><strong>图形接口的版本要求较高，PC上DX11、移动设备ES3</strong></p>
+<h5 id="graphics-jobsexperimental图形作业">Graphics Jobs(Experimental)：图形作业<a hidden class="anchor" aria-hidden="true" href="#graphics-jobsexperimental图形作业">#</a></h5>
+<h5 id="启用后unity将渲染循环的图形任务移到其它cpu内核上运行的工作线程可以减少在主线程上花费的时间">启用后，Unity将渲染循环的图形任务移到其它CPU内核上运行的工作线程，可以减少在主线程上花费的时间<a hidden class="anchor" aria-hidden="true" href="#启用后unity将渲染循环的图形任务移到其它cpu内核上运行的工作线程可以减少在主线程上花费的时间">#</a></h5>
+<h5 id="texture-compression-format纹理压缩格式"><strong>Texture compression format：纹理压缩格式</strong><a hidden class="anchor" aria-hidden="true" href="#texture-compression-format纹理压缩格式">#</a></h5>
+<p><strong>可以在ASTC、ETC2、ETC之间进行选择</strong></p>
+<h5 id="normal-map-encoding法线地图编码"><strong>Normal Map Encoding：法线地图编码</strong><a hidden class="anchor" aria-hidden="true" href="#normal-map-encoding法线地图编码">#</a></h5>
+<p><strong>选择 XYZ 或 DXT5nm 样式以设置法线映射编码。这会影响用于法线贴图的编码方案和压缩格式。DXT5nm 样式的法线贴图质量更高，但在着色器中解码成本更高</strong></p>
+<h5 id="lightmap-encoding光照贴图编码"><strong>Lightmap Encoding：光照贴图编码</strong><a hidden class="anchor" aria-hidden="true" href="#lightmap-encoding光照贴图编码">#</a></h5>
+<p><strong>选择“正常质量”或“高质量”以设置光照贴图编码。此设置会影响光照贴图的编码方案和压缩格式</strong></p>
+<h5 id="lightmap-streaming光照贴图流"><strong>Lightmap Streaming：光照贴图流</strong><a hidden class="anchor" aria-hidden="true" href="#lightmap-streaming光照贴图流">#</a></h5>
+<p><strong>是否对光照贴图使用 Mipmap 流式处理</strong></p>
+<h5 id="frame-timing-stats帧时序统计">Frame Timing Stats：帧时序统计<a hidden class="anchor" aria-hidden="true" href="#frame-timing-stats帧时序统计">#</a></h5>
+<p>启用此属性可收集 CPU 和 GPU 帧时间统计信息</p>
+<p>需要和摄像机上的动态分辨率设置结合使用（Camera组件下的Allow Dynamic Resolution选项），以确定应用程序是受 CPU 还是 GPU 限制。</p>
+<h5 id="opengl">OpenGL:<a hidden class="anchor" aria-hidden="true" href="#opengl">#</a></h5>
+<p>Profiler GPU Recorders：是否启用OpenGL的探查GPU记录器</p>
+<p>在OpenGL上，探查GPU记录器 会 禁用GPU探查器</p>
+<h5 id="virtual-texturing虚拟纹理">Virtual Texturing：虚拟纹理<a hidden class="anchor" aria-hidden="true" href="#virtual-texturing虚拟纹理">#</a></h5>
+<p>可在场景中具有很多高分辨率纹理时减少 GPU 内存使用量和纹理加载时间。它将纹理拆分为瓦片，然后在需要时将这些瓦片逐步上传到 GPU 内存中。</p>
+<p>注意：虚拟纹理和安卓设备不兼容</p>
+<h5 id="shader-precision-model着色器精度模型">Shader Precision model：着色器精度模型<a hidden class="anchor" aria-hidden="true" href="#shader-precision-model着色器精度模型">#</a></h5>
+<p>控制着色器中使用的采样器的默认精度</p>
+<h5 id="360-stereo-capture360-度立体捕捉">360 Stereo Capture：360 度立体捕捉<a hidden class="anchor" aria-hidden="true" href="#360-stereo-capture360-度立体捕捉">#</a></h5>
+<p>Unity 是否可以捕获立体 360 度全景图像和视频</p>
+<p>注意：360 度立体捕捉与 Android 不兼容。</p>
+<h4 id="vulkan-setting">Vulkan Setting<a hidden class="anchor" aria-hidden="true" href="#vulkan-setting">#</a></h4>
+<p>身份证明设置</p>
+<p>注意：安卓平台时，不要修改这些选项</p>
+<h5 id="srgb-write-mode-srgb-写入模式">SRGB Write Mode: SRGB 写入模式<a hidden class="anchor" aria-hidden="true" href="#srgb-write-mode-srgb-写入模式">#</a></h5>
+<p>允许呈现器在运行时切换 sRGB 写入模式，如果要暂时关闭线性到 sRGB 写入颜色转换，可以启用该选项</p>
+<p>注意：建议不要为移动设备启用该选项
+它会增加移动设备GPU的负担，产生负面影响</p>
+<h5 id="number-of-swapchain-buffers-交换链缓冲区数量">Number of swapchain buffers: 交换链缓冲区数量<a hidden class="anchor" aria-hidden="true" href="#number-of-swapchain-buffers-交换链缓冲区数量">#</a></h5>
+<p>设为2位双缓冲，设为3为三重缓冲可以和Vulkan渲染器一起使用
+该设置可以帮助解决移动平台上的延迟问题</p>
+<p>注意：一般情况下我们不要修改此选项，保持为3，不要在安卓设备上使用双缓冲，会产生负面影响</p>
+<h5 id="acquire-swapchain-image-late-as-possible尽可能晚的获取交换链图像">Acquire swapchain image late as possible：尽可能晚的获取交换链图像<a hidden class="anchor" aria-hidden="true" href="#acquire-swapchain-image-late-as-possible尽可能晚的获取交换链图像">#</a></h5>
+<p>启用后，Vulkan会延迟获取后缓冲器，直到它将帧渲染为屏幕外图像。Vulkan 使用暂存映像来实现此目的。启用此设置会导致在显示反向缓冲器时产生额外的光圈。此设置与双缓冲相结合，可以提高性能。但是，它也可能导致性能问题，因为额外的 blit 会占用带宽。</p>
+<p>注意：安卓设备上我们不要修改该选项</p>
+<h5 id="recycle-command-buffers回收命令缓冲区">Recycle command buffers：回收命令缓冲区<a hidden class="anchor" aria-hidden="true" href="#recycle-command-buffers回收命令缓冲区">#</a></h5>
+<p>Unity 执行命令缓冲区后是回收还是释放命令缓冲区</p>
+<h5 id="apply-display-rotation-during-rendering">Apply display rotation during rendering：<a hidden class="anchor" aria-hidden="true" href="#apply-display-rotation-during-rendering">#</a></h5>
+<p>在渲染期间应用显示旋转启用此选项可在显示的本机方向上执行所有渲染。这在许多设备上具有性能优势，虽然如此，但是使用它会带来一些限制，所以还是建议大家不要修改此选项</p>
+<h4 id="identification身份证明">Identification：身份证明<a hidden class="anchor" aria-hidden="true" href="#identification身份证明">#</a></h4>
+<p>注意：首次发布时，一定要确保包名的正确性</p>
+<h5 id="override-default-package-name是否覆盖默认包名称">Override Default Package Name：是否覆盖默认包名称<a hidden class="anchor" aria-hidden="true" href="#override-default-package-name是否覆盖默认包名称">#</a></h5>
+<p>如果你的公司名和游戏名 不是英文，请勾选它自行设置包名</p>
+<h5 id="package-name软件包名">Package Name：软件包名<a hidden class="anchor" aria-hidden="true" href="#package-name软件包名">#</a></h5>
+<p>相当于应用程序的ID，用于在设备和安卓应用商店中的唯一标识。
+格式：com.公司名.产品名
+只能包含字母数字和下划线，每段都必须以字母开头</p>
+<h5 id="version版本号">Version：版本号<a hidden class="anchor" aria-hidden="true" href="#version版本号">#</a></h5>
+<p>显示给用户看的
+用于标识应用程序包的迭代
+格式：数字.数字.数字。。。
+比如：1.0、4.3.2、1.2.1等</p>
+<h5 id="bundle-version-code内部版本号">Bundle Version Code：内部版本号<a hidden class="anchor" aria-hidden="true" href="#bundle-version-code内部版本号">#</a></h5>
+<p>确定一个版本是否比另一个版本新，数字越大表示版本越新，不会显示给用户看
+该值为整数，比如每次发布新版本时可以让数字加一</p>
+<h5 id="minimum-api-level最低api级别">Minimum API Level：最低API级别<a hidden class="anchor" aria-hidden="true" href="#minimum-api-level最低api级别">#</a></h5>
+<p>决定应用程序运行需要的最低的API级别，如果用户手机的SDK版本低于该设置，Android系统会组织用户安装该应用程序</p>
+<h5 id="target-api-level目标api级别">Target API Level：目标API级别<a hidden class="anchor" aria-hidden="true" href="#target-api-level目标api级别">#</a></h5>
+<p>用于指定应用的目标API级别
+主要用于通知Android系统，我们已经针对目标版本进行了测试，并且系统不应该通过启用任何兼容性行为，以保持你的应用与目标版本的向前兼容性。应用程序一样可以在较低版本上运行（取决于Minimum API Level）</p>
+<h4 id="configuration配置">Configuration：配置<a hidden class="anchor" aria-hidden="true" href="#configuration配置">#</a></h4>
+<p><img alt="image-20220901232738331" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242134547.png"></p>
+<h5 id="scripting-backend脚本后端"><strong>Scripting Backend：脚本后端</strong><a hidden class="anchor" aria-hidden="true" href="#scripting-backend脚本后端">#</a></h5>
+<p><strong>决定Unity如何在项目中编译和执行C#代码</strong></p>
+<p><strong>Mono：将C#编译为.Net公共中间语言CIL，并使用公共语言运行时执行中间语言</strong></p>
+<p><strong>IL2CPP：将C#编译为CIL，再将CIL转换为C++，再将C++编译为本机代码，</strong></p>
+<p><strong>Mono和IL2CPP的具体区别在 Unity进阶之C#知识补充当中有讲解</strong></p>
+<h5 id="api-compatibility-levelapi兼容性级别"><strong>Api Compatibility Level：API兼容性级别</strong><a hidden class="anchor" aria-hidden="true" href="#api-compatibility-levelapi兼容性级别">#</a></h5>
+<p><strong>决定可以在项目中使用的.Net API。该设置会影响代码和第三方库的兼容性</strong></p>
+<p><strong>.Net Standard 2.1：和.Net Standard 2.1兼容，生成较小的版本，具有完整的跨平台支持</strong></p>
+<p><strong>.Net Framework：和.Net Framework兼容（包含.Net Standard 2.1中的所有的内容），包含更多的API支持，但是会生成更大的包。</strong></p>
+<p><strong>如果在使用C#的一些高级功能时遇到报错或无法使用，可以尝试切换到.Net Framework以便支持这些高级功能的使用，如果有替代方案，建议使用替代方案，尽量使用.Net Standard 2.1可以让包体更小</strong></p>
+<h5 id="c-compiler-configurationc编译器配置"><strong>C++ Compiler Configuration：C++编译器配置</strong><a hidden class="anchor" aria-hidden="true" href="#c-compiler-configurationc编译器配置">#</a></h5>
+<p><strong>只有将Scripting Backend设置为IL2CPP，才能使用该选项</strong></p>
+<p><strong>Debug（调试模式）: 将关闭所有优化，让代码生成速度更快，但运行速度较慢，可以在这种模式下进行调试</strong></p>
+<p><strong>Release（发布模式）：会对代码进行优化，编译后的代码运行会更快，二进制文件大小更小，但编译时间更长</strong></p>
+<p><strong>Master（大师模式）：可实现所有可能的优化，从而压缩每一点可能的优化，发布时间比发布模式还要长，如果接受较长的发布时间，建议在发布最终版本时使用Master模式</strong></p>
+<h5 id="use-incremental-gc使用增量gc"><strong>Use incremental GC：使用增量GC</strong><a hidden class="anchor" aria-hidden="true" href="#use-incremental-gc使用增量gc">#</a></h5>
+<p><strong>启用后可以使用增量垃圾回收器，它会将GC分散到多个帧上执行，可以降低在一帧中进行GC造成的卡顿。</strong></p>
+<h5 id="assembly-version-validation程序集版本验证">Assembly Version Validation：程序集版本验证<a hidden class="anchor" aria-hidden="true" href="#assembly-version-validation程序集版本验证">#</a></h5>
+<p>Mono是否验证强名称程序集中的类型</p>
+<p>强名称程序集，是对程序集进行强命名，为程序集创建唯一标识，可以防止程序集冲突</p>
+<h5 id="mute-other-audio-sources将其它音频源静音"><strong>Mute Other Audio Sources：将其它音频源静音</strong><a hidden class="anchor" aria-hidden="true" href="#mute-other-audio-sources将其它音频源静音">#</a></h5>
+<p><strong>如果希望在运行Unity应用程序时停止在后台运行的应用程序中的音频，可以启用该选项，否则后台音频将和Unity中的音频一起播放</strong></p>
+<h5 id="target-architectures目标体系结构">Target Architectures：目标体系结构<a hidden class="anchor" aria-hidden="true" href="#target-architectures目标体系结构">#</a></h5>
+<p>允许应用程序运行的CPU
+64位环境中运行安卓应用具有性能优势
+64位应用可以处理超过4GB的内存空间</p>
+<p>Mono模式只能选择ARMv7
+IL2CPP模式可以选择更多的模式</p>
+<p>ARM就是一种微处理器硬件
+Chrome OS是一款Google开发的基于PC的操作系统</p>
+<p>ARMv7 32位的ARM</p>
+<p>ARM64 64位的ARM</p>
+<p>x86(Chrome OS) 32位</p>
+<p>x86-64(Chrome OS) 64位</p>
+<h5 id="split-apks-by-target-architecture按目标架构拆分apk实验性功能">Split APKs by target architecture：按目标架构拆分APK（实验性功能）<a hidden class="anchor" aria-hidden="true" href="#split-apks-by-target-architecture按目标架构拆分apk实验性功能">#</a></h5>
+<p>启用后，可以为目标体系结构中选择的每个CPU架构创建单独的APK，这样在Google Play中为用户提供下载时，它会根据设备的情况下载对应版本的APK，可以让apk更小，用户下载更小的包。
+但是主要是针对Google Play，因此面向国内的产品几乎不会使用。</p>
+<h5 id="target-devices目标设备">Target Devices：目标设备<a hidden class="anchor" aria-hidden="true" href="#target-devices目标设备">#</a></h5>
+<p>执行允许运行APK的目标设备</p>
+<p>All Devices（所有设备）：允许apk在所有Android和Chrome OS设备上运行
+Phones，Tablets，and TV Devices Only（手机、平板、电视设备）：允许apk在Android手机和平板电脑、电视上运行，但是不能在Chrome OS设备上运行
+Chrome OS Devices Only（Chrome OS设备）：允许apk在Chrome OS设备上运行，但是不能在Android手机、平板、电视上运行</p>
+<h5 id="install-location安装位置"><strong>Install Location：安装位置</strong><a hidden class="anchor" aria-hidden="true" href="#install-location安装位置">#</a></h5>
+<p><strong>指定设备上的应用程序安装位置</strong></p>
+<p><strong>Automatic：自动让操作系统决定，用户可以自己移动安装位置</strong></p>
+<p><strong>Prefer External：首选外部安装，如果可以，将应用程序安装到外部存储中（SD卡），如果不能，应用程序安装到手机存储空间中</strong></p>
+<p><strong>Force Internal：强制内部，强制将应用程序安装到手机存储空间中，用户无法将应用程序移动到外部存储中安装</strong></p>
+<h5 id="internet-access互联网接入"><strong>Internet Access：互联网接入</strong><a hidden class="anchor" aria-hidden="true" href="#internet-access互联网接入">#</a></h5>
+<p><strong>选择是否始终将网络权限添加到Android清单（即使你没有使用任何网路API）</strong></p>
+<p><strong>Auto：仅当使用了网络API时才会添加互联网访问权限</strong>
+<strong>Require：使用添加互联网访问权限</strong></p>
+<h5 id="write-permission写入权限"><strong>Write Permission：写入权限</strong><a hidden class="anchor" aria-hidden="true" href="#write-permission写入权限">#</a></h5>
+<p><strong>是否启用对外部存储（SD卡）的写入访问权限，并向Android应用清单添加相应的权限</strong></p>
+<p><strong>Internal（内部）：仅授予对内部存储的写入权限</strong>
+<strong>External（外置SD卡）：启用对外部存储的写入权限</strong></p>
+<h5 id="filter-touches-when-obscured遮挡时过滤触摸">Filter Touches When Obscured：遮挡时过滤触摸<a hidden class="anchor" aria-hidden="true" href="#filter-touches-when-obscured遮挡时过滤触摸">#</a></h5>
+<p>启用后可以丢弃在另一个可见窗口覆盖Unity应用程序时收到的触摸（触屏事件），可以放置窃听劫持</p>
+<h5 id="sustained-performance-mode持续性能模式">Sustained Performance Mode：持续性能模式<a hidden class="anchor" aria-hidden="true" href="#sustained-performance-mode持续性能模式">#</a></h5>
+<p>启用此选项可在较长的时间段内设置可预测且一致的设备性能级别，而无需进行热限制。启用此设置时，整体性能可能会降低</p>
+<h5 id="low-accuracy-location低精度定位">Low Accuracy Location：低精度定位<a hidden class="anchor" aria-hidden="true" href="#low-accuracy-location低精度定位">#</a></h5>
+<p>启用后可改为低精度值与Android位置API配合使用</p>
+<h5 id="chrome-os-input-emulation">Chrome OS Input Emulation：<a hidden class="anchor" aria-hidden="true" href="#chrome-os-input-emulation">#</a></h5>
+<p>Chrome OS 操作系统的默认行为是将鼠标和触摸板输入事件转为触屏输入事件。
+取消可禁用这个默认行为</p>
+<h5 id="android-tv-compatibility安卓电视兼容性">Android TV Compatibility：安卓电视兼容性<a hidden class="anchor" aria-hidden="true" href="#android-tv-compatibility安卓电视兼容性">#</a></h5>
+<p>启用后应用程序标记为兼容Android TV</p>
+<p>启用后出现
+Android Game：启用后可将输出的apk标记为游戏而不是常规应用
+Android Gamepad Support Level：安卓游戏输入板支持等级
+可以选择玩游戏时支持的输入方式</p>
+<h5 id="warn-about-app-bundle-size警告应用程序包的大小">Warn about App Bundle size：警告应用程序包的大小<a hidden class="anchor" aria-hidden="true" href="#warn-about-app-bundle-size警告应用程序包的大小">#</a></h5>
+<p>只有在Build Settings中勾选了Build App Bundle（Google Play）才有用
+当应用程序包大小超过这个阈值时会收到警告</p>
+<h5 id="active-input-handling活动输入处理"><strong>Active Input Handling：活动输入处理</strong><a hidden class="anchor" aria-hidden="true" href="#active-input-handling活动输入处理">#</a></h5>
+<p><strong>选择要如何处理来自用户的输入</strong></p>
+<p><strong>Input Manager：老的输入系统，Input相关</strong>
+<strong>Input System Package：新输入系统</strong>
+<strong>Both：同时使用</strong></p>
+<h4 id="script-compilation脚本编译">Script Compilation：脚本编译<a hidden class="anchor" aria-hidden="true" href="#script-compilation脚本编译">#</a></h4>
+<h5 id="scripting-define-symbols脚本定义符号">Scripting Define Symbols：脚本定义符号<a hidden class="anchor" aria-hidden="true" href="#scripting-define-symbols脚本定义符号">#</a></h5>
+<p>可以在此设置自定义编译标志。</p>
+<p>再使用一些第三方内容时有时会在此处添加脚本符号
+比如：Lua热更相关、FairyGUI相关</p>
+<h6 id="unity有内置的脚本符号">Unity有内置的脚本符号<a hidden class="anchor" aria-hidden="true" href="#unity有内置的脚本符号">#</a></h6>
+<p>这些符号能够帮助我们有选择的在编译中包含或排除部分代码</p>
+<p>这些脚本符号可以配合多路测试 #if 进行使用
+#if 脚本符号
+代码逻辑
+#elif 脚本符号
+代码逻辑
+#else
+代码逻辑
+#endif</p>
+<h6 id="平台脚本符号">平台脚本符号<a hidden class="anchor" aria-hidden="true" href="#平台脚本符号">#</a></h6>
+<p><img alt="image-20220901233443206" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242134540.png"></p>
+<h6 id="编辑器版本脚本符号">编辑器版本脚本符号<a hidden class="anchor" aria-hidden="true" href="#编辑器版本脚本符号">#</a></h6>
+<p><img alt="image-20220901233531611" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242134858.png"></p>
+<h6 id="其它脚本符号">其它脚本符号<a hidden class="anchor" aria-hidden="true" href="#其它脚本符号">#</a></h6>
+<p><img alt="image-20220901233603453" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242134723.png"></p>
+<h5 id="additional-compiler-arguments其它编译器参数">Additional Compiler Arguments：其它编译器参数<a hidden class="anchor" aria-hidden="true" href="#additional-compiler-arguments其它编译器参数">#</a></h5>
+<p>向此列表添加条目以将其他参数传递给 Roslyn 编译器。对每个附加参数使用一个新条目。
+要创建新条目，请按“+”按钮。要删除条目，请按“-”按钮。
+添加完所有所需参数后，单击“应用”按钮以在将来的编译中包括其他参数。“还原”按钮将此列表重置为最近应用的状态。</p>
+<h5 id="suppress-common-warnings禁止显示常见警告">Suppress Common Warnings：禁止显示常见警告<a hidden class="anchor" aria-hidden="true" href="#suppress-common-warnings禁止显示常见警告">#</a></h5>
+<p>禁用此设置可显示C#警告
+CS0169：从不使用私有字段，声明了私有变量，但是从没有使用
+CS0649：编译器检测到从未分配值的未初始化的私有或内部字段声明</p>
+<h5 id="allow"><strong>Allow &lsquo;unsafe&rsquo; Code：允许使用“不安全”代码</strong><a hidden class="anchor" aria-hidden="true" href="#allow">#</a></h5>
+<p><strong>启用对在预定义程序集中编译“unsafe”C# 代码的支持</strong></p>
+<p><strong>unsafe 关键词的基本概念</strong></p>
+<p>默认情况下，C#是不支持 指针 的，unsafe 关键词用于在C#表示<strong>不安全的上下文</strong>，如果<strong>想要在C#中进行任何和指针相关的操作，就必须配合unsafe关键词使用。</strong></p>
+<p>在公共语言运行时（CLR）中，不安全代码是指无法验证的代码。</p>
+<p>C# 中的不安全代码不一定是危险的，只是 CLR 无法验证该代码的安全性。因此，CLR 将仅执行完全信任的程序集中的不安全代码。</p>
+<p><strong>如果你使用不安全代码，你****应该负责确保代码不会引发安全风险或指针错误</strong></p>
+<p><strong>unsafe 关键词的基本使用</strong></p>
+<p>如果想要在Unity中正常使用C#中的unsafe关键词进行程序编写，我们必须在Unity的 Player Settings 中的 Other Settings 中将 Allow unsafe Code 选项勾选上</p>
+<p>勾选该选项后，我们就可以在Unity中使用unsafe关键词了。</p>
+<p><strong>注意：unsafe 的使用虽然能让我们在C#中使用指针，但是会存在安全风险和稳定性风险，如果没有特殊需求，请尽量避免在C#中使用 unsafe。</strong></p>
+<h5 id="use-deterministic-compilation使用确定性编译">Use Deterministic Compilation：使用确定性编译<a hidden class="anchor" aria-hidden="true" href="#use-deterministic-compilation使用确定性编译">#</a></h5>
+<p>启用此设置后，编译的程序集在每次编译时都是完全相同的。
+禁用此设置可防止使用 -确定性 C# 标志进行编译</p>
+<p>确定性编译可用于确定二进制文件是否从受信任的源编译</p>
+<h6 id="enable-roslyn-analyzers启用罗斯林分析器">Enable Roslyn Analyzers：启用罗斯林分析器<a hidden class="anchor" aria-hidden="true" href="#enable-roslyn-analyzers启用罗斯林分析器">#</a></h6>
+<p>禁用此设置可编译用户编写的脚本，而无需项目中可能存在的 Roslyn 分析器 DLL（ Roslyn 就是微软的.Net开源编译器，编译器支持 C# 编译，并提供丰富的代码分析 API。）</p>
+<h4 id="optimization优化">Optimization：优化<a hidden class="anchor" aria-hidden="true" href="#optimization优化">#</a></h4>
+<p><img alt="image-20220901234125528" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242135478.png"></p>
+<h5 id="prebake-collision-meshes预烘焙碰撞到网格">Prebake Collision Meshes：预烘焙碰撞到网格<a hidden class="anchor" aria-hidden="true" href="#prebake-collision-meshes预烘焙碰撞到网格">#</a></h5>
+<p>启用该选项可以在构建时将碰撞数据添加到网格</p>
+<h5 id="keep-loaded-shaders-alive保持加载的着色器的活动状态">Keep Loaded Shaders Alive：保持加载的着色器的活动状态<a hidden class="anchor" aria-hidden="true" href="#keep-loaded-shaders-alive保持加载的着色器的活动状态">#</a></h5>
+<p>启动后，不能卸载着色器</p>
+<p>着色器加载时会造成性能开销，可能会出现卡顿现象，不允许卸载着色器可以避免卸载后重复加载</p>
+<h4 id="preloaded-assets预装资源"><strong>Preloaded Assets：预装资源</strong><a hidden class="anchor" aria-hidden="true" href="#preloaded-assets预装资源">#</a></h4>
+<p><strong>设置启动时加载的资源数组</strong>
+<strong>将想要预加载的内容拖入框中</strong></p>
+<h5 id="strip-engine-code剥离引擎代码"><strong>Strip Engine Code：剥离引擎代码</strong><a hidden class="anchor" aria-hidden="true" href="#strip-engine-code剥离引擎代码">#</a></h5>
+<p><strong>选择IL2CPP模式才会出现的字段</strong>
+<strong>如果你希望在IL2CPP模式，能够删除Unity引擎功能中没有使用的代码，可以启用该选项，可以有效的减小包体大小</strong></p>
+<h5 id="managed-stripping-level管理剥离水平"><strong>Managed Stripping Level：管理剥离水平</strong><a hidden class="anchor" aria-hidden="true" href="#managed-stripping-level管理剥离水平">#</a></h5>
+<p><strong>选择Unity如何剥离未使用的C#代码</strong>
+<strong>在发布应用程序时，Unity会自动去除掉没有使用的代码，剥离代码可以使生成的执行文件减小，但是有可能会意外删除需要使用的代码</strong></p>
+<p><strong>在Unity进阶之C#知识补充中讲解IL2CPP相关内容时讲解过</strong></p>
+<p><strong>Disabled：不剥离，只有在Mono模式下才能选择</strong></p>
+<p><strong>Minimal：最小剥离，Unity只会搜索Unity引擎未使用的.Net类库，不会删除任何用户编写的代码，该设置基本不会出现意外剥离，在使用IL2CPP模式后，该模式是默认模式</strong></p>
+<p><strong>Low：低级剥离，处理Unity相关，玩家自己编写的代码也会被剥离，会尽量减小意外剥离发生</strong></p>
+<p><strong>Medium：中级剥离，比起Low更多一些剥离</strong></p>
+<p><strong>High：高级剥离，优先考虑打包大小，会最大限度剥离代码。可以采配合link.xml来手动拒绝剥离，或使用[Preserve]特性（在不希望被剥离的函数前加该特性）</strong></p>
+<h5 id="enable-internal-profiler启用内部探查器已经弃用的功能">Enable Internal Profiler：启用内部探查器，已经弃用的功能<a hidden class="anchor" aria-hidden="true" href="#enable-internal-profiler启用内部探查器已经弃用的功能">#</a></h5>
+<p>用此选项以从Android SDK的设备中获取profiler数据adblogcat测试项目时输出。这仅在开发版本中可用。</p>
+<h4 id="vertex-compression顶点压缩"><strong>Vertex Compression：顶点压缩</strong><a hidden class="anchor" aria-hidden="true" href="#vertex-compression顶点压缩">#</a></h4>
+<p><strong>选择要设置的通道，以便在顶点压缩方法下压缩网格</strong>
+<strong>通常，顶点压缩用于减少内存中网格数据的大小，减小文件大小，提高CPU性能。</strong></p>
+<h5 id="optimize-mesh-data优化网格数据"><strong>Optimize Mesh Data：优化网格数据</strong><a hidden class="anchor" aria-hidden="true" href="#optimize-mesh-data优化网格数据">#</a></h5>
+<p><strong>启用后，构建时会从使用的网格中剥离未使用的顶点属性</strong>
+<strong>它可以减少网格中的数量，也可以减小包体大小，可以减小加载时间和运行时的内存使用</strong>
+<strong>但是，如果启用了该设置，运行时就不要更改材质或着色器相关设置</strong></p>
+<p><strong>也就是说，如果你游戏会在运行时转换一些对象的着色器，就不能开启该选项。</strong></p>
+<p><strong>比如游戏中某一个对象，如果网格使用简单漫射着色器，那么 Unity 将删除 切线矢量，因为并不需要它们。如果您想要在运行时切换到网格上的凹凸贴图着色器 ，那么您将不会得到正确的切线数据，因为此数据已被删除</strong></p>
+<h5 id="texture-mipmap-stripping贴图纹理剥离"><strong>Texture MipMap Stripping：贴图纹理剥离</strong><a hidden class="anchor" aria-hidden="true" href="#texture-mipmap-stripping贴图纹理剥离">#</a></h5>
+<p><strong>启用后会启用纹理贴图剥离，在构建时会从纹理中剥离没有使用的纹理贴图。</strong>
+<strong>会根据你发布平台的质量设置进行比较来确定哪些贴图用不到。</strong>
+<strong>mipmap生成的多分辨率图也会被剥离</strong></p>
+<h5 id="stack-trace堆栈跟踪"><strong>Stack Trace：堆栈跟踪</strong><a hidden class="anchor" aria-hidden="true" href="#stack-trace堆栈跟踪">#</a></h5>
+<p><strong>选择在特定的上下文中允许的日志记录类型</strong>
+<strong>可以选择日志记录的方式</strong>
+<strong>None：不记录</strong>
+<strong>ScriptOnly：只在运行脚本时记录信息</strong>
+<strong>Full：一直记录</strong></p>
+<p>Error：错误信息
+Assert：断言（用于检测非法情况的）信息
+Warning：警告信息
+Log：打印日志信息
+Exception：异常信息</p>
+<h5 id="legacy以前的内容">Legacy：以前的内容<a hidden class="anchor" aria-hidden="true" href="#legacy以前的内容">#</a></h5>
+<p>Clamp BlendShapes（Deprecated）：启用 骨骼蒙皮动画中钳制混合形状权重的范围</p>
+<h3 id="publishing-settings">Publishing Settings<a hidden class="anchor" aria-hidden="true" href="#publishing-settings">#</a></h3>
+<h4 id="前言"><strong>前言</strong><a hidden class="anchor" aria-hidden="true" href="#前言">#</a></h4>
+<h5 id="android-中的签名是什么"><strong>Android 中的签名是什么？</strong><a hidden class="anchor" aria-hidden="true" href="#android-中的签名是什么">#</a></h5>
+<p>Android要求所有已安装的应用程序都使用数字证书做数字签名，数字证书的私钥由应用开发者持有，
+Android使用证书作为标示应用程序作者的一种方式，并在应用程序之间建立信任的关系。 证书并不用来控制用户能否安装哪个应用。证书不需要由证书认证中心签名；完全可以使用自制签名证书。</p>
+<p>没有正确签名的应用，Android系统不会安装或运行。此规则适用于在任何地方运行的Android系统，不管是在模拟器还是真实设备上。因为这个原因。在真机或模拟器上运行或者调试应用前，必须为其设置好签名。</p>
+<p><strong>为什么要使用签名？</strong></p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242135676.png"></p>
+<p>上图是我们在Unity中发布Android应用程序时，设置的包名</p>
+<p>开发Android的人这么多，完全有可能把包名命名成同样的名字，这个时候该如何区分？</p>
+<p>这时就需要签名来区分了，由于开发商可能通过使用相同的Package Name（包名）来混淆替换已经安装的程序，签名可以保证相同名字，但是签名不同的包不被替换。</p>
+<p>举例：</p>
+<p>比如应用程序A 和 应用程序B 的包名是相同的，如果没有签名的存在，在同一Android设备上重复安装A和B，就会导致他们之间的彼此覆盖，不能同时拥有，为了避免这种情况出现，就有了签名机制。</p>
+<p><strong>安卓密钥库和密钥，就是用来进行Android签名的。</strong></p>
+<h5 id="android-应用程序清单是什么"><strong>Android 应用程序清单是什么？</strong><a hidden class="anchor" aria-hidden="true" href="#android-应用程序清单是什么">#</a></h5>
+<p>Android应用程序工程中，有一个叫做 AndroidManifest.xml 的xml文件，该文件在之后的开发中我们会经常使用和编辑，该配置文件主要用于声明应用程序的组件，并且还有以下的一些重要作用：</p>
+<ol>
+<li>
+<p>确定应用程序要求的用户权限，比如：网络访问、通讯录访问、信息读取等权限</p>
+</li>
+<li>
+<p>声明应用程序要求的最低API Level</p>
+</li>
+<li>
+<p>声明应用程序将要使用的或要求的硬件和软件特性，比如：摄像头访问、蓝牙服务、多点触碰等</p>
+</li>
+<li>
+<p>等等</p>
+</li>
+</ol>
+<p>也就是说，如果我们想要在安卓游戏当中使用一些系统功能或硬件访问权限，都需要在该文件当中进行设置。</p>
+<p><strong>Unity中如果引入Android第三方SDK，或者需要和Android进行交互，经常会对该文件进行编辑。如果我们没有这些需求，可以忽略它。</strong></p>
+<h5 id="gradle-是什么"><strong>Gradle 是什么？</strong><a hidden class="anchor" aria-hidden="true" href="#gradle-是什么">#</a></h5>
+<p>Gradle 是一个自动化构建开源工具，主要面向Java应用为主，也支持其它语言，比如C++、Kotlin、Swift，未来还会支持更多的语言。</p>
+<p>它是一个基于JVM（Java虚拟机）的构建工具，是一款通用灵活的构建工具，也可以用于Android 项目的构建工作，它可以让安卓项目变得更加简洁。</p>
+<p><strong>在Unity中简单理解Gradle，它就是用于帮助我们打包出安卓应用程序 .apk 的一个工具，在Android Studio中也使用Gradle进行应用程序打包。</strong></p>
+<h5 id="proguard-和-r8-是什么"><strong>ProGuard 和 R8 是什么？</strong><a hidden class="anchor" aria-hidden="true" href="#proguard-和-r8-是什么">#</a></h5>
+<p><strong>代码混淆</strong></p>
+<p>代码混淆(Obfuscated code)，是将计算机程序的代码，转换成一种功能上等价，但是难于阅读和理解的形式的行为。代码混淆主要用于程序源代码，也可以用于程序编译而成的中间代码。执行代码混淆的程序被称作代码混淆器。已经存在许多种功能各异的代码混淆器。</p>
+<p>将代码中的各种元素，如变量，函数，类的名字改写成无意义的名字。比如改写成单个字母，或是简短的无意义字母组合，甚至改写成“__”这样的符号，使得阅读的人无法根据名字猜测其用途。重写代码中的部分逻辑，将其变成功能上等价，但是更难理解的形式。比如将for循环改写成while循环，将循环改写成递归，精简中间变量，等等。打乱代码的格式。比如删除空格，将多行代码挤到一行中，或者将一行代码断成多行等等。</p>
+<p><strong>代码混淆的主要目的是提升源代码的安全性</strong>，别人反编译你的应用程序代码后，增加他们阅读分析逻辑的难度。</p>
+<p><strong>ProGuard 和 R8 就是两种不同的代码混淆器。</strong></p>
+<p><strong>ProGuard</strong></p>
+<p>ProGuard是一个压缩、优化和混淆<a href="https://baike.baidu.com/item/Java%E5%AD%97%E8%8A%82%E7%A0%81/13025120">J</a>ava字节码（Java源代码通常被编译为字节码）文件的免费的工具，它可以删除无用的类、字段、方法和属性。可以删除没用的注释，最大限度地优化字节码文件。它还可以使用简短的无意义的名称来重命名已经存在的类、字段、方法和属性。常常在Android开发用于混淆最终的项目，增加项目被反编译的难度。</p>
+<p>Unity发布安卓应用程序时，默认使用的就是ProGuard来进行处理最终的代码。</p>
+<p><strong>R8</strong></p>
+<p>R8是相对ProGuard较新的Android混淆编译器，它可以尽可能的减小应用的大小，早期的Android Studio版本中，混淆编译器使用的是ProGuard执行编译时的代码优化，如果我们使用Android Gradle 3.4.0或更高版本构建项目时，不再使用ProGuard进行代码优化，而是采用R8编译器协同工作。</p>
+<p>Android Sutdio 3.3版本开始，就使用R8作为代码压缩器来对代码进行混淆、压缩、优化了。</p>
+<p>R8 相对 ProGuard来说，它可以更快地缩减代码，同时改善输出的大小。</p>
+<p>Unity发布安卓应用程序时，我们可以选择使用R8混淆编译器进行发布处理。</p>
+<p>大概了解了这些基本概念后，才能知道我们是在设置什么内容。</p>
+<h4 id="keystore-manager密钥管理器"><strong>Keystore Manager：密钥管理器</strong><a hidden class="anchor" aria-hidden="true" href="#keystore-manager密钥管理器">#</a></h4>
+<p><img alt="image-20220903120410725" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242135085.png"></p>
+<p><strong>可以通过密钥管理器创建、配置和加载密钥和密钥库</strong>
+<strong>我们可以在Keystore Manager窗口</strong>
+<strong>或</strong>
+<strong>Publishing Settings 发布设置中</strong>
+<strong>加载现有密钥库和密钥</strong></p>
+<p><img alt="image-20220903120739100" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242135418.png"></p>
+<p>Create New：创建新的密钥库</p>
+<p>Anywhere：任何地方，会打开项目文件夹根目录下的文件资源管理器，这是Unity存储密钥库的默认位置</p>
+<p>In Dedicated Location：专用位置，将密钥库文件保存到计算机中的另一个目录中</p>
+<p>注意：为了协同开发方便，建议大家就把密钥库保存在项目文件夹下，避免其它同事无法访问密钥库</p>
+<p>Select Existing：选择现有密钥库
+可以指定加载现有密钥库</p>
+<p>Password：密钥库的密码
+Confirm password：创建密钥库时 需要重复一次密码</p>
+<p>Existing Keys：现有密钥
+界面的这一部分包含当前密钥库包含的密钥的只读列表</p>
+<p><img alt="image-20220903120936402" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242135636.png"></p>
+<h4 id="project-keystore项目密钥库"><strong>Project Keystore：项目密钥库</strong><a hidden class="anchor" aria-hidden="true" href="#project-keystore项目密钥库">#</a></h4>
+<p><strong>用于保存签名密钥来实现应用程序安全性的容器</strong>
+<strong>如果想要加载和使用现有密钥库，我们需要：</strong></p>
+<ol>
+<li><strong>启动 Custom Keystore</strong></li>
+<li><strong>在 Select 下拉列表中选择Browse，从文件系统中选择密钥库</strong></li>
+<li><strong>输入密钥库密码</strong></li>
+</ol>
+<p>Custom Keystore：启用后，可以指定加载和使用现有密钥库</p>
+<p>Select：启用Custom Keystore后，该按钮可以用来选择要使用的密钥库</p>
+<p>Path：你选择的密钥库所在路径</p>
+<p>Password：输入密钥库密码以加载所选的密钥库</p>
+<h4 id="project-key项目密钥"><strong>Project Key：项目密钥</strong><a hidden class="anchor" aria-hidden="true" href="#project-key项目密钥">#</a></h4>
+<p><strong>加载密钥库后，Unity会加载该密钥库中的所有密钥</strong>
+<strong>我们可以在项目密钥Project Key中设置从该密钥库中选择哪一个密钥用来作为该项目的活动密钥</strong></p>
+<p>Alias：选择用于打开的项目的密钥</p>
+<p>Password：密钥密码</p>
+<h4 id="build构建相关"><strong>Build：构建相关</strong><a hidden class="anchor" aria-hidden="true" href="#build构建相关">#</a></h4>
+<p><strong>默认情况下，Unity使用Unity安装提供的清单文件、Gradle模板和文件构建应用程序</strong>
+<strong>如果想要自定义这些内容，你需要：</strong></p>
+<ol>
+<li><strong>启用Build下方的这些复选框，文件会出现到复选框的下方</strong></li>
+<li><strong>打开新文件进行更改</strong></li>
+<li><strong>保存修改的文件，Unity下次构建应用程序时会自动使用的文件</strong></li>
+</ol>
+<h5 id="custom-main-manifest自定义主清单文件"><strong>Custom Main Manifest：自定义主清单文件</strong><a hidden class="anchor" aria-hidden="true" href="#custom-main-manifest自定义主清单文件">#</a></h5>
+<p><strong>该清单文件是一个xml文件</strong>
+<strong>我们可以在此决定一些权限设置（比如：网络、定位、拍照等权限配置），还可以设置是否启用一些安卓功能等等</strong></p>
+<h5 id="custom-launcher-manifest自定义启动器清单">Custom Launcher Manifest：自定义启动器清单<a hidden class="anchor" aria-hidden="true" href="#custom-launcher-manifest自定义启动器清单">#</a></h5>
+<p>该清单文件是一个xml文件
+我们可以在此决定一些应用程序启动之前的外观和行为。（比如：图标、名称、安装位置等等）</p>
+<h5 id="custom-main-gradle-template自定义主gradle构建模板">Custom Main Gradle Template：自定义主Gradle构建模板<a hidden class="anchor" aria-hidden="true" href="#custom-main-gradle-template自定义主gradle构建模板">#</a></h5>
+<p>Gradle 是一个构建系统，可自动执行许多构建过程并防止许多常见的构建错误。Unity将Gradle用于所有Android版本。您可以在Unity中构建输出包（.apk，.aab），也可以从Unity导出Gradle项目，然后使用Android Studio等外部工具构建它</p>
+<p>是一个gradle文件，包含有关如何将Android应用程序构建为库的信息</p>
+<h5 id="custom-launcher-gradle-template自定义启动器gradle构建模板">Custom Launcher Gradle Template：自定义启动器Gradle构建模板<a hidden class="anchor" aria-hidden="true" href="#custom-launcher-gradle-template自定义启动器gradle构建模板">#</a></h5>
+<p>是一个gradle文件，包含有关如何构建Android应用程序的说明</p>
+<h5 id="custom-base-gradle-template自定义基础gradle构建模板">Custom Base Gradle Template：自定义基础Gradle构建模板<a hidden class="anchor" aria-hidden="true" href="#custom-base-gradle-template自定义基础gradle构建模板">#</a></h5>
+<p>是一个gradle文件，包含在所有其它模板和Gradle项目之间的共享配置</p>
+<h5 id="custom-gradle-properties-template自定义属性gradle构建模板">Custom Gradle Properties Template：自定义属性Gradle构建模板<a hidden class="anchor" aria-hidden="true" href="#custom-gradle-properties-template自定义属性gradle构建模板">#</a></h5>
+<p>属性文件，包含Gradle生成环境的配置设置
+比如
+JVM（Java虚拟机）内存配置
+允许Gradle使用多个JVM构建的属性
+用于选择进行缩小的工具的属性
+构建应用程序包时不压缩本机库的属性等等</p>
+<h5 id="custom-proguard-file自定义proguard文件">Custom Proguard File：自定义Proguard文件<a hidden class="anchor" aria-hidden="true" href="#custom-proguard-file自定义proguard文件">#</a></h5>
+<p>是一个txt文件，包含缩小过程的配置设置
+如果缩小删除了一些应该保留的Java代码，你可以添加一条规则来将这些代码保留在此文件中</p>
+<h4 id="minify代码混淆和缩小相关"><strong>Minify：代码混淆和缩小相关</strong><a hidden class="anchor" aria-hidden="true" href="#minify代码混淆和缩小相关">#</a></h4>
+<p><strong>是一种缩减、混淆和优化应用程序代码的过程</strong>
+<strong>它可以减小代码大小并使代码更难以反编译</strong>
+<strong>使用 Minify 设置可定义 Unity 应何时以及如何将缩小应用于构建</strong></p>
+<p><strong>使用该功能会加长发布时间，并且还会让调试变得复杂，所以一般在最终发布时才会使用，平时发布测试应用时不需要开启。</strong></p>
+<p>Use R8：默认情况下，Unity 使用 Proguard 进行缩小。启用此复选框可改为使用 R8。</p>
+<p><strong>Release：如果希望 Unity 在发布构建中缩小应用程序的代码，请启用此复选框。</strong></p>
+<p>Debug：如果希望 Unity 在调试构建中缩小应用程序的代码，请启用此复选框。</p>
+<h4 id="split-application-binary拆分应用程序二进制文件"><strong>Split Application Binary：拆分应用程序二进制文件</strong><a hidden class="anchor" aria-hidden="true" href="#split-application-binary拆分应用程序二进制文件">#</a></h4>
+<p><strong>启用 Split Application Binary 选项可将输出包拆分为主包 (APK) 和扩展包 (OBB) 包。如果要发布大于 100 MB 的应用程序，则 Google Play 应用商店需要此功能。</strong></p>
+<h2 id="unity打包android">Unity打包Android<a hidden class="anchor" aria-hidden="true" href="#unity打包android">#</a></h2>
+<h3 id="unity导出apk">Unity导出APk<a hidden class="anchor" aria-hidden="true" href="#unity导出apk">#</a></h3>
+<p>没什么可说的直接导出就行了</p>
+<h3 id="unity导出android-studio能够打开的工程">Unity导出Android Studio能够打开的工程<a hidden class="anchor" aria-hidden="true" href="#unity导出android-studio能够打开的工程">#</a></h3>
+<p>1.设置导出基本信息：公司名、游戏名、图标、包名等关键信息</p>
+<p>2.在File——&gt;Build Settings中，勾选 Export Project 选项</p>
+<p>3.点击Export 导出按钮</p>
+<h4 id="在android-studio中打开unity导出的工程">在Android Studio中打开Unity导出的工程<a hidden class="anchor" aria-hidden="true" href="#在android-studio中打开unity导出的工程">#</a></h4>
+<p>1.打开Android Studio</p>
+<p>2.新选择 打开工程</p>
+<p>3.选择 之前导出的对应文件夹</p>
+<p>4.弹出提示时，使用Android Studio中的 Android SDK，可以避免打包失败</p>
+<p>5.等待工程加载结束</p>
+<p>6.更新Gradle版本，保证之后打包成功</p>
+<h4 id="使用android-studio生成应用程序apk">使用Android Studio生成应用程序apk<a hidden class="anchor" aria-hidden="true" href="#使用android-studio生成应用程序apk">#</a></h4>
+<p>1.在 工具栏——&gt;Build——&gt;Build Bundle&hellip;——&gt;Build APK</p>
+<p>构建一次工程，保证构建成功，根据报错解决问题</p>
+<p>常见问题：</p>
+<p>1.The option &lsquo;android.enableR8&rsquo; is deprecated 由于新版本Gradle默认使用R8混淆</p>
+<p>所以不需要这个选项设置了</p>
+<p>在Project选项中 找到 gradle.properties 删除 android.enableR8</p>
+<p>2.SDK Tools 版本不匹配</p>
+<p>更新SDK使用的路径，使用Android Studio自己的路径，或者更新SDK</p>
+<p>2.在 工具栏——&gt;Build——&gt;Build Bundle&hellip;——&gt;Generate Signed Bundle</p>
+<p>发布APK，可以设置密钥库相关内容后进行打包即可</p>
+<p>3.测试生成的apk文件</p>
+<h2 id="android调试相关">Android调试相关<a hidden class="anchor" aria-hidden="true" href="#android调试相关">#</a></h2>
+<h3 id="unity进行安卓真机调试">Unity进行安卓真机调试<a hidden class="anchor" aria-hidden="true" href="#unity进行安卓真机调试">#</a></h3>
+<h4 id="调试指的是什么">调试指的是什么？<a hidden class="anchor" aria-hidden="true" href="#调试指的是什么">#</a></h4>
+<p>安卓手机的真机调试</p>
+<p>由于运行环境的改变（开发时在 Windows 或 MacOS，使用时在Android或IOS）</p>
+<p>我们很多时候需要在真机上进行项目的 性能分析 和 bug处理（断点调试修复bug）</p>
+<h4 id="准备测试用安卓手机">准备测试用安卓手机<a hidden class="anchor" aria-hidden="true" href="#准备测试用安卓手机">#</a></h4>
+<p>1.安卓手机需要打开开发者模式可以根据自己的手机品牌自行搜索开启方式</p>
+<p>一般的操作方式：设置——&gt;关于手机——&gt;版本号（点击n次版本号）便可开启</p>
+<p>2.完成第一步后，在手机的开发者选项中 开启 USB调试功能一般开发者选项会在：设置——&gt;系统——&gt;开发者选项中找到USB调试功能 开启它</p>
+<p>3.将手机通过USB接入到你的电脑上，在手机上一般会弹出一个提示选择允许进行USB调试</p>
+<h4 id="在unity中进行调试相关设置">在Unity中进行调试相关设置<a hidden class="anchor" aria-hidden="true" href="#在unity中进行调试相关设置">#</a></h4>
+<p>在 File ——&gt; Build Settings 中进行调试相关的设置</p>
+<ol>
+<li>完成知识点一相关内容后，可以在 Run Device 的设备列表中看到你的安卓设备</li>
+</ol>
+<p>如果Refresh刷新后也无法看到你的设备，证明你的连接有问题，或没有开启USB调试模式</p>
+<ol start="2">
+<li>调试相关设置</li>
+</ol>
+<p>剖析器 性能问题排查相关（勾选了他们，我们才能在Unity的剖析器中获取完整信息）</p>
+<p>开启 Development Build 开发模式构建</p>
+<p>开启 Autoconnect Profiler 自动连接分析器</p>
+<p>开启 Deep Profiling 深度剖析</p>
+<p>断点 调试相关（勾选了他们，我们才能进行断点调试）</p>
+<p>开启 Script Debuggins 脚本调试</p>
+<p>开启 Wait For Managed Debugger 等待托管调试器</p>
+<ol start="3">
+<li>项目基本的发布设置相关内容一定要设置正确</li>
+</ol>
+<p>比如：包名、项目名、公司名、密钥库等等</p>
+<h4 id="unity连接安卓真机进行项目调试">Unity连接安卓真机进行项目调试<a hidden class="anchor" aria-hidden="true" href="#unity连接安卓真机进行项目调试">#</a></h4>
+<p>点击Build and Run</p>
+<p>这时Unity会自动发布apk应用该程序，然后安装到设备上自动启动</p>
+<p>这时我们就可以</p>
+<ol>
+<li>
+<p>利用Unity的 剖析器来分析应用程序</p>
+</li>
+<li>
+<p>进行断点调试，排查问题</p>
+</li>
+</ol>
+<p>注意：如果想要断点调试，自动启动应用程序后，弹出的提示窗口 不要点击OK先在VS中 工具栏——&gt;调试——&gt;附加 Unity 调试程序——&gt;选择对应的设备再在运行的应用程序中点击ok</p>
+<h3 id="unity-remote">Unity Remote<a hidden class="anchor" aria-hidden="true" href="#unity-remote">#</a></h3>
+<h4 id="remote是什么">Remote是什么？<a hidden class="anchor" aria-hidden="true" href="#remote是什么">#</a></h4>
+<p>Remote翻译过来是远程的意思</p>
+<p>Unity Remote是Unity提供给我们的一个可以安装到移动平台上的应用程序帮助我们进行调试的远程工具</p>
+<p>该应用程序可以安装到 Android、IOS设备上，当我们在Unity编辑器运行项目时，移动设备上安装的Unity Remote会和Unity连接，Unity编辑器中的游戏画面会被发送到移动设备上，移动设备上的输入操作会返回到Unity编辑器运行的项目中</p>
+<p>它的主要作用就是可以让我们省去发布安装包、安装到移动设备上的这一繁琐流程</p>
+<p>可以直接通过Unity Remote远程连接来达到以下目的：</p>
+<p>查看项目在设备上的视觉表现效果</p>
+<p>测试移动设备输入逻辑是否能正常使用</p>
+<p>设备的以下输入会被回传到Unity引擎中用于测试</p>
+<p>触屏输入相关</p>
+<p>GPS</p>
+<p>陀螺仪</p>
+<p>指南针</p>
+<p>加速度计</p>
+<p>相机拍照信息</p>
+<p>等等输入信息</p>
+<p>注意：</p>
+<p>1.Unity引擎传递给移动设备的画面较模糊，帧率较低，我们只能看看大致的表现效果</p>
+<p>2.我们主要通过这种方式，来测试移动设备输入相关的功能</p>
+<p>比如：陀螺仪、GPS、触屏功能等等</p>
+<h4 id="获取和使用unity-remote">获取和使用Unity Remote<a hidden class="anchor" aria-hidden="true" href="#获取和使用unity-remote">#</a></h4>
+<p>1.下载Unity Remote应用程序,并安装到移动设备上</p>
+<p>2.将移动设备使用USB调试模式和电脑连接</p>
+<p>3.在菜单栏Edit——&gt;Project Setting——&gt;Editor中设置Unity Remote的Device为任意设备</p>
+<p>4.在移动设备运行Unity Remote</p>
+<p>5.在Unity编辑器中启动项目，便可以进行远端调试</p>
+<p>注意：</p>
+<p>1.如果电脑插入多个Android设备，会自动选择第一台设备</p>
+<p>2.Unity Remote存在的主要目的仅仅是为了快速的在设备上测试输入相关功能以及基本表现效果 如果要完整的测试，还是需要发布安装进行调试</p>
+<h3 id="android-logcat">Android Logcat<a hidden class="anchor" aria-hidden="true" href="#android-logcat">#</a></h3>
+<h4 id="android-logcat是什么">Android Logcat是什么？<a hidden class="anchor" aria-hidden="true" href="#android-logcat是什么">#</a></h4>
+<p>Android Logcat是Unity提供的一个拓展包，引入该拓展包后，我们可以在Unity当中对Android应用程序进行调试</p>
+<p>我们可以通过该工具获取到：</p>
+<p>1.安卓日志打印信息</p>
+<p>2.安卓应用程序内存统计</p>
+<p>3.安卓屏幕截图</p>
+<p>4.安卓屏幕录像</p>
+<p>5.堆栈跟踪</p>
+<p>Unity2019.4及以上版本都可以引入Android Logcat来帮助我们进行调试</p>
+<h4 id="如何使用android-logcat工具">如何使用Android Logcat工具<a hidden class="anchor" aria-hidden="true" href="#如何使用android-logcat工具">#</a></h4>
+<p>1.在Unity工程中引入Android Logcat包</p>
+<p>2.连接Android设备</p>
+<p>3.将Android Logcat连接到Android设备上点的应用程序，便可以查看相关信息</p>
+<h4 id="android-logcat窗口基础知识">Android Logcat窗口基础知识<a hidden class="anchor" aria-hidden="true" href="#android-logcat窗口基础知识">#</a></h4>
+<p><img alt="image-20220903135914927" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242136422.png"></p>
+<h5 id="a工具栏">A：工具栏<a hidden class="anchor" aria-hidden="true" href="#a工具栏">#</a></h5>
+<h6 id="auto-run自动运行">Auto Run：自动运行<a hidden class="anchor" aria-hidden="true" href="#auto-run自动运行">#</a></h6>
+<p>启用后，当你构建和运行应用程序时Android Logcat窗口会连接到应用程序，显示对应的相关信息</p>
+<h6 id="no-device设备选择器">No device：设备选择器<a hidden class="anchor" aria-hidden="true" href="#no-device设备选择器">#</a></h6>
+<p>当没有Android设备连接电脑是，显示No Device，有设备时可以在这选择连接的Android设备</p>
+<h6 id="no-filter过滤选择器">No Filter：过滤选择器<a hidden class="anchor" aria-hidden="true" href="#no-filter过滤选择器">#</a></h6>
+<p>可以指定Android设备上显示消息的应用程序，此处显示的是应用程序的包名</p>
+<h6 id="过滤输入框">过滤输入框<a hidden class="anchor" aria-hidden="true" href="#过滤输入框">#</a></h6>
+<p>用于过滤搜索消息日志，可以输入内容搜索信息</p>
+<p>消息正文过滤：在输入框输入内容，则会自动筛选消息中存在输入字符的内容</p>
+<p>优先级过滤：在下方点击Priority优先级，选择过滤的内容</p>
+<p>Verbose：冗长的，所有
+Debug：调试信息
+Info：信息
+Warn：警告
+Error：错误
+Fatal：致命的</p>
+<p>按标签过滤：在下方点击Tag标签，选择过滤的内容</p>
+<h6 id="filter-options过滤器选项">Filter Options：过滤器选项<a hidden class="anchor" aria-hidden="true" href="#filter-options过滤器选项">#</a></h6>
+<p>决定如何使用选项过滤器输入过滤消息日志中的消息
+Use Regular Expressions：使用正则表达式
+Match Case：区分大小写</p>
+<h6 id="reconnect重新连接">Reconnect：重新连接<a hidden class="anchor" aria-hidden="true" href="#reconnect重新连接">#</a></h6>
+<p>重新连接到应用程序和设备，如果程序不再运行则重新连接到设备</p>
+<h6 id="disconnect断开和设备的连接">Disconnect：断开和设备的连接<a hidden class="anchor" aria-hidden="true" href="#disconnect断开和设备的连接">#</a></h6>
+<h6 id="clear清除消息列表中的消息日志">Clear：清除消息列表中的消息日志<a hidden class="anchor" aria-hidden="true" href="#clear清除消息列表中的消息日志">#</a></h6>
+<h6 id="tools工具相关">Tools：工具相关<a hidden class="anchor" aria-hidden="true" href="#tools工具相关">#</a></h6>
+<p>Screen Capture：屏幕捕获
+从连接的Android设备上捕捉屏幕截图和视频</p>
+<p>Open Terminal：开放终端
+在Windows上打开命令调试符窗口，在macOS和Linux上打开终端</p>
+<p>Stacktrace Utility：堆栈跟踪应用程序
+解析自定义堆栈跟踪</p>
+<p>Memory Window：内存窗口
+跟踪为应用程序分配的内存</p>
+<h5 id="b消息日志">B：消息日志<a hidden class="anchor" aria-hidden="true" href="#b消息日志">#</a></h5>
+<p><img alt="image-20220903140638857" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242136658.png"></p>
+<h4 id="屏幕捕获工具">屏幕捕获工具<a hidden class="anchor" aria-hidden="true" href="#屏幕捕获工具">#</a></h4>
+<p>屏幕捕获工具主要可以帮助我们进行游戏内截图，录屏</p>
+<p>该工具可以帮助我们：</p>
+<p>1.测试人员用来录制bug表现，反馈给程序人员进行解决</p>
+<p>2.获取截屏、录屏信息，获取宣传资料</p>
+<p>优点：直接PC端远程获取，方便快捷，便于记录bug表现效果</p>
+<p>缺点：录制的视频不会捕获声音，录屏功能可以部分设备不支持</p>
+<p><img alt="image-20220903141016807" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242136696.png"></p>
+<p><img alt="image-20220903141109817" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242136092.png"></p>
+<h4 id="堆栈跟踪实用工具">堆栈跟踪实用工具<a hidden class="anchor" aria-hidden="true" href="#堆栈跟踪实用工具">#</a></h4>
+<p>目前我们使用Android Logcat连接真机进行测试时</p>
+<p>打印、警告、报错等等信息都会直接在主窗口中打印出来让我们进行分析</p>
+<p>相当于它帮助我们进行了自动的堆栈跟踪解析</p>
+<p>什么是自动堆栈跟踪解析呢？</p>
+<p>就是我们可以在打印窗口看到具体是哪个脚本的哪行代码</p>
+<p>出现了打印、警告、报错等等信息</p>
+<p>而Tools(工具)中的Stacktrace Utility(堆栈跟踪实用工具)的作用是</p>
+<p>允许我们复制粘贴自定义日志并解析堆栈跟踪</p>
+<p>主要用于没有真机连接设备调试时</p>
+<p>或者之后正式发布版本后</p>
+<p>我们可以获取应用程序日志信息</p>
+<p>将这些日志信息复制到该工具中用于翻译</p>
+<p>(一般项目会在崩溃后，在本地存储一份崩溃日志，我们可以获取该日志)</p>
+<p>因为这种情况下的日志信息中，不会明确指明是哪个脚本哪行代码</p>
+<p>往往是一堆看不懂的符号,我们可以使用该工具进行翻译</p>
+<p>比如：下面这个打印信息就是安卓的原始日志</p>
+<p>E CRASH   :      #01  pc 01c65330  /data/app/com.CrashComp.Crash-J2Z_L0XSsSAZPkt9lab2rQ==/lib/arm/libunity.so</p>
+<p>(DiagnosticsUtils_Bindings::ForceCrash(DiagnosticsUtils_Bindings::ForcedCrashCategory, ScriptingExceptionPtr*)+48)</p>
+<p>这里面都是一堆特殊符号，并没有明确告诉你哪个脚本哪行代码</p>
+<p>通过翻译后堆栈跟踪实用工具翻译后，我们就能够获取到哪个脚本哪行代码打印了输出了该信息</p>
+<p>总而言之它该工具就是用来翻译发布后安卓应用程序的日志信息的</p>
+<h5 id="堆栈跟踪实用工具的使用">堆栈跟踪实用工具的使用<a hidden class="anchor" aria-hidden="true" href="#堆栈跟踪实用工具的使用">#</a></h5>
+<p>使用堆栈跟踪实用工具的作用是可以翻译自己获取到的安卓日志信息</p>
+<p>使用流程是：</p>
+<p>1.设置项目的 so 文件路径</p>
+<p>2.将日志信息复制到Original（初始）页签中</p>
+<p>3.点击Resolve Stacktraces(解析堆栈跟踪)</p>
+<p>4.在Resolved(已解析的日志)页签中查看翻译结果</p>
+<p>注意：我们在电脑连接安卓设备通过Android Logcat进行调试时一般不使用该功能，只有当非连接调试时，获取了安卓崩溃日志后才会使用该功能</p>
+<p><img alt="image-20220903141656842" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242136417.png"></p>
+<p><img alt="image-20220903141726069" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242136849.png"></p>
+<h4 id="内存窗口工具">内存窗口工具<a hidden class="anchor" aria-hidden="true" href="#内存窗口工具">#</a></h4>
+<p>首先了解 RAM（运行时内存）对于我们的意义</p>
+<p>如果应用程序出现闪退情况，往往都是因为应用程序运行时内存的使用超出了设备允许的最大内存量，而被手机系统强行关闭</p>
+<p>注意：</p>
+<p>不同品牌、型号的手机配置都是不同的，手机后台运行的程序数量也是不同的，所以要根据实际情况进行测试获取目标设备的内存极限值，可以选取市面上的主流机型来进行测试</p>
+<p><strong>内存窗口工具是用于跟踪应用程序RAM（运行时内存）的分配情况的</strong></p>
+<p>我们可以使用它来分析应用程序可能存在的内存问题</p>
+<p>我们可以使用它 定期自动的 或者 手动的 捕获内存快照</p>
+<p>这里的内存快照就是捕获的这一瞬间应用程序的运行时内存使用情况</p>
+<p>根据内存快照我们可以分析内存问题</p>
+<p>比如：</p>
+<ol>
+<li>
+<p>切换场景前和切换场景后的内存快照比较，判断是否存在内存泄露</p>
+</li>
+<li>
+<p>比如闪退前的内存快照，来分析设备占用多少内存时造成了闪退，确定内存瓶颈</p>
+</li>
+</ol>
+<p>等等</p>
+<p><img alt="image-20220903142133235" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242136108.png"></p>
+<p>Auto Capture：自动捕获
+Unity会定期捕获应用程序的内存快照
+注意：自动捕获，可能会影响性能表现，可能会造成卡顿，如果严重影响测试，建议使用手动捕获</p>
+<p>Manual Capture：手动捕获
+通过点击按钮，自己手动捕获内存快照</p>
+<p>Disabled：不启用</p>
+<p><img alt="image-20220903142205592" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242136948.png"></p>
+<p><img alt="image-20220903142318882" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242136572.png"></p>
+<h3 id="android-debug-brige">Android Debug Brige<a hidden class="anchor" aria-hidden="true" href="#android-debug-brige">#</a></h3>
+<p>ADB是 Android Debug Brige（安卓调试桥）的简称</p>
+<p>它是我们调试Android设备的一套指令集</p>
+<p>它可以让我们通过指令来进行一些操作，来获取日志信息</p>
+<p>比如：</p>
+<p>1.关机、重启</p>
+<p>2.安装、启动、卸载应用程序</p>
+<p>3.删除、移动、复制文件</p>
+<p>4.查看日志信息</p>
+<p>我们最常使用的就是查看日志信息的功能</p>
+<p>之前学习的Android Logcat工具其实就是利用了ADB来获取的信息</p>
+<p>由于Android Logcat工具只能在Unity 2019.4及其以上版本才能使用</p>
+<p>所以对于老版本的Unity来说，我们一般使用ADB来帮助我们进行调试</p>
+<p>注意：</p>
+<p>使用ADB工具的前提是 电脑和安卓设备处于USB调试连接</p>
+<h4 id="如何使用adb">如何使用ADB？<a hidden class="anchor" aria-hidden="true" href="#如何使用adb">#</a></h4>
+<p>在Android SDK的路径中</p>
+<p>寻找platform-tools文件夹</p>
+<p>在其中可以找到adb.exe文件</p>
+<p>我们需要配合命令调试符窗口（Windows）使用adb指令集</p>
+<p>方法一：</p>
+<p>直接在Android Logcat窗口中使用Tools中的Open Terminal（打开终端）</p>
+<p>Window系统会自动打开命令调试符窗口</p>
+<p>MacOS系统会自动打开终端窗口</p>
+<p>会直接来到SDK文件夹中的platform-tools（平台工具）文件夹</p>
+<p>在后面直接输入指令即可</p>
+<p>adb 指令</p>
+<p>方法二：</p>
+<p>自己打开命令调试符窗口</p>
+<p>输入adb.exe所在文件夹路径</p>
+<p>比如：</p>
+<p>D:\Android\android-sdk\platform-tools\adb 指令</p>
+<h4 id="关键指令">关键指令<a hidden class="anchor" aria-hidden="true" href="#关键指令">#</a></h4>
+<p>常用指令</p>
+<p>1.显示日志信息</p>
+<p>adb logcat</p>
+<p>2.获取Unity相关日志信息</p>
+<p>adb logcat -s Unity</p>
+<p>做了解的指令</p>
+<p>1.查看abb相关信息，比如版本号、常用命令等</p>
+<p>adb help</p>
+<p>2.查看adb版本</p>
+<p>adb version</p>
+<p>3.安装apk</p>
+<p>adb install apk路径</p>
+<p>4.覆盖安装</p>
+<p>adb install -r apk路径</p>
+<p>5.卸载应用程序</p>
+<p>adb uninstall 应用程序包名</p>
+<p>6.保留数据卸载应用程序</p>
+<p>adb uninstall -k 应用程序包名</p>
+<p>7.查看连接的主机设备</p>
+<p>adb devices</p>
+<p>8.从电脑上复制文件到手机</p>
+<p>adb push 电脑上文件路径 需要复制到的手机路径</p>
+<p>9.从手机上复制文件到电脑</p>
+<p>adb pull 手机上文件路径 需要复制到的电脑路径</p>
+<p>10.查看手机上安装的所有应用程序包名</p>
+<p>adb shell pm list packages</p>
+<p>11.截图</p>
+<p>adb shell screencap 保存到的手机路径</p>
+<p>12.录屏</p>
+<p>adb shell screenrecord 保存到的手机路径</p>
+<p>等等</p>
+<p>更多信息</p>
+<p><a href="https://developer.android.com/studio/command-line/adb.html">https://developer.android.com/studio/command-line/adb.html</a></p>
+<h3 id="android-studio中调试应用程序">Android Studio中调试应用程序<a hidden class="anchor" aria-hidden="true" href="#android-studio中调试应用程序">#</a></h3>
+<h4 id="回顾unity导出android-studio工程">回顾Unity导出Android Studio工程<a hidden class="anchor" aria-hidden="true" href="#回顾unity导出android-studio工程">#</a></h4>
+<p>Build Settings中进行设置</p>
+<p>1.勾选Export Project</p>
+<p>2.勾选Development Build</p>
+<p>3.导出到指定目录</p>
+<p>4.使用Android Studio打开该工程</p>
+<p>5.更新Gradle版本</p>
+<p>6.删除 android.enableR8</p>
+<p>7.保证构建成功</p>
+<h4 id="在android-studio中调试应用程序">在Android Studio中调试应用程序<a hidden class="anchor" aria-hidden="true" href="#在android-studio中调试应用程序">#</a></h4>
+<p>1.保证Android设备和电脑进行USB调试连接</p>
+<p>2.菜单栏的Run页签中进行调试（若上部分Run置灰，可以重启一次Android Studio）</p>
+<p>3.在下方的Logcat日志窗口和Profiler性能分析器窗口调试应用程序，排查问题</p>
+<p>更多关于Android Studio调试和性能分析内容</p>
+<p>调试：https://developer.android.google.cn/studio/debug</p>
+<p>性能分析：https://developer.android.google.cn/studio/profile</p>
+<p>总结</p>
+<p>Android Studio中调试应用程序和Unity中使用 Android Logcat + Unity Profiler窗口类似</p>
+<p>一般情况下，没有特殊需求，我们都在Unity中进行Android应用程序调试</p>
+<p>相对Android Studio中调试来说更适合我们Unity程序员</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/unity/">Unity</a></li>
+      <li><a href="http://localhost:1313/tags/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0/">移动平台</a></li>
+      <li><a href="http://localhost:1313/tags/android/">Android</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/unity/unity-%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E7%9B%B8%E5%85%B3java%E8%AF%AD%E6%B3%95/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Unity-移动平台相关Java语法</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/unity/unity-%E7%BD%91%E7%BB%9C%E5%BC%80%E5%8F%91%E4%B8%89/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Unity-网络开发（三）</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-移动平台相关Android on x"
+            href="https://x.com/intent/tweet/?text=Unity-%e7%a7%bb%e5%8a%a8%e5%b9%b3%e5%8f%b0%e7%9b%b8%e5%85%b3Android&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E7%25A7%25BB%25E5%258A%25A8%25E5%25B9%25B3%25E5%258F%25B0%25E7%259B%25B8%25E5%2585%25B3android%2f&amp;hashtags=Unity%2c%e7%a7%bb%e5%8a%a8%e5%b9%b3%e5%8f%b0%2cAndroid">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-移动平台相关Android on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E7%25A7%25BB%25E5%258A%25A8%25E5%25B9%25B3%25E5%258F%25B0%25E7%259B%25B8%25E5%2585%25B3android%2f&amp;title=Unity-%e7%a7%bb%e5%8a%a8%e5%b9%b3%e5%8f%b0%e7%9b%b8%e5%85%b3Android&amp;summary=Unity-%e7%a7%bb%e5%8a%a8%e5%b9%b3%e5%8f%b0%e7%9b%b8%e5%85%b3Android&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E7%25A7%25BB%25E5%258A%25A8%25E5%25B9%25B3%25E5%258F%25B0%25E7%259B%25B8%25E5%2585%25B3android%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-移动平台相关Android on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E7%25A7%25BB%25E5%258A%25A8%25E5%25B9%25B3%25E5%258F%25B0%25E7%259B%25B8%25E5%2585%25B3android%2f&title=Unity-%e7%a7%bb%e5%8a%a8%e5%b9%b3%e5%8f%b0%e7%9b%b8%e5%85%b3Android">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-移动平台相关Android on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E7%25A7%25BB%25E5%258A%25A8%25E5%25B9%25B3%25E5%258F%25B0%25E7%259B%25B8%25E5%2585%25B3android%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-移动平台相关Android on whatsapp"
+            href="https://api.whatsapp.com/send?text=Unity-%e7%a7%bb%e5%8a%a8%e5%b9%b3%e5%8f%b0%e7%9b%b8%e5%85%b3Android%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E7%25A7%25BB%25E5%258A%25A8%25E5%25B9%25B3%25E5%258F%25B0%25E7%259B%25B8%25E5%2585%25B3android%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-移动平台相关Android on telegram"
+            href="https://telegram.me/share/url?text=Unity-%e7%a7%bb%e5%8a%a8%e5%b9%b3%e5%8f%b0%e7%9b%b8%e5%85%b3Android&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E7%25A7%25BB%25E5%258A%25A8%25E5%25B9%25B3%25E5%258F%25B0%25E7%259B%25B8%25E5%2585%25B3android%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-移动平台相关Android on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=Unity-%e7%a7%bb%e5%8a%a8%e5%b9%b3%e5%8f%b0%e7%9b%b8%e5%85%b3Android&u=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E7%25A7%25BB%25E5%258A%25A8%25E5%25B9%25B3%25E5%258F%25B0%25E7%259B%25B8%25E5%2585%25B3android%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">LiuYingbo Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

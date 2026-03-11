@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Unity | LiuYingbo Blog</title>
+<meta name="keywords" content="">
+<meta name="description" content="LiuYingbo 的博客">
+<meta name="author" content="LiuYingbo">
+<link rel="canonical" href="http://localhost:1313/categories/unity/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.a29c24210eb31d9ce56f669c66a35c9c51b17376b7764e336a49af7dec914cf0.css" integrity="sha256-opwkIQ6zHZzlb2acZqNcnFGxc3a3dk4zakmvfeyRTPA=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/categories/unity/index.xml" title="rss">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/categories/unity/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="LiuYingbo Blog (Alt + H)">LiuYingbo Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/categories/" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives/" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+<header class="page-header"><div class="breadcrumbs"><a href="http://localhost:1313/">Home</a>&nbsp;»&nbsp;<a href="http://localhost:1313/categories/">Categories</a></div>
+  <h1>
+    Unity
+  </h1>
+</header>
+
+<article class="post-entry tag-entry"> 
+<figure class="entry-cover">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211192022487.jpg" alt="">
+</figure>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Unity-中英对照汉化
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>演示 操作 把汉化包zh-cn.po用记事本打开，复制内容到word编辑
+word软件主窗口 编辑–替换，打开查找替换窗口
+点击高级，选中使用通配符
+查找内容：(msgid\ &#34;)(*)(&#34;^13msgstr &#34;)(*)(&#34;^13)
+替换为：\1\2\3\2 \4\5
+全部替换完之后，复制全部内容到记事本 记事本中文件–另存为zh-cn.po就OK了
+解释 举例 汉化包中的一段内容 #: Editor/Mono/Inspector/AudioMixerControllerInspector.cs:1 msgid &#34; Threshold Volume&#34; msgstr “阈值音量”
+查找内容 msgid &#34; Threshold Volume&#34; msgstr “阈值音量” 替换为 msgid &#34; Threshold Volume&#34; msgstr &#34; Threshold Volume阈值音量&#34;
+拆分解释 (msgid\ “)()(“13)(msgstr “)(*)(“13) （）括号内为需要查找的文本内容，一个括号对应一个替换文本的元素即， 第一个(msgid\ “)对应替换\1 第二个()对应\2 (”^13)对应\3 以此类推
+(msgid\ “)这一段在查找中会找到第二行的msgid &#34; 需要查找的msgid “之中有个空格，需要用\来避免编译
+(msgid\ “)()(&#34;^13)这一段有三个元素 ()代表所有文本 (”^13)代表&#34;加上一个换行 这一段就表示找到msgid “开头，然后到&#34;行末端结尾的一整行 并且分为了3个元素，在替换的时候用\序号调用
+</p>
+  </div>
+  <footer class="entry-footer"><span title='2022-05-09 15:56:17 +0800 CST'>May 9, 2022</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to Unity-中英对照汉化" href="http://localhost:1313/posts/unity/unity%E4%B8%AD%E8%8B%B1%E5%AF%B9%E7%85%A7%E6%B1%89%E5%8C%96/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Unity-Addressable
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>配置 Profile 概述窗口配置 BuildTarget：构建目标，可以在这里设置是哪个平台，默认是你激活哪个平台就是哪个平台 LocalBuildPath：本地构建路径，默认在项目的Library库文件夹中 LocalLoadPath：本地加载路径，在哪里加载本地已有的资源 RemoteBuildPath：远程构建路径 RemoteLoadPath：远程加载路径，在哪里下载远程内容和目录
+注意： 1.一般情况下，不要去修改本地构建和加载路径默认值 2.当我们针对不同平台远程分发内容时，通过多个配置文件最方便。如果你想要最终的发布包包含所有内容，那么一个默认配置就够了
+AddressableAssetSettings 可寻址资源数据设置 概述配置 Profile In Use：可以在这选择使用的是哪一套配置文件 Manage Profiles：点击它会打开管理配置文件窗口
+Diagnostics:诊断 Send Profiler Events：启用分析器事件，启用它后我们可以在Event Viewer窗口查看Addressable相关信息 Log Runtime Exceptions：记录运行时加载相关的异常
+目录相关设置，将资源的地址映射到其物理位置 Player Version Override：重写用于制定远程目录名称的时间戳 如果不设置默认使用时间戳作为远程目录命名
+Compress Local Catalog：在压缩的AssetBundle文件中生成目录。可以压缩大小，但是会增加生成和加载的时间
+Optimize Catalog Size：通过为内部ID创建查找表来减小目录的大小。会增加加载目录所需的时间
+Content Update：内容更新
+Disable Catalog Update on Startup：当可寻址系统在运行时初始化时，禁用自动检查更新的远程目录。您可以手动检查更新的目录。
+Content State Build Path：在何处生成由默认生成脚本生成的内容状态文件。
+Build Remote Catalog：构建远程目录 勾选后会出现新选项
+Build &amp; Load Paths： 在何处生成和加载远程目录。从列表中选择一个配置文件路径，如果要分别设置生成路径和加载路径，请选择。 仅在启用生成远程目录时可见。
+Build Path：远程构建路径，在何处构建远程目录。通常，应该使用RemoteBuildPath配置文件变量。 仅当将生成和加载路径设置为时显示。
+Load Path：远程加载路径，用于访问远程目录的URL。通常，应该使用RemoteLoadPath配置文件变量。 仅当将生成和加载路径设置为时显示。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2022-04-20 10:30:27 +0800 CST'>April 20, 2022</span>&nbsp;·&nbsp;<span>5 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to Unity-Addressable" href="http://localhost:1313/posts/unity/unity-addressable/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+<figure class="entry-cover">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211192022487.jpg" alt="">
+</figure>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Unity-Camera
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>摄像机组件 照相机是玩家观察世界的装置，屏幕空间点按像素定义，屏幕的左下为（0,0）；右上是（pixelwidth，pixelHeight），z位置在照相机的世界单位中。
+相机组件
+Clear Flags ： 清除标识：确定了屏幕哪些部分将被清除，方便多个摄像机画不同的游戏元素 Background:背景色 Culling Mask:包含或省略要由相机呈现的对象层。在检查器中将图层分配给您的对象。 Projection: 切换相机的功能来模拟透视。 Perspective(透视): 相机将完整地呈现透视物体。拍摄角度为0-180°（最高） Field of View: 设置为“正交”时，“相机”的视口大小。 Orthographic(正交): 相机将统一渲染对象，没有视角。注：正交模式下不支持延迟渲染。正向渲染总是被使用。 Size:设置为“正交”时，“相机”的视口大小。 Cliping Planes:从相机到开始和停止渲染的距离。 Near ：相对于相机的最近点将出现绘图。 Far ：相对于相机的最远点将出现绘图。 ViewportRect：视口矩形 四个值指示屏幕上的相机视图将被绘制的位置。在视口坐标中测量（值为0-1）。 Depth:相机的位置按照画图顺序。具有较大值的相机将被绘制在具有较小值的相机之上。 Rendering Path:用于定义相机将使用什么渲染方法的选项 渲染路径 ：定义什么绘制方法被用于相机的选项 Use Graphics Settings 使用玩家设置：在玩家设置（Player Settings.）相机使用哪个渲染路径。 Forward 正向渲染：所有对象每材质渲染只渲染一次,快速渲染 Deferred 延迟照明：所有物体将在无光照的环境渲染一次，然后在渲染队列尾部将物体的光照一起渲染出来。 Legacy Vertex Lit 顶点光照 ：所有被这个相机渲染的物体都将渲染成Vertex-Lit物体。 Legacy Deferred : 旧的延迟光照 Target Texture : 目标纹理:渲染纹理 （Render Texture）包含相机视图输出。这会使相机渲染在屏幕上的能力被禁止。可用于实现画中画或者画面特效。 Occlusion Culling : 是否剔除物体背向摄像机的部分 Allow HDR:高动态光照渲染，启动相机高动态范围渲染功能。让场景更真实。 Allow MSAA: 这台相机应该使用MSAA渲染目标吗？如果当前质量设置MSAA级别支持，将只使用MSAA。 Allow Dynamic Resolution：动态分辨率缩放。 如果相机使用动态分辨率渲染，则为true，否则为false。即使此属性为true，动态分辨率也只能在当前图形设备支持的情况下使用。 Target Display:设置此摄像机的目标显示。 此设置使摄像机呈现在指定的显示中。显示器（例如监视器）支持的最大数目是8. ...</p>
+  </div>
+  <footer class="entry-footer"><span title='2022-03-29 23:17:58 +0800 CST'>March 29, 2022</span>&nbsp;·&nbsp;<span>9 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to Unity-Camera" href="http://localhost:1313/posts/unity/unity-camera/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+<figure class="entry-cover">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211192022487.jpg" alt="">
+</figure>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Unity解析Json
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>JsonUtility 一、Unity自带的Json库 官方API：https://docs.unity3d.com/ScriptReference/JsonUtility.html
+在Unity中使用JsonUtility类对Json进行解析，此类包含三个重要方法，下面进行详解。
+二、FromJson方法（反序列化） 将Json转换为object
+返回值是一个Object，需要在对应的类或结构体前标记Serializable属性（没标记好像也行 序列化不成功可能就是因为没有标记）。object类型必须支持序列化，其中的字段也必须支持序列化（比如私有类型、标记了NonSerialized属性的类型等不可序列化字段会被忽视）。
+只有普通的类/结构体才行， 继承自UnityEngine.Object (比如 MonoBehaviour 或 ScriptableObject)的类则不行。
+使用string的此函数可以在后台线程调用，但使用TextAsset的此函数只可以在主线程调用。
+using UnityEngine;[System.Serializable]public class PlayerInfo{public string name;public int lives;public float health;public static PlayerInfo CreateFromJSON(string jsonString){return JsonUtility.FromJson&lt;PlayerInfo&gt;(jsonString);}// Given JSON input:// {&#34;name&#34;:&#34;Dr Charles&#34;,&#34;lives&#34;:3,&#34;health&#34;:0.8}// this example will return a PlayerInfo object with// name == &#34;Dr Charles&#34;, lives == 3, and health == 0.8f.} 三、ToJson（序列化） 将object转换为Json
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2022-03-22 22:13:59 +0800 CST'>March 22, 2022</span>&nbsp;·&nbsp;<span>4 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to Unity解析Json" href="http://localhost:1313/posts/unity/unity%E8%A7%A3%E6%9E%90json/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+<figure class="entry-cover">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211192048985.png" alt="">
+</figure>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Unity-全局屏幕点击特效
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>
+准备 首先canvas的设置调为camera模式
+Screen Space -OverLay:只显示所创建的canvas中的内容，即只渲染画布。
+Screen Space-Camera：只显示相机所渲染的区域，当保证camera的projection是perspective（透视模式）而不是（orthogonality）正交模式的时候通过调整canvas中image或其他物体的Rotation可以制作3D立体效果的UI，但是这种模式下不可以更改Canvas的ReactTransform,只能通过相机来调整canvas的显示位置和显示大小。
+World Space：canvas的ReacTransform完全可以编辑并且把canvas完全当成一个普通的类似于Cube的物体在场景中进行渲染，仔细考虑一下这种模式，如果你把canvas赋给游戏人物，那么你会发现这种模式适合给人物做血条或者在场景中一直在游戏人物的头顶显示人物名称。
+Unity坐标 世界坐标： 场景中非子物体的transform组件的坐标。Unity中的通过transform.position获取到的坐标即为世界坐标，注意:Inspector上点击子物体显示的transform上的坐标值是局部坐标，通过transform.localposition获取。
+屏幕坐标： 屏幕坐标即当前整个游戏画面分辨率为主创建的坐标系，画面左下角为原点(0,0)，宽高根据分辨率而定，如分辨率为1920X1080，则宽Screen.width = 1920，Screen.height = 1080.
+视口坐标： 将屏幕坐标normalized化，x值 = 1/Screen.width,y值 = 1/Screen.height。，即原点变不变依然为(0,0),宽高则为(1,1)。
+UI坐标： 以UI上的RectTransform的width和height为宽高，根据锚点不同，原点也不一样。
+转换： 1.屏幕转世界坐标 Vector3 Camera.main.ScreenToWorldPoint(newVector3(screenPos.x,screenPos.y,zInfo));
+2.世界转屏幕坐标 Vector3 Camera.main.WorldToScreenPoint(newVector3(worldPos.x,worldPos.y,worldPos.z));
+3.世界转视口坐标 Vector3 Camera.main.WorldToViewportPoint();
+4.视口转世界坐标 Vector3 Camera.main.ViewportToWorldPoint(newVector3(viewPortPos.x,viewPortPos.y,zInfo));
+5.视口转屏幕坐标 Vector3 Camera.main.ViewportToScreenPoint();
+6.屏幕转视口坐标 Vector3 Camera.main.ScreenToViewportPoint();
+7.屏幕转UI坐标:这个比较特殊，如果UI宽高和屏幕宽高一样，那么可以不用转换，直接通过屏幕坐标根据锚点赋值即可。其他情况下： RectTransformUtility.ScreenPointToLocalPointInRectangle (RectTransform rect, Vector2 screenPoint, Camera cam, outVector2 localPoint);
+rect表示该UI的父物体的组件， screenPoint表示屏幕坐标， cam表示当前使用的相机(如果Canvas是Screen Space-overlay模式，cam参数应为null), localPoint则是输出的UI的局部坐标。 这个函数是根据父物体的坐标系来计算出当面屏幕坐标应该转换为的值，该值是相对父物体而言的局部坐标。
+实现 using UnityEngine; public class FXContainer : MonoBehaviour { Vector2 point; public Transform parent; public GameObject effect; public Canvas UICanvas; //你所使用的UICanvas [Range(0, 5.0f)] public float desTime = 1.0f; private void Update() { if (Input.GetMouseButtonDown(0)) { //将鼠标点击的屏幕坐标转换为UI坐标，最后一个输出参数为转换的点 RectTransformUtility.ScreenPointToLocalPointInRectangle(UICanvas.transform as RectTransform,Input.mousePosition, UICanvas.worldCamera, out point); GameObject go = Instantiate(effect, parent); go.GetComponent&lt;RectTransform&gt;().anchoredPosition = point; Destroy(go, desTime); } } } 主要就是靠RectTransformUtility.ScreenPointToLocalPointInRectangle获取鼠标点击的UI坐标，如果想优化的话可以写个对象池，扩展可以实现粒子效果跟随鼠标,图片跟随鼠标等
+</p>
+  </div>
+  <footer class="entry-footer"><span title='2022-03-14 23:11:45 +0800 CST'>March 14, 2022</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to Unity-全局屏幕点击特效" href="http://localhost:1313/posts/unity/unity-%E5%85%A8%E5%B1%80%E5%B1%8F%E5%B9%95%E7%82%B9%E5%87%BB%E7%89%B9%E6%95%88/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+<figure class="entry-cover">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211192048985.png" alt="">
+</figure>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Unity-底层原理
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Unity是如何实现跨平台的 首先，我们要知道Unity,Mono,.Net 三者的关系。需要简单说一下.Net。
+.Net拥有跨语言，跨平台性。
+跨语言：就是只要是面向.Net平台的编程语言，用其中一种语言编写的类型就可以无缝的在另外一种语言编写的应用程序中互操作。
+跨平台：一次编译，不需要任何代码修改，应用程序就可以运行在任意在.Net实现的平台上跑，即代码不依赖于操作系统，也不依赖硬件环境。一个.Net程序运行的核心在于.Net
+CLR(公共语言运行时，或者称为.Net 虚拟机，类似java虚拟机的概念)，为了让.Net程序在其他平台（目前只能在.Net 平台,windows系统）上跑,微软官方还推出了在其他平台上(MacOs,Linux)跑的
+.Net的实现，就推出了.Net Core。
+然而，Unity引擎需求也是需要跨平台，支持多语言（C#，Js，Boo）。就参考微软开发.Net Core的概念，于是，推出了Mono.
+到这里，基本说明了.Net 与Mono和Unity的联系关系，其实没啥关系。做游戏都知道，肯定需要跨平台，不能只支持一种平台，不然每个对应的平台做出一种对应的编译器，那真的会累死。所以对于跨平台的需求，对于游戏开发而言，很重要。Unity的架构需求设计当然也需要这个特性。参考.Net依托CLR来实现设计思路，于是Mono就出来了。
+Mono介绍 Mono是一个由Xamarin公司所主持的自由开放源码项目。 Mono的目标是在尽可能多的平台上使.net标准的东西能正常运行的一套工具，核心在于“跨平台的让.net代码能运行起来“。 Mono组成组件：C# 编译器，CLI虚拟机，以及核心类别程序库。 Mono的编译器负责生成符合公共语言规范的映射代码，即公共中间语言（Common Intermediate Language，CIL），我的理解就是工厂方法实现不同解析。 IL的全称是 Intermediate Language，很多时候还会看到CIL（特指在.Net平台下的IL标准）。翻译过来就是中间语言。 它是一种属于通用语言架构和.NET框架的低阶的人类可读的编程语言。 CIL类似一个面向对象的汇编语言，并且它是完全基于堆栈的，它运行在虚拟机上（.Net Framework, Mono VM）的语言。
+工作流程： 通过C#编译器mcs，将C#编译为IL（中间语言，byte code） 通过Mono运行时中的编译器将IL编译成对应平台的原生码 编译器 C#编译器mcs：将C#编译为IL Mono Runtime编译器：将IL转移为原生码。
+三种转译方式： 即时编译（Just in time,JIT）：程序运行过程中，将CIL的byte code转译为目标平台的原生码。 提前编译（Ahead of time,AOT）：程序运行之前，将.exe或.dll文件中的CIL的byte code部分转译为目标平台的原生码并且存储，程序运行中仍有部分CIL的byte code需要JIT编译。 完全静态编译（Full ahead of time,Full-AOT）：程序运行前，将所有源码编译成目标平台的原生码。
+Unity跨平台的原理 Mono运行时编译器支持将IL代码转为对应平台原生码 IL可以在任何支持CLI,通用语言环境结构)中运行，IL的运行是依托于Mono运行时。
+IOS不支持jit编译原因： 机器码被禁止映射到内存，即封存了内存的可执行权限，变相的封锁了jit编译方式。
+JIT编译 将IL代码转为对应平台原生码并且将原生码映射到虚拟内存中执行。JIT编译的时候IL是在依托Mono运行时，转为对应的原生码后在依托本地运行。
+优点： 构建应用非常快 由于Mono的JIT(Just In Time compilation ) 机制, 所以支持更多托管类库 支持运行时代码执行 必须将代码发布成托管程序集(.dll 文件 , 由mono或者.net 生成 ) Mono VM在各个平台移植异常麻烦，有几个平台就得移植几个VM（WebGL和UWP这两个平台只支持 IL2CPP） Mono版本授权受限，C#很多新特性无法使用 iOS仍然支持Mono , 但是不再允许Mono(32位)应用提交到Apple Store IL2CPP介绍 IL2CPP 是 Unity一种新的脚本后处理(Scripting Backend)方式，针对.Net平台编译输出的IL（中间语言）进行处理。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2022-03-12 16:46:56 +0800 CST'>March 12, 2022</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to Unity-底层原理" href="http://localhost:1313/posts/unity/unity-%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+<figure class="entry-cover">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211192022487.jpg" alt="">
+</figure>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Unity-Shader
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Mesh MeshFilter 网格过滤器
+主要从众多的资源中挑选需要的Mesh，把它丢给MeshRender。
+MeshRenderer 网格渲染器
+主要是负责把MeshFilter丢过来的Mesh，绘制显示到我们的场景中，当然这项工作是非常复杂的。
+Material 材质球
+Material是MeshRenderer中非常重要的角色，它的配置决定了物体表面的外观将以怎样的质地呈现到我们眼前。如果天MeshRenderer不小心弄丢了Material，那这个物体就会变成让人烦躁的品红色。其实它跟大家经常看到的网页Error404差不多，RGB调成101就是这个颜色啦。
+如果说Material是MeshRenderer的灵魂，那Shader就是Material的灵魂，但凡Shader哪里不开心了，即使MeshRenderer没有弄丢Material，物体依旧会变成前面所说的101颜色。
+Mesh 网格
+Mesh指的就是模型的网格，它决定了物体的表面形状是怎样的，一个模型的表面大多是由多个彼此相连的三角面构成，当然也有其它类型。我们平时听到的建模，可以简单理解为就是在建网格，那为什么Unity中的网格大多都是三角形而不是四边形呢？正所谓一生二，二生三，三生万物。三角形可以说是最为基础的面了，可以简单理解为三角形具有更广泛的适用性，而Mesh则是构成这些三角面所需的信息集合。
+通过 Mesh data - Unity 手册 我们可以看到构成这些三角面所需的信息。
+Vertices 顶点数组 Vector3[]
+顾名思义它存储的是顶点的相关信息，所谓点成线，线成面，可以理解为这里面存储的是构成网格面全部的点
+Topology 拓扑类型
+它存储的就是一个类型信息，可以理解为它是图形表面排列结构的组成方式，Unity给我们提供了5种拓扑类型，三角面、四边形、线条、虚线、点阵，最常用的则是三角面。
+Indices 索引数组 int[]
+它是每个三角面顶点 的索引，可以理解为他存储了构网格三角面所用到的顶点索引。
+Vertex data 顶点数据
+它包含了顶点的位置、法线、切线、UV等属性
+Normal 法线 Vector3[]
+法线就是垂直于该顶点三角面的一条三维向量，它只有方向，没有大小。法线的方向就是顶点三角面朝外的方向。假设我们面前有一面镜子，它的正中心会有一条法线垂直于镜面指向我们，指向我们的面就是正面，相反就是背面
+Tangent 切线 Vector3[]
+它是垂直于法线的一条向量，而由于垂直于法线的向量有无数条，所以切线最终是由UV坐标来决定朝向的
+UV 纹理坐标 Vector2[]
+上面所说的UV坐标其实就是它，U增长的方向就是切线的方向，它和三维空间的X, Y, Z较为类似，它是一个二维的坐标系统，模型网格除了有三维空间的xyz坐标外，还有一个二维的UV坐标，在UV坐标中，U和V分别代表顶点在Texture水平和垂直方向上的采样坐标，这些坐标通常位于(0，0)和(1，1)之间，（0，0）代表最左下角，而（1，1）代表最右上角。这就跟平时装修房子贴墙纸一样，可以理解为它是Texture映射到模型表面的依据，模型顶点 会依据UV坐标对Texture进行采样。
+Index data 索引数据
+这个数据取决于拓扑类型，如果是三角面他储存的就是[0,1,2]，四边形储存的就是[0,1,2,3]，这个索引数值对应的就是顶点数组的下标。
+渲染 渲染管线 渲染管线通常来说就是在虚拟相机、三维物体、光源、照明模式、纹理等诸多条件都给定的情况下，生成或是绘制一幅二维图像的过程。而这个过程会有很多步骤，这些步骤就渲染阶段。
+一般这个过程会分为四个主要阶段：应用程序阶段、几何阶段、光栅化阶段、像素处理阶段。而每个阶段 又会分为很多个部分。
+应用程序阶段 （The Application Stage） CPU
+它最主要是负责数据的准备，也就是准备后面的阶段 所需的数据，像如模型，贴图，光照，相机位置等信息。
+-————————————————————————————————————
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2022-03-06 22:25:02 +0800 CST'>March 6, 2022</span>&nbsp;·&nbsp;<span>11 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to Unity-Shader" href="http://localhost:1313/posts/unity/unity-shader/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+<figure class="entry-cover">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211192048985.png" alt="">
+</figure>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Unity-简易对象池
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>在Unity中我们经常会用到对象池，使用对象池无非就是解决两个问题:
+一是减少 new 时候寻址造成的消耗，该消耗的原因是内存碎片。 二是减少 Object.Instantiate 时内部进行序列化和反序列化而造成的CPU消耗。 设计： 从字面上理解对象池，池的意思就是容器。我们可以从池中获取一个对象(一条鱼)，也可以向池中放入一个对象(一条鱼)。获取的操作我们叫Allocate(分配),而放入一个对象我们叫Recycle(回收)。所以我们可以定义池的接口为如下:
+public interface IPool&lt;T&gt;{T Allocate();bool Recycle(T obj);} 为什么要用泛型呢？如何实现一个精简并且灵活的对象池。这个灵活很大一部分是通过泛型体现的。
+池是容器的意思，在C#中可以是List,Queue或者Stack甚至是数组。所以对象池本身要维护一个容器。本篇我们选取Stack来作为池容器，原因是当我们在Allocate和Recycle时并不关心缓存的存储的顺序，只要求缓存对象的地址是连续的。代码如下所示:
+using System.Collections.Generic;public abstract class Pool&lt;T&gt; : IPool&lt;T&gt;{...protected Stack&lt;T&gt; mCacheStack = new Stack&lt;T&gt;();...} Pool是个抽象类，实现一个精简并且灵活的对象池。这个灵活很大一部分是通过抽象类体现的。
+现在对象的存取和缓存接口都设计好了，那么这些对象是从哪里来的呢？我们分析下，创建对象我们知道有两种方式，反射构造方法和new一个对象。对象池的一个重要功能就是缓存，要想实现缓存就要求对象可以在对象池内部进行创建。所以我们要抽象出一个对象的工厂，代码如下所示:
+public interface IObjectFactory&lt;T&gt;{T Create();} 为什么要用工厂? 实现一个精简并且灵活的对象池。这个灵活很大一部分是通过工厂体现的。
+OK，现在对象的创建，存取，缓存的接口都设计好了。下面放出Pool的全部代码。
+using System.Collections.Generic;public abstract class Pool&lt;T&gt; : IPool&lt;T&gt;{#region ICountObserverable/// &lt;summary&gt;/// Gets the current count./// &lt;/summary&gt;/// &lt;value&gt;The current count.&lt;/value&gt;public int CurCount{get { return mCacheStack.Count; }}#endregionprotected IObjectFactory&lt;T&gt; mFactory;protected Stack&lt;T&gt; mCacheStack = new Stack&lt;T&gt;();/// &lt;summary&gt;/// default is 5/// &lt;/summary&gt;protected int mMaxCount = 5;public virtual T Allocate(){return mCacheStack.Count == 0? mFactory.Create(): mCacheStack.Pop();}public abstract bool Recycle(T obj);} 对象池实现 首先要实现一个对象的创建器,代码如下所示:
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2022-03-01 22:51:57 +0800 CST'>March 1, 2022</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to Unity-简易对象池" href="http://localhost:1313/posts/unity/unity-%E7%AE%80%E6%98%93%E5%AF%B9%E8%B1%A1%E6%B1%A0/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+<figure class="entry-cover">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211192022487.jpg" alt="">
+</figure>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Unity-射线
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Unity射线系统 Demo展示 UI&#43;Physical射线测试：
+FPS自定义射线测试：
+UGUI射线工具 实现功能，鼠标点击UI,返回鼠标点击的UI对象；
+需要使用到鼠标点击事件-PointerEventData；
+关键API:EventSystem.current.RaycastAll();
+参数为鼠标点击事件，和接受射线返回结果集合；
+public static GameObject RaycastUI() { if (EventSystem.current == null) return null; //鼠标点击事件 PointerEventData pointerEventData = new PointerEventData(EventSystem.current); //设置鼠标位置 pointerEventData.position = Input.mousePosition; //射线检测返回结果 List&lt;RaycastResult&gt; results = new List&lt;RaycastResult&gt;(); //检测UI EventSystem.current.RaycastAll(pointerEventData, results); //返回最上层ui if (results.Count &gt; 0) return results[0].gameObject; else return null; } Physcial射线工具 从摄像机发射射线，方向为，摄像机——鼠标位置；
+可以获取射线碰撞到的3D物品的大部分信息：
+可以活着hit.collider；意味着可以获取碰撞点的位置，物体等信息；
+用来做鼠标点击地面控制人物位移；
+public static GameObject RaycastPhysical() { Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition); RaycastHit hit; bool isHit = Physics.Raycast((Ray) ray, out hit); if (isHit) { Debug.Log(hit.collider.name); return hit.collider.gameObject; //检测到碰撞，就把检测到的点记录下来 } return null; } 测试代码：
+public class Test : MonoBehaviour { void Update() { if (Input.GetMouseButtonUp(0)) { GameObject temp = RayCastTool.RaycastUI(); if (temp.CompareTag(&#34;Pic&#34;)) { temp.GetComponent&lt;Image&gt;().color = Color.red; } } if (Input.GetMouseButtonUp(1)) { GameObject temp = RayCastTool.RaycastPhysical(); temp.GetComponent&lt;Renderer&gt;().material.color = Color.red; } } } FPS射线测试 自定义射线的起始点Origin，方向，以及射线长度；
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2022-03-01 22:48:15 +0800 CST'>March 1, 2022</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to Unity-射线" href="http://localhost:1313/posts/unity/unity%E5%B0%84%E7%BA%BF/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+<figure class="entry-cover">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211192022487.jpg" alt="">
+</figure>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Unity-Asset资源
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Unity资源文件夹介绍 编辑时 在Asset文件下存在Resources和SteamingAsset文件夹；
+Resources 只读不可修改，打包时直接写死，没有办法通过热更新替换资源；
+可以存放任何格式的资源；
+通过Resources.Load加载；
+一般只存登录UI，congfig配置等不会修改的文件；
+//加载 GameObject go = Resources.Load&lt;GameObject&gt;(path); Sprite sp = Resouces.Load(path,typeof(sprite)) as sprite; TextAsset txt = Resources.Load(path) as TextAsset; SteamingAssets 存放打包后Unity打包后的资源，也就是我说的AssetBundle（ab包）；
+可读可写，打包后移动端不能使用File类读取（用过www读取streamingAssetspath数据拷贝到persistentDataPath）；
+安装后 Application.dataPath 包含游戏数据文件夹的路径，app程序包安装路径（不常用）；
+1.UnityEditor——默认Assets——可读可写 using StreamReader/StreamWriter/异步
+2.Andriod——data/app/xxx.apk——不可读不可写
+3.IOS——Application/…..app/Data——可读不可写（读没意义）
+Application.streamingAssetsPath 数据流换成目录，外部数据文件（二进制，AssetsBundle.csv、数据裸露不加密）；
+1.除了Andriod都可读可写，使用WWW或者System.IO都可以；
+2.Andriod只读，只能用WWW读写——第三方压缩/解压库实现读写（待研究）；
+3.安装包资源目录，不可修改；
+Application.presistentDataPath 持久化存储目录，应用更新、覆盖安装都不会清除；
+1.全平台可读可写——stream和file都可以读写；
+2.热更新资源存放目录；
+Application.temporaryCachePath 临时换成目录，可读可写（只有ios常用）；
+AssetBundle 资源压缩文件（ab包），非路径，一种压缩文件的格式；
+AssetBundle Asset Bundle： AssetBundle 是一个存档文件，包含可在运行时加载的特定于平台的资源（模型、纹理、预制件、音频剪辑甚至整个场景）。AssetBundle 可以表达彼此之间的依赖关系；例如 AssetBundle A 中的材质可以引用 AssetBundle B 中的纹理。为了通过网络进行有效传递，可以根据用例要求选用内置算法来压缩 AssetBundle（LZMA 和 LZ4）。
+AssetBundle 可用于可下载内容（DLC），减小初始安装大小，加载针对最终用户平台优化的资源，以及减轻运行时内存压力。
+AssetBundle 中有什么: “AssetBundle”可以指两种不同但相关的东西。
+首先是磁盘上的实际文件。对于这种情况，我们称之为 AssetBundle 存档，在本文档中简称“存档”。存档可以被视为一个容器，就像文件夹一样，可以在其中包含其他文件。这些附加文件包含两种类型：
+序列化文件和资源文件。序列化文件包含分解为各个对象并写入此单个文件的资源。资源文件只是为某些资源（纹理和音频）单独存储的二进制数据块，允许我们有效地在另一个线程上从磁盘加载它们。
+其次是通过代码进行交互以便从特定存档加载资源的实际 AssetBundle 对象。此对象包含一个映射，即从已添加到此存档的资源的所有文件路径到按需加载的资源所包含的对象之间的映射。
+为 AssetBundle 分配资源 要为 AssetBundle 分配指定资源，请按照下列步骤操作：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2022-02-20 15:37:00 +0800 CST'>February 20, 2022</span>&nbsp;·&nbsp;<span>6 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to Unity-Asset资源" href="http://localhost:1313/posts/unity/unity-%E8%B5%84%E6%BA%90%E6%96%87%E4%BB%B6/"></a>
+</article>
+<footer class="page-footer">
+  <nav class="pagination">
+    <a class="prev" href="http://localhost:1313/categories/unity/">
+      «&nbsp;Prev&nbsp;
+    </a>
+    <a class="next" href="http://localhost:1313/categories/unity/page/3/">Next&nbsp;&nbsp;»
+    </a>
+  </nav>
+</footer>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">LiuYingbo Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

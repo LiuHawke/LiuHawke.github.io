@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>异步 on LiuYingbo Blog</title>
+    <link>http://localhost:1313/tags/%E5%BC%82%E6%AD%A5/</link>
+    <description>Recent content in 异步 on LiuYingbo Blog</description>
+    <generator>Hugo -- 0.155.2</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sun, 14 Aug 2022 21:24:49 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/%E5%BC%82%E6%AD%A5/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Unity-UniTask</title>
+      <link>http://localhost:1313/posts/unity/unity-unitask/</link>
+      <pubDate>Sun, 14 Aug 2022 21:24:49 +0800</pubDate>
+      <guid>http://localhost:1313/posts/unity/unity-unitask/</guid>
+      <description>&lt;h1 id=&#34;unitask&#34;&gt;UniTask&lt;/h1&gt;
+&lt;p&gt;为Unity提供一个高性能，0GC的async/await异步方案。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;基于值类型的&lt;code&gt;UniTask&amp;lt;T&amp;gt;&lt;/code&gt;和自定义的 AsyncMethodBuilder 来实现0GC&lt;/li&gt;
+&lt;li&gt;使所有 Unity 的 AsyncOperations 和 Coroutines 可等待&lt;/li&gt;
+&lt;li&gt;基于 PlayerLoop 的任务( &lt;code&gt;UniTask.Yield&lt;/code&gt;, &lt;code&gt;UniTask.Delay&lt;/code&gt;, &lt;code&gt;UniTask.DelayFrame&lt;/code&gt;, etc…) 可以替换所有协程操作&lt;/li&gt;
+&lt;li&gt;对MonoBehaviour 消息事件和 uGUI 事件进行 可等待/异步枚举 拓展&lt;/li&gt;
+&lt;li&gt;完全在 Unity 的 PlayerLoop 上运行，因此不使用Thread，并且同样能在 WebGL、wasm 等平台上运行。&lt;/li&gt;
+&lt;li&gt;带有 Channel 和 AsyncReactiveProperty的异步 LINQ，&lt;/li&gt;
+&lt;li&gt;提供一个 TaskTracker EditorWindow 以追踪所有UniTask分配来预防内存泄漏&lt;/li&gt;
+&lt;li&gt;与原生 Task/ValueTask/IValueTaskSource 高度兼容的行为&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;有关技术细节，请参阅博客文章：&lt;a href=&#34;https://medium.com/@neuecc/unitask-v2-zero-allocation-async-await-for-unity-with-asynchronous-linq-1aa9c96aa7dd&#34;&gt;UniTask v2 — Unity 的0GC async/await 以及 异步LINQ 的使用&lt;/a&gt;
+有关高级技巧，请参阅博客文章：&lt;a href=&#34;https://medium.com/@neuecc/extends-unitywebrequest-via-async-decorator-pattern-advanced-techniques-of-unitask-ceff9c5ee846&#34;&gt;通过异步装饰器模式扩展 UnityWebRequest — UniTask 的高级技术&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;入门&#34;&gt;入门&lt;/h2&gt;
+&lt;p&gt;通过&lt;a href=&#34;https://github.com/Cysharp/UniTask/releases&#34;&gt;UniTask/releases&lt;/a&gt;页面中提供的&lt;a href=&#34;https://github.com/wqaetly/UniTask#upm-package&#34;&gt;UPM 包&lt;/a&gt;或资产包 ( &lt;code&gt;UniTask.*.*.*.unitypackage&lt;/code&gt;)安装。&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;CSHARP
+// 使用UniTask所需的命名空间
+using Cysharp.Threading.Tasks;
+
+// 你可以返回一个形如 UniTask&amp;lt;T&amp;gt;(或 UniTask) 的类型，这种类型事为Unity定制的，作为替代原生Task&amp;lt;T&amp;gt;的轻量级方案
+// 为Unity集成的 0GC，快速调用，0消耗的 async/await 方案
+async UniTask&amp;lt;string&amp;gt; DemoAsync()
+{
+    // 你可以等待一个Unity异步对象
+    var asset = await Resources.LoadAsync&amp;lt;TextAsset&amp;gt;(&amp;#34;foo&amp;#34;);
+    var txt = (await UnityWebRequest.Get(&amp;#34;https://...&amp;#34;).SendWebRequest()).downloadHandler.text;
+    await SceneManager.LoadSceneAsync(&amp;#34;scene2&amp;#34;);
+
+    // .WithCancellation 会启用取消功能，GetCancellationTokenOnDestroy 表示获取一个依赖对象生命周期的Cancel句柄，当对象被销毁时，将会调用这个Cancel句柄，从而实现取消的功能
+    var asset2 = await Resources.LoadAsync&amp;lt;TextAsset&amp;gt;(&amp;#34;bar&amp;#34;).WithCancellation(this.GetCancellationTokenOnDestroy());
+
+    // .ToUniTask 可接收一个 progress 回调以及一些配置参数，Progress.Create是IProgress&amp;lt;T&amp;gt;的轻量级替代方案
+    var asset3 = await Resources.LoadAsync&amp;lt;TextAsset&amp;gt;(&amp;#34;baz&amp;#34;).ToUniTask(Progress.Create&amp;lt;float&amp;gt;(x =&amp;gt; Debug.Log(x)));
+
+    // 等待一个基于帧的延时操作（就像一个协程一样）
+    await UniTask.DelayFrame(100); 
+
+    // yield return new WaitForSeconds/WaitForSecondsRealtime 的替代方案
+    await UniTask.Delay(TimeSpan.FromSeconds(10), ignoreTimeScale: false);
+    
+    // 可以等待任何 playerloop 的生命周期(PreUpdate, Update, LateUpdate, 等...)
+    await UniTask.Yield(PlayerLoopTiming.PreLateUpdate);
+
+    // yield return null 替代方案
+    await UniTask.Yield();
+    await UniTask.NextFrame();
+
+    // WaitForEndOfFrame 替代方案 (需要 MonoBehaviour(CoroutineRunner))
+    await UniTask.WaitForEndOfFrame(this); // this 是一个 MonoBehaviour
+
+    // yield return new WaitForFixedUpdate 替代方案，(和 UniTask.Yield(PlayerLoopTiming.FixedUpdate) 效果一样)
+    await UniTask.WaitForFixedUpdate();
+    
+    // yield return WaitUntil 替代方案
+    await UniTask.WaitUntil(() =&amp;gt; isActive == false);
+
+    // WaitUntil拓展，指定某个值改变时触发
+    await UniTask.WaitUntilValueChanged(this, x =&amp;gt; x.isActive);
+
+    // 你可以直接 await 一个 IEnumerator 协程
+    await FooCoroutineEnumerator();
+
+    // 你可以直接 await 一个原生 task
+    await Task.Run(() =&amp;gt; 100);
+
+    // 多线程示例，在此行代码后的内容都运行在一个线程池上
+    await UniTask.SwitchToThreadPool();
+
+    /* 工作在线程池上的代码 */
+
+    // 转回主线程
+    await UniTask.SwitchToMainThread();
+
+    // 获取异步的 webrequest
+    async UniTask&amp;lt;string&amp;gt; GetTextAsync(UnityWebRequest req)
+    {
+        var op = await req.SendWebRequest();
+        return op.downloadHandler.text;
+    }
+
+    var task1 = GetTextAsync(UnityWebRequest.Get(&amp;#34;http://google.com&amp;#34;));
+    var task2 = GetTextAsync(UnityWebRequest.Get(&amp;#34;http://bing.com&amp;#34;));
+    var task3 = GetTextAsync(UnityWebRequest.Get(&amp;#34;http://yahoo.com&amp;#34;));
+
+    // 构造一个async-wait，并通过元组语义轻松获取所有结果
+    var (google, bing, yahoo) = await UniTask.WhenAll(task1, task2, task3);
+
+    // WhenAll简写形式
+    var (google2, bing2, yahoo2) = await (task1, task2, task3);
+
+    // 返回一个异步值，或者你也可以使用`UniTask`(无结果), `UniTaskVoid`(协程，不可等待)
+    return (asset as TextAsset)?.text ?? throw new InvalidOperationException(&amp;#34;Asset not found&amp;#34;);
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;unitask-和-asyncoperation-基础知识&#34;&gt;UniTask 和 AsyncOperation 基础知识&lt;/h2&gt;
+&lt;p&gt;UniTask 功能依赖于 C# 7.0( &lt;a href=&#34;https://github.com/dotnet/roslyn/blob/master/docs/features/task-types.md&#34;&gt;task-like custom async method builder feature&lt;/a&gt; ) 所以需要的 Unity 最低版本是&lt;code&gt;Unity 2018.3&lt;/code&gt; ，官方支持的最低版本是&lt;code&gt;Unity 2018.4.13f1&lt;/code&gt;.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

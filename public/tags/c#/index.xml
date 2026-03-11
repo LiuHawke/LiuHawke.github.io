@@ -93,6 +93,48 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;代码中的 list 的数据规模是 3，其实就是数据量，那么这一段代码所执行的时间就是， Debug.Log(s) 所执行的时间 x 3。&lt;/p&gt;</description>
     </item>
     <item>
+      <title>Unity协程</title>
+      <link>http://localhost:1313/posts/unity/unity%E6%90%BA%E7%A8%8B/</link>
+      <pubDate>Wed, 09 Feb 2022 22:49:20 +0800</pubDate>
+      <guid>http://localhost:1313/posts/unity/unity%E6%90%BA%E7%A8%8B/</guid>
+      <description>&lt;h2 id=&#34;yield&#34;&gt;yield&lt;/h2&gt;
+&lt;p&gt;yield 实质是一个语法糖，它让程序员能够更方便的去使用迭代器，通过 yield 你可以直接使用迭代器操作而不需要去实现 IEnumerable 和 IEnumerator，也不需要一个临时的 Collection 来完成迭代。&lt;/p&gt;
+&lt;p&gt;yield 有两种格式声明&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;yield return &amp;lt;expression&amp;gt;;
+yield break;
+&lt;/code&gt;&lt;/pre&gt;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;using System.Collections;
+using UnityEngine;
+
+namespace UniRxLesson
+{
+  public class YieldExample : MonoBehaviour
+  {
+    private void Start()
+    {
+      foreach (var empty in FiveTimes())
+      {
+        Debug.Log(&amp;#34;A&amp;#34;);
+      }
+    }
+
+    private  IEnumerable FiveTimes()
+    {
+      for (var i = 0; i &amp;lt; 5; i++)
+      {
+        yield return string.Empty;
+      }
+    }
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;输出结果为&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;A
+A
+A
+A
+A
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;每一次 foreach 的循环中都会调用迭代器方法，当 yield return 被执行到时，表达式的值会被返回，同时当前的函数的上下文信息被保存下来。下一次循环执行之时会重新从上一次停止的位置继续执行。你也可以使用 yield break 来终止迭代过程。&lt;/p&gt;</description>
+    </item>
+    <item>
       <title>c# async/await</title>
       <link>http://localhost:1313/posts/%E8%AF%AD%E6%B3%95/c%23%E5%AD%A6%E4%B9%A0-async-await/</link>
       <pubDate>Sun, 05 Dec 2021 21:29:02 +0000</pubDate>

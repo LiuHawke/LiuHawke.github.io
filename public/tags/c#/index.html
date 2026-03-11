@@ -188,6 +188,25 @@ var list = new List&lt;string&gt;(){&#34;a&#34;,&#34;b&#34;,&#34;c&#34;}; foreac
 
 <article class="post-entry tag-entry"> 
 <figure class="entry-cover">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211192022487.jpg" alt="">
+</figure>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Unity协程
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>yield yield 实质是一个语法糖，它让程序员能够更方便的去使用迭代器，通过 yield 你可以直接使用迭代器操作而不需要去实现 IEnumerable 和 IEnumerator，也不需要一个临时的 Collection 来完成迭代。
+yield 有两种格式声明
+yield return &lt;expression&gt;;yield break; using System.Collections;using UnityEngine;namespace UniRxLesson{public class YieldExample : MonoBehaviour{private void Start(){foreach (var empty in FiveTimes()){Debug.Log(&#34;A&#34;);}}private IEnumerable FiveTimes(){for (var i = 0; i &lt; 5; i&#43;&#43;){yield return string.Empty;}}}} 输出结果为
+AAAAA 每一次 foreach 的循环中都会调用迭代器方法，当 yield return 被执行到时，表达式的值会被返回，同时当前的函数的上下文信息被保存下来。下一次循环执行之时会重新从上一次停止的位置继续执行。你也可以使用 yield break 来终止迭代过程。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2022-02-09 22:49:20 +0800 CST'>February 9, 2022</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to Unity协程" href="http://localhost:1313/posts/unity/unity%E6%90%BA%E7%A8%8B/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+<figure class="entry-cover">
         <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191917907.png" alt="">
 </figure>
   <header class="entry-header">

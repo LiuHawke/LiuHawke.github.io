@@ -131,113 +131,333 @@
 
 <article class="post-entry"> 
 <figure class="entry-cover">
-        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211162350352.png" alt="">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211192048985.png" alt="">
 </figure>
   <header class="entry-header">
-    <h2 class="entry-hint-parent">GitHub&#43;Hexo 搭建个人博客（四）：SEO 优化及站点被搜索引擎收录设置
+    <h2 class="entry-hint-parent">Unity-网络开发（一）
     </h2>
   </header>
   <div class="entry-content">
-    <p>前言 我们必须把我们的网站推送到搜索引擎那， 不然别人除了输入我们的域名或者搜索文章，是没法发现我们的博文。
-如何查看我的网站是否被收录：
-site:你的网站 比如我的：site:liuyingbo.com
-站点地图 站点地图即 sitemap， 是一个页面，上面放置了网站上需要搜索引擎抓取的所有页面的链接。站点地图可以告诉搜索引擎网站上有哪些可供抓取的网页，以便搜索引擎可以更加智能地抓取网站。所以我们首先需要生成一个站点地图
-安装百度和 Google 的站点地图生成插件：
-npm install hexo-generator-baidu-sitemap --save npm install hexo-generator-sitemap --save 然后来到站点目录配置文件_config.yml，在下面添加：
-# 站点地图 sitemap: path: sitemap.xml baidusitemap: path: baidusitemap.xml 然后重新推送到服务器，在访问如下 URL:
-https://你的域名/sitemap.xml https://你的域名/baidusitemap.xml 看看有没有出现代码。有的话就成功。
-给你的 hexo 网站添加蜘蛛协议 robots.txt, 把 robots.txt 放在你的 hexo 站点的 source 文件下即可。
-# hexo robots.txt User-agent: * Allow: / Sitemap: https://liuyyingbo.com/sitemap.xml Sitemap: https://liuyingbo.com/baidusitemap.xml 百度收录 提交网站 通过百度站长平台进行链接提交，增加网站的索引量。先去注册并登录：百度站长平台
-然后需要验证网站，我选择的是https://，这根据你前面是否添加 SSL 证书来选择。并且我使用的是不带 www 的，看个人。然后到第三步，我使用的 HTML 标签验证。你也可以选择自己喜欢的方式
+    <p>网络基本概念 网络 网络的作用 在没有网络之前，每个人的设备（电脑等）都是彼此孤立的，网络的出现让设备之间可以相互通信
+网络是由若干设备和连接这些设备的链路构成，各种设备 间接或者直接通过介质相连
+设备之间想要进行信息传递时，将想要传递的数据编码为2进制数值便可以被有效的传输。这些数据是以电脉冲的形式进行传输的
+线缆中的电压是在高低状态之间进行变化的，因而
+二进制中1是通过产生一个正电压来传输的，二进制中0是通过产生一个负电压来传输的
+局域网 局域网（Local Area Network，简称LAN）
+是按照范围划分而来的名称，是指在某一个小区域内由多台设备互联成的计算机组，可以是家里的两台设备组成
+也可以是学校、公司里的上千台设备组成，特点是分布地区范围有限，覆盖范围一般是方圆几千米之内
+以太网 以太网是一种计算机局域网技术，是目前应用最普遍的局域网技术
+IEEE组织（电气与电子工程师协会）的IEEE 802.3标准制定了以太网的技术标准，它规定了包括物理层的连线、电子信号和介质访问层协议的内容
+说人话：
+局域网中设备的连接规范，数据的传输规范等等规则，都是基于以太网的技术标准来完成的
+所以，简单理解以太网就是网络连接的一种规则（协议）
+以太网 网络拓扑结构 概念：
+用传输媒体把计算机等各种设备互相连接起来的物理布局，是指设备互连过程中构成的几何形状
+局域网 城域网（Metropolitan Area Network，简称MAN）
+是在一个城市范围内所建立的网络通常覆盖一个城市，从几十公里到一百公里不等，可能会有多种介质用户的数量也比局域网更多
+广域网 广域网（Wide Area Network，简称WAN）
+又称外网、公网，是连接不同地区局域网或城域网设备通信的远程网，通常跨接很大的物理范围，所覆盖的范围从几十公里到几千公里，它能连接多个地区、城市和国家，形成国际性的远程网络
+注意：广域网并不等同于互联网
+互联网（因特网） 互联网，如果作为名词理解的话，就是互相联网，让各种设备处于同一网络环境下，只要设备互相连接网络了，那么设备之间就可以进行通信
+它一般泛指彼此能够通信的设备组成的网络，但是目前我们往往提到的互联网，大部分时候都是指代的因特网，你可以把互联网作为名词理解，也可以将互联网理解为因特网的代称
+互联网（internet，音译为因特网）
+又称国际网络，指的是网络与网络之间所串连成的庞大网络，这些网络以一组通用的协议（规则）相连，形成逻辑上的单一巨大国际网络。
+互联网目前已经把200多个国家和地区的大部分设备连接了起来，形成了一个遍布全世界的网络。所以在一定程度上也可以说，互联网等同于广域网，广域网包含了互联网。互联网使用的技术，在广域网上一定有，但是某些广域网的技术，互联网上不一定有比如军用的广域网，普通老百姓是不会使用的
+互联网（因特网）的本质就是人为定义的一系列协议（规则）总称为“互联网协议”
+主要功能：
+定义计算机如何接入互联网，以及接入互联网的计算机的通信标准，也就是为我们的设备定义连入标准，并且为传输的2进制数据定义一些传输规则，只要遵守这些规则来进行网络连接和数据传输，我们的各种设备就可以通过网络进行通讯，进行信息的交换
+简单理解因特网：
+它是国际上最大的互联网，所以当我们提到互联网时一般都代指因特网
+它是指当前全球最大的、开放的、有众多网络互相连接而成的特定的计算机网络
+它采用TCP/IP协议簇作为通信的规则，提供了包括万维网（WWW）、文件传输（FTP）、电子邮件（E-mail）、远程登录（Telnet）等等服务
+只要我们的设备和应用程序遵守这套因特网的互联网规则，那么我们就可以在这个庞大的网络体系当中畅游
+万维网 万维网（World Wide Web，简称WWW，也称Web、3W等）
+它是存储在因特网的计算机当中，数量巨大的文档（页面）的集合
+它是无数个网络站点和网页的集合，是构成因特网的主要部分
+我们平时用浏览器看到的内容就属于万维网，他们本质上就是一个个的文档（页面）
+如果把因特网看做是网络的基础，那么万维网就可以被看做是对因特网的应用，是利用因特网规则的一种信息传递和呈现的手段，可以认为万维网就是网站和页面的统称
+总结 网络：由若干设备和连接这些设备的链路构成，设备间可以相互通信
+局域网：指某一个小区域内由多台设备互联成的计算机组
+以太网：网络连接的一种规则，定义了连接传输规范
+城域网：是在一个城市范围内所建立的网络，几十到一百公里
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2021-11-30 23:36:13 +0800 CST'>November 30, 2021</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
-  <a class="entry-link" aria-label="post link to GitHub&#43;Hexo 搭建个人博客（四）：SEO 优化及站点被搜索引擎收录设置" href="http://localhost:1313/posts/hexo/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E5%9B%9B/"></a>
+  <footer class="entry-footer"><span title='2022-05-16 15:06:06 +0800 CST'>May 16, 2022</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to Unity-网络开发（一）" href="http://localhost:1313/posts/unity/unity-%E7%BD%91%E7%BB%9C%E5%BC%80%E5%8F%91%E4%B8%80/"></a>
 </article>
 
 <article class="post-entry"> 
 <figure class="entry-cover">
-        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211162350352.png" alt="">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211192048985.png" alt="">
 </figure>
   <header class="entry-header">
-    <h2 class="entry-hint-parent">GitHub&#43;Hexo 搭建个人博客（三）：使用 GitHub Actions 实现 Hexo 博客自动部署
+    <h2 class="entry-hint-parent">Unity-网络开发（二）
     </h2>
   </header>
   <div class="entry-content">
-    <p>Hexo 相关知识点 静态博客简单，但是发布博文时稍显麻烦，一般需要下面两步：
-hexo clean hexo g -d // 相当于 hexo g &#43; hexo d 如果考虑到同步源文件，还需要每次更改后，将源文件 push 到指定仓库：
-git push origin main 我们可以将 Hexo 文件分为两类，一类是源文件，即下面这些文件：
-.├── _config.yml├── package.json├── scaffolds├── source| ├── _drafts| └── _posts└── themes 一类是 public 文件，即网站文件：
-public├── 2020├── categories├── tags.... 发布博文的这三个操作代表：
-hexo clean：删除网站（public）文件 hexo g：生成网站（public）文件 hexo d：将本地网站（public）文件同步到指定仓库（如：yourname.github.io）中 我使用一个私有仓库存放 Hexo 源文件，在 deppwang/deppwang.github.io 中存放网站文件。所以每次发布或者更新博文时，需要使用 push 操作更新源文件，再执行 hexo clean、hexo g -d 更新博客，比较麻烦,而且github在国内经常登录不上。
+    <p>网络通信 网络游戏通信方案概述 弱联网和强联网游戏 网络游戏是以C/S模型为基础进行开发的由客户端和服务端组成
+弱联网游戏：
+这种游戏不会频繁的进行数据通信，客户端和服务端之间每次连接只处理一次请求，服务端处理完客户端的请求后返回数据后就断开连接了
+强联网游戏：
+这种游戏会频繁的和服务端进行通信，会一直和服务端保持连接状态，不停的和服务器之间交换数据通过之前的知识我们知道，网络游戏是以C/S模型为基础进行开发的由客户端和服务端组成
+弱联网游戏代表：
+一般的三消类休闲游戏、卡牌游戏等都会是弱联网游戏，这些游戏的核心玩法都由客户端完成，客户端处理完成后只是告诉服务端一个结果，服务端验证结果即可，不需要随时通信
+比如：开心消消乐、刀塔传奇、我叫MT等等
+强联网游戏代表：
+一般的MMORPG（角色扮演）、MOBA（多人在线竞技游戏）、ACT（动作游戏）等等都会是强联网游戏，这些游戏的部分核心逻辑是由服务端进行处理，客户端和服务端之间不停的在同步信息
+比如：王者荣耀、守望先锋、和平精英等等
+长连接和短连接游戏 长连接和短连接游戏是按照网络游戏通信特点来划分的
+弱联网游戏——&gt;短连接游戏
+强联网游戏——&gt;长连接游戏
+短连接游戏：
+需要传输数据时，建立连接，传输数据，获得响应，断开连接
+通信特点：需要通信时再连接，通信完毕断开连接
+通信方式：HTTP超文本传输协议、HTTPS安全的超文本传输协议（他们本质上是TCP协议）
+长连接游戏：不管是否需要传输数据，客户端与服务器一直处于连接状态，除非一端主动断开，或
+者出现意外情况（客户端关闭或服务端崩溃等）
+通信特点：连接一直建立，可以实时的传输数据
+通信方式：TCP传输控制协议 或 UDP用户数据报协议
+Socket、HTTP、FTP Socket：网络套接字，是对网络中不同主机上的应用进程之间进行双向通信的端点的抽象，一个套接字就是网络上进程通信的一端，提供了应用层进程利用网络协议交换数据的机制
+主要用于制作长连接游戏（强联网游戏）
+Http/Https：(安全的)超文本传输协议，是一个简单的请求-响应协议，它通常运行在TCP协议之上，它指定了客户端可能发送给服务端什么样的信息以及得到什么样的响应。
+主要用于制作短连接游戏（弱联网游戏），也可以用来进行资源下载
+FTP：文件传输协议，是用于在网络上进行文件传输的一套标准协议，可以利用它来进行网络上资源的下载和上传。它也是基于TCP的传输，是面向连接的，为文件传输提供了可靠的保证
+网络通信基础 IP地址和端口类 #region IPAddress类 //命名空间：System.Net; //类名：IPAddress //初始化IP信息的方式 //1.用byte数组进行初始化 byte[] ipAddress = new byte[] { 118, 102, 111, 11 }; IPAddress ip1 = new IPAddress(ipAddress); //2.用long长整型进行初始化 //4字节对应的长整型 一般不建议大家使用 IPAddress ip2 = new IPAddress(0x79666F0B); //3.推荐使用的方式 使用字符串转换 IPAddress ip3 = IPAddress.Parse(&#34;118.102.111.11&#34;); //特殊IP地址 //127.0.0.1代表本机地址 //一些静态成员 //获取可用的IPv6地址 //IPAddress.IPv6Any #endregion #region IPEndPoint类 //命名空间：System.Net; //类名：IPEndPoint //IPEndPoint类将网络端点表示为IP地址和端口号，表现为IP地址和端口号的组合 //初始化方式 IPEndPoint ipPoint = new IPEndPoint(0x79666F0B, 8080); IPEndPoint ipPoint2 = new IPEndPoint(IPAddress.Parse(&#34;118.102.111.11&#34;), 8080); #endregion #region 总结 //程序表示IP信息 IPAddress ip = IPAddress.Parse(&#34;IPv4地址&#34;); //程序表示通信目标 IPEndPoint point = new IPEndPoint(ip, 8080); #endregion 域名解析 域名解析也叫域名指向、服务器设置、域名配置以及反向IP登记等等，说得简单点就是将好记的域名解析成IP，IP地址是网络上标识站点的数字地址，但是IP地址相对来说记忆困难，所以为了方便记忆，采用域名来代替IP地址标识站点地址。
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2021-11-30 23:35:16 +0800 CST'>November 30, 2021</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
-  <a class="entry-link" aria-label="post link to GitHub&#43;Hexo 搭建个人博客（三）：使用 GitHub Actions 实现 Hexo 博客自动部署" href="http://localhost:1313/posts/hexo/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E4%B8%89/"></a>
+  <footer class="entry-footer"><span title='2022-05-16 15:06:06 +0800 CST'>May 16, 2022</span>&nbsp;·&nbsp;<span>11 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to Unity-网络开发（二）" href="http://localhost:1313/posts/unity/unity-%E7%BD%91%E7%BB%9C%E5%BC%80%E5%8F%91%E4%BA%8C/"></a>
 </article>
 
 <article class="post-entry"> 
 <figure class="entry-cover">
-        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211162350352.png" alt="">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211192022487.jpg" alt="">
 </figure>
   <header class="entry-header">
-    <h2 class="entry-hint-parent">GitHub&#43;Hexo 搭建个人博客（二）：使用GitHub PicGod搭建图床
+    <h2 class="entry-hint-parent">Unity-中英对照汉化
     </h2>
   </header>
   <div class="entry-content">
-    <p>图床 图床这是个老生常谈的问题了，流行过不少的图床但是基本都凉凉了。
-背景 图床是个啥东西就不用过多介绍了，先来对比一下各路图床：
-微博图床：以前用的人比较多，从2019年4月开始开启了防盗链，凉凉 SM.MS：运营四年多了，也变得越来越慢了，到了晚上直接打不开图片，速度堪忧 其他小众图床：随时有挂掉的风险 Imgur等国外图床：国内访问速度太慢，随时有被墙的风险 语雀图床，语雀用的oss本来挺好用，也开启防盗链了 大厂储存服务：例如七牛云、又拍云、腾讯云COS、阿里云OSS等，容量限制，操作繁琐，又是实名认证又是域名备案的，麻烦，而且还要花钱（有钱又不怕麻烦的当我没说） Github图床 Gitee 图床 如果舍得花钱可以选择大厂存储服务，定期交流量费即可。略过第2步直接往下看，如果喜欢稳定且免费的图床可以继续往下看gitee 就是github在国内的一个翻版，操作基本一致，github有时候访问会有抽风现象，原因你懂的 毕竟方校长的GFW不是吃素的。
-因此，GitHub 图床是个不错的选择，利用 jsDelivr CDN 加速访问（jsDelivr 是一个免费开源的 CDN 解决方案），PicGo 工具一键上传，操作简单高效，GitHub 和 jsDelivr 都是大厂，不用担心跑路问题，不用担心速度和容量问题，而且完全免费，可以说是目前免费图床的最佳解决方案！
-搭建github仓库图床 登录/注册GitHub，新建一个仓库，填写好仓库名，仓库描述，根据需求选择是否为仓库初始化一个README.md描述文件
-生成Token 在主页依次选择【Settings】-【Developer settings】-【Personal access tokens】-【Generate new token】，填写好描述，勾选【repo】，然后点击【Generate token】生成一个Token，注意这个Token只会显示一次，自己先保存下来，或者等后面配置好PicGo后再关闭此网页
-配置PicGo 前往下载PicGo，安装好后开始配置图床
-设定仓库名：按照【用户名/图床仓库名】的格式填写
-设定分支名：【main】
-设定Token：粘贴之前生成的【Token】
-指定存储路径：填写想要储存的路径，如【ITRHX-PIC/】，这样就会在仓库下创建一个名为 ITRHX-PIC 的文件夹，图片将会储存在此文件夹中
-设定自定义域名：它的作用是，在图片上传后，PicGo 会按照【自定义域名&#43;储存路径&#43;上传的图片名】的方式生成访问链接，并放到粘贴板上，因为我们要使用 jsDelivr 加速访问，所以可以设置为【https://cdn.jsdelivr.net/gh/用户名/图床仓库名 】，上传完毕后，我们就可以通过【https://cdn.jsdelivr.net/gh/用户名/图床仓库名/图片路径 】加速访问我们的图片了，比如上图的图片链接为：https://cdn.jsdelivr.net/gh/TRHX/ImageHosting/ITRHX-PIC/A27/08.jpg
-参考上面创建了一个仓库如下图
-至此免费图床搭建完成。可以使用PicGo 工具 愉快的上传图片了，直接粘贴在markdown博客编写工具中就可以了。
-图片不能重复上传，因为都会在同一个目录下，重复上传会有重名错误。
-进行图片上传 配置好PicGo后，我们就可以进行高效创作了，将图片拖拽到上传区，将会自动上传并复制访问链接，将链接粘贴到博文中就行了，访问速度杠杠的，此外PicGo还有相册功能，可以对已上传的图片进行删除，修改链接等快捷操作，PicGo还可以生成不同格式的链接、支持批量上传、快捷键上传、自定义链接格式、上传前重命名等，更多功能自己去探索吧！
+    <p>演示 操作 把汉化包zh-cn.po用记事本打开，复制内容到word编辑
+word软件主窗口 编辑–替换，打开查找替换窗口
+点击高级，选中使用通配符
+查找内容：(msgid\ &#34;)(*)(&#34;^13msgstr &#34;)(*)(&#34;^13)
+替换为：\1\2\3\2 \4\5
+全部替换完之后，复制全部内容到记事本 记事本中文件–另存为zh-cn.po就OK了
+解释 举例 汉化包中的一段内容 #: Editor/Mono/Inspector/AudioMixerControllerInspector.cs:1 msgid &#34; Threshold Volume&#34; msgstr “阈值音量”
+查找内容 msgid &#34; Threshold Volume&#34; msgstr “阈值音量” 替换为 msgid &#34; Threshold Volume&#34; msgstr &#34; Threshold Volume阈值音量&#34;
+拆分解释 (msgid\ “)()(“13)(msgstr “)(*)(“13) （）括号内为需要查找的文本内容，一个括号对应一个替换文本的元素即， 第一个(msgid\ “)对应替换\1 第二个()对应\2 (”^13)对应\3 以此类推
+(msgid\ “)这一段在查找中会找到第二行的msgid &#34; 需要查找的msgid “之中有个空格，需要用\来避免编译
+(msgid\ “)()(&#34;^13)这一段有三个元素 ()代表所有文本 (”^13)代表&#34;加上一个换行 这一段就表示找到msgid “开头，然后到&#34;行末端结尾的一整行 并且分为了3个元素，在替换的时候用\序号调用
 </p>
   </div>
-  <footer class="entry-footer"><span title='2021-11-30 23:32:59 +0800 CST'>November 30, 2021</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
-  <a class="entry-link" aria-label="post link to GitHub&#43;Hexo 搭建个人博客（二）：使用GitHub PicGod搭建图床" href="http://localhost:1313/posts/hexo/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E4%BA%8C/"></a>
+  <footer class="entry-footer"><span title='2022-05-09 15:56:17 +0800 CST'>May 9, 2022</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to Unity-中英对照汉化" href="http://localhost:1313/posts/unity/unity%E4%B8%AD%E8%8B%B1%E5%AF%B9%E7%85%A7%E6%B1%89%E5%8C%96/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Unity-Addressable
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>配置 Profile 概述窗口配置 BuildTarget：构建目标，可以在这里设置是哪个平台，默认是你激活哪个平台就是哪个平台 LocalBuildPath：本地构建路径，默认在项目的Library库文件夹中 LocalLoadPath：本地加载路径，在哪里加载本地已有的资源 RemoteBuildPath：远程构建路径 RemoteLoadPath：远程加载路径，在哪里下载远程内容和目录
+注意： 1.一般情况下，不要去修改本地构建和加载路径默认值 2.当我们针对不同平台远程分发内容时，通过多个配置文件最方便。如果你想要最终的发布包包含所有内容，那么一个默认配置就够了
+AddressableAssetSettings 可寻址资源数据设置 概述配置 Profile In Use：可以在这选择使用的是哪一套配置文件 Manage Profiles：点击它会打开管理配置文件窗口
+Diagnostics:诊断 Send Profiler Events：启用分析器事件，启用它后我们可以在Event Viewer窗口查看Addressable相关信息 Log Runtime Exceptions：记录运行时加载相关的异常
+目录相关设置，将资源的地址映射到其物理位置 Player Version Override：重写用于制定远程目录名称的时间戳 如果不设置默认使用时间戳作为远程目录命名
+Compress Local Catalog：在压缩的AssetBundle文件中生成目录。可以压缩大小，但是会增加生成和加载的时间
+Optimize Catalog Size：通过为内部ID创建查找表来减小目录的大小。会增加加载目录所需的时间
+Content Update：内容更新
+Disable Catalog Update on Startup：当可寻址系统在运行时初始化时，禁用自动检查更新的远程目录。您可以手动检查更新的目录。
+Content State Build Path：在何处生成由默认生成脚本生成的内容状态文件。
+Build Remote Catalog：构建远程目录 勾选后会出现新选项
+Build &amp; Load Paths： 在何处生成和加载远程目录。从列表中选择一个配置文件路径，如果要分别设置生成路径和加载路径，请选择。 仅在启用生成远程目录时可见。
+Build Path：远程构建路径，在何处构建远程目录。通常，应该使用RemoteBuildPath配置文件变量。 仅当将生成和加载路径设置为时显示。
+Load Path：远程加载路径，用于访问远程目录的URL。通常，应该使用RemoteLoadPath配置文件变量。 仅当将生成和加载路径设置为时显示。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2022-04-20 10:30:27 +0800 CST'>April 20, 2022</span>&nbsp;·&nbsp;<span>5 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to Unity-Addressable" href="http://localhost:1313/posts/unity/unity-addressable/"></a>
 </article>
 
 <article class="post-entry"> 
 <figure class="entry-cover">
-        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211162350352.png" alt="">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211192022487.jpg" alt="">
 </figure>
   <header class="entry-header">
-    <h2 class="entry-hint-parent">GitHub&#43;Hexo 搭建个人博客（一）
+    <h2 class="entry-hint-parent">Unity-Camera
     </h2>
   </header>
   <div class="entry-content">
-    <p>什么是Hexo ? Hexo是一款基于Node.js的静态博客框架，依赖少易于安装使用，可以方便的生成静态网页托管在GitHub和Heroku上，是搭建博客的首选框架。这里我们选用的是GitHub，你没看错，全球最大的同性恋交友网站（逃……）。Hexo同时也是GitHub上的开源项目，参见：hexojs/hexo 如果想要更加全面的了解Hexo，可以到其官网 Hexo 了解更多的细节，因为Hexo的创建者是台湾人，对中文的支持很友好，可以选择中文进行查看。这里，默认各位猿/媛儿都知道GitHub就不再赘述。
-这是我的个人博客效果: 刘英博 · Hawk
-下面正式从零开始搭建年轻人的第一个网站。
-环境准备 获得个人网站域名 域名是网站的入口，也是网站的第一印象，比如饿了么的官网的域名是：https://www.ele.me/ ，很是巧妙。常见的有com,cn,net,org等后缀，也有小众的xyz,me,io等后缀，根据你自己的喜好，选择不同的后缀，比如我选择就是常见的com后缀。很多小众奇特的后缀在大陆是没办法备案的，网站也就无法上线。然而使用GitHub托管我们的网站，完全不需要备案，因为托管我们的网站内容的服务器在美国，而且在国内备案流程也比较繁杂，时间需要一周左右。
-申请域名的地方有很多，这里推荐阿里云：阿里云-为了无法计算的价值 申请入口：域名注册 购买域名这也是我们整个搭建过程中惟一一个需要花钱的地方。如果你已经有了空闲域名就无需购买，直接使用即可。
-GitHub创建个人仓库 登录到GitHub,如果没有GitHub帐号，使用你的邮箱注册GitHub帐号：Build software better, together 点击GitHub中的New repository创建新仓库，仓库名应该为：用户名.http://github.io 这个用户名使用你的GitHub帐号名称代替，这是固定写法
-安装Git 什么是Git ?简单来说Git是开源的分布式版本控制系统，用于敏捷高效地处理项目。我们网站在本地搭建好了，需要使用Git同步到GitHub上。如果想要了解Git的细节，参看廖雪峰老师的Git教程：Git教程 从Git官网下载：Git - Downloading Package 现在的机子基本都是64位的，选择64位的安装包，下载后安装，在命令行里输入git --version测试是否安装成功，若安装失败，参看其他详细的Git安装教程。安装成功后，将你的Git与GitHub帐号绑定。
-liuyingbo@liuyingbodeMacBook-Pro ~ % git --version git version 2.32.0 (Apple Git-132) 在命令行里，设置user.name和user.email配置信息：
-git config --global user.name &#34;你的GitHub用户名&#34; git config --global user.email &#34;你的GitHub注册邮箱&#34; 生成ssh密钥文件：
-ssh-keygen -t 然后直接三个回车即可，默认不需要设置密码 然后找到生成的.ssh的文件夹中的id_rsa.pub密钥，将内容全部复，Mac打开隐藏文件显示Shift&#43;Command&#43;.，windows应该在C盘。
-打开GitHub_Settings_keys 页面，新建new SSH Key
-Title为标题，任意填即可，将刚刚复制的id_rsa.pub内容粘贴进去，最后点击Add SSH key。 在Git Bash中检测GitHub公钥设置是否成功，输入ssh git@github.com
-liuyingbo@liuyingbodeMacBook-Pro ~ % ssh git@github.com PTY allocation request failed on channel 0 Hi liuyingbor! You&#39;ve successfully authenticated, but GitHub does not provide shell access. Connection to github.com closed. 如上则说明成功。这里之所以设置GitHub密钥原因是，通过非对称加密的公钥与私钥来完成加密，公钥放置在GitHub上，私钥放置在自己的电脑里。GitHub要求每次推送代码都是合法用户，所以每次推送都需要输入账号密码验证推送用户是否是合法用户，为了省去每次输入密码的步骤，采用了ssh，当你推送的时候，git就会匹配你的私钥跟GitHub上面的公钥是否是配对的，若是匹配就认为你是合法用户，则允许推送。这样可以保证每次的推送都是正确合法的。
+    <p>摄像机组件 照相机是玩家观察世界的装置，屏幕空间点按像素定义，屏幕的左下为（0,0）；右上是（pixelwidth，pixelHeight），z位置在照相机的世界单位中。
+相机组件
+Clear Flags ： 清除标识：确定了屏幕哪些部分将被清除，方便多个摄像机画不同的游戏元素 Background:背景色 Culling Mask:包含或省略要由相机呈现的对象层。在检查器中将图层分配给您的对象。 Projection: 切换相机的功能来模拟透视。 Perspective(透视): 相机将完整地呈现透视物体。拍摄角度为0-180°（最高） Field of View: 设置为“正交”时，“相机”的视口大小。 Orthographic(正交): 相机将统一渲染对象，没有视角。注：正交模式下不支持延迟渲染。正向渲染总是被使用。 Size:设置为“正交”时，“相机”的视口大小。 Cliping Planes:从相机到开始和停止渲染的距离。 Near ：相对于相机的最近点将出现绘图。 Far ：相对于相机的最远点将出现绘图。 ViewportRect：视口矩形 四个值指示屏幕上的相机视图将被绘制的位置。在视口坐标中测量（值为0-1）。 Depth:相机的位置按照画图顺序。具有较大值的相机将被绘制在具有较小值的相机之上。 Rendering Path:用于定义相机将使用什么渲染方法的选项 渲染路径 ：定义什么绘制方法被用于相机的选项 Use Graphics Settings 使用玩家设置：在玩家设置（Player Settings.）相机使用哪个渲染路径。 Forward 正向渲染：所有对象每材质渲染只渲染一次,快速渲染 Deferred 延迟照明：所有物体将在无光照的环境渲染一次，然后在渲染队列尾部将物体的光照一起渲染出来。 Legacy Vertex Lit 顶点光照 ：所有被这个相机渲染的物体都将渲染成Vertex-Lit物体。 Legacy Deferred : 旧的延迟光照 Target Texture : 目标纹理:渲染纹理 （Render Texture）包含相机视图输出。这会使相机渲染在屏幕上的能力被禁止。可用于实现画中画或者画面特效。 Occlusion Culling : 是否剔除物体背向摄像机的部分 Allow HDR:高动态光照渲染，启动相机高动态范围渲染功能。让场景更真实。 Allow MSAA: 这台相机应该使用MSAA渲染目标吗？如果当前质量设置MSAA级别支持，将只使用MSAA。 Allow Dynamic Resolution：动态分辨率缩放。 如果相机使用动态分辨率渲染，则为true，否则为false。即使此属性为true，动态分辨率也只能在当前图形设备支持的情况下使用。 Target Display:设置此摄像机的目标显示。 此设置使摄像机呈现在指定的显示中。显示器（例如监视器）支持的最大数目是8. ...</p>
+  </div>
+  <footer class="entry-footer"><span title='2022-03-29 23:17:58 +0800 CST'>March 29, 2022</span>&nbsp;·&nbsp;<span>9 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to Unity-Camera" href="http://localhost:1313/posts/unity/unity-camera/"></a>
+</article>
+
+<article class="post-entry"> 
+<figure class="entry-cover">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211192022487.jpg" alt="">
+</figure>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Unity解析Json
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>JsonUtility 一、Unity自带的Json库 官方API：https://docs.unity3d.com/ScriptReference/JsonUtility.html
+在Unity中使用JsonUtility类对Json进行解析，此类包含三个重要方法，下面进行详解。
+二、FromJson方法（反序列化） 将Json转换为object
+返回值是一个Object，需要在对应的类或结构体前标记Serializable属性（没标记好像也行 序列化不成功可能就是因为没有标记）。object类型必须支持序列化，其中的字段也必须支持序列化（比如私有类型、标记了NonSerialized属性的类型等不可序列化字段会被忽视）。
+只有普通的类/结构体才行， 继承自UnityEngine.Object (比如 MonoBehaviour 或 ScriptableObject)的类则不行。
+使用string的此函数可以在后台线程调用，但使用TextAsset的此函数只可以在主线程调用。
+using UnityEngine;[System.Serializable]public class PlayerInfo{public string name;public int lives;public float health;public static PlayerInfo CreateFromJSON(string jsonString){return JsonUtility.FromJson&lt;PlayerInfo&gt;(jsonString);}// Given JSON input:// {&#34;name&#34;:&#34;Dr Charles&#34;,&#34;lives&#34;:3,&#34;health&#34;:0.8}// this example will return a PlayerInfo object with// name == &#34;Dr Charles&#34;, lives == 3, and health == 0.8f.} 三、ToJson（序列化） 将object转换为Json
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2021-11-11 22:12:57 +0800 CST'>November 11, 2021</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
-  <a class="entry-link" aria-label="post link to GitHub&#43;Hexo 搭建个人博客（一）" href="http://localhost:1313/posts/hexo/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E4%B8%80/"></a>
+  <footer class="entry-footer"><span title='2022-03-22 22:13:59 +0800 CST'>March 22, 2022</span>&nbsp;·&nbsp;<span>4 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to Unity解析Json" href="http://localhost:1313/posts/unity/unity%E8%A7%A3%E6%9E%90json/"></a>
+</article>
+
+<article class="post-entry"> 
+<figure class="entry-cover">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211192048985.png" alt="">
+</figure>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Unity-全局屏幕点击特效
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>
+准备 首先canvas的设置调为camera模式
+Screen Space -OverLay:只显示所创建的canvas中的内容，即只渲染画布。
+Screen Space-Camera：只显示相机所渲染的区域，当保证camera的projection是perspective（透视模式）而不是（orthogonality）正交模式的时候通过调整canvas中image或其他物体的Rotation可以制作3D立体效果的UI，但是这种模式下不可以更改Canvas的ReactTransform,只能通过相机来调整canvas的显示位置和显示大小。
+World Space：canvas的ReacTransform完全可以编辑并且把canvas完全当成一个普通的类似于Cube的物体在场景中进行渲染，仔细考虑一下这种模式，如果你把canvas赋给游戏人物，那么你会发现这种模式适合给人物做血条或者在场景中一直在游戏人物的头顶显示人物名称。
+Unity坐标 世界坐标： 场景中非子物体的transform组件的坐标。Unity中的通过transform.position获取到的坐标即为世界坐标，注意:Inspector上点击子物体显示的transform上的坐标值是局部坐标，通过transform.localposition获取。
+屏幕坐标： 屏幕坐标即当前整个游戏画面分辨率为主创建的坐标系，画面左下角为原点(0,0)，宽高根据分辨率而定，如分辨率为1920X1080，则宽Screen.width = 1920，Screen.height = 1080.
+视口坐标： 将屏幕坐标normalized化，x值 = 1/Screen.width,y值 = 1/Screen.height。，即原点变不变依然为(0,0),宽高则为(1,1)。
+UI坐标： 以UI上的RectTransform的width和height为宽高，根据锚点不同，原点也不一样。
+转换： 1.屏幕转世界坐标 Vector3 Camera.main.ScreenToWorldPoint(newVector3(screenPos.x,screenPos.y,zInfo));
+2.世界转屏幕坐标 Vector3 Camera.main.WorldToScreenPoint(newVector3(worldPos.x,worldPos.y,worldPos.z));
+3.世界转视口坐标 Vector3 Camera.main.WorldToViewportPoint();
+4.视口转世界坐标 Vector3 Camera.main.ViewportToWorldPoint(newVector3(viewPortPos.x,viewPortPos.y,zInfo));
+5.视口转屏幕坐标 Vector3 Camera.main.ViewportToScreenPoint();
+6.屏幕转视口坐标 Vector3 Camera.main.ScreenToViewportPoint();
+7.屏幕转UI坐标:这个比较特殊，如果UI宽高和屏幕宽高一样，那么可以不用转换，直接通过屏幕坐标根据锚点赋值即可。其他情况下： RectTransformUtility.ScreenPointToLocalPointInRectangle (RectTransform rect, Vector2 screenPoint, Camera cam, outVector2 localPoint);
+rect表示该UI的父物体的组件， screenPoint表示屏幕坐标， cam表示当前使用的相机(如果Canvas是Screen Space-overlay模式，cam参数应为null), localPoint则是输出的UI的局部坐标。 这个函数是根据父物体的坐标系来计算出当面屏幕坐标应该转换为的值，该值是相对父物体而言的局部坐标。
+实现 using UnityEngine; public class FXContainer : MonoBehaviour { Vector2 point; public Transform parent; public GameObject effect; public Canvas UICanvas; //你所使用的UICanvas [Range(0, 5.0f)] public float desTime = 1.0f; private void Update() { if (Input.GetMouseButtonDown(0)) { //将鼠标点击的屏幕坐标转换为UI坐标，最后一个输出参数为转换的点 RectTransformUtility.ScreenPointToLocalPointInRectangle(UICanvas.transform as RectTransform,Input.mousePosition, UICanvas.worldCamera, out point); GameObject go = Instantiate(effect, parent); go.GetComponent&lt;RectTransform&gt;().anchoredPosition = point; Destroy(go, desTime); } } } 主要就是靠RectTransformUtility.ScreenPointToLocalPointInRectangle获取鼠标点击的UI坐标，如果想优化的话可以写个对象池，扩展可以实现粒子效果跟随鼠标,图片跟随鼠标等
+</p>
+  </div>
+  <footer class="entry-footer"><span title='2022-03-14 23:11:45 +0800 CST'>March 14, 2022</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to Unity-全局屏幕点击特效" href="http://localhost:1313/posts/unity/unity-%E5%85%A8%E5%B1%80%E5%B1%8F%E5%B9%95%E7%82%B9%E5%87%BB%E7%89%B9%E6%95%88/"></a>
+</article>
+
+<article class="post-entry"> 
+<figure class="entry-cover">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211192048985.png" alt="">
+</figure>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Unity-底层原理
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Unity是如何实现跨平台的 首先，我们要知道Unity,Mono,.Net 三者的关系。需要简单说一下.Net。
+.Net拥有跨语言，跨平台性。
+跨语言：就是只要是面向.Net平台的编程语言，用其中一种语言编写的类型就可以无缝的在另外一种语言编写的应用程序中互操作。
+跨平台：一次编译，不需要任何代码修改，应用程序就可以运行在任意在.Net实现的平台上跑，即代码不依赖于操作系统，也不依赖硬件环境。一个.Net程序运行的核心在于.Net
+CLR(公共语言运行时，或者称为.Net 虚拟机，类似java虚拟机的概念)，为了让.Net程序在其他平台（目前只能在.Net 平台,windows系统）上跑,微软官方还推出了在其他平台上(MacOs,Linux)跑的
+.Net的实现，就推出了.Net Core。
+然而，Unity引擎需求也是需要跨平台，支持多语言（C#，Js，Boo）。就参考微软开发.Net Core的概念，于是，推出了Mono.
+到这里，基本说明了.Net 与Mono和Unity的联系关系，其实没啥关系。做游戏都知道，肯定需要跨平台，不能只支持一种平台，不然每个对应的平台做出一种对应的编译器，那真的会累死。所以对于跨平台的需求，对于游戏开发而言，很重要。Unity的架构需求设计当然也需要这个特性。参考.Net依托CLR来实现设计思路，于是Mono就出来了。
+Mono介绍 Mono是一个由Xamarin公司所主持的自由开放源码项目。 Mono的目标是在尽可能多的平台上使.net标准的东西能正常运行的一套工具，核心在于“跨平台的让.net代码能运行起来“。 Mono组成组件：C# 编译器，CLI虚拟机，以及核心类别程序库。 Mono的编译器负责生成符合公共语言规范的映射代码，即公共中间语言（Common Intermediate Language，CIL），我的理解就是工厂方法实现不同解析。 IL的全称是 Intermediate Language，很多时候还会看到CIL（特指在.Net平台下的IL标准）。翻译过来就是中间语言。 它是一种属于通用语言架构和.NET框架的低阶的人类可读的编程语言。 CIL类似一个面向对象的汇编语言，并且它是完全基于堆栈的，它运行在虚拟机上（.Net Framework, Mono VM）的语言。
+工作流程： 通过C#编译器mcs，将C#编译为IL（中间语言，byte code） 通过Mono运行时中的编译器将IL编译成对应平台的原生码 编译器 C#编译器mcs：将C#编译为IL Mono Runtime编译器：将IL转移为原生码。
+三种转译方式： 即时编译（Just in time,JIT）：程序运行过程中，将CIL的byte code转译为目标平台的原生码。 提前编译（Ahead of time,AOT）：程序运行之前，将.exe或.dll文件中的CIL的byte code部分转译为目标平台的原生码并且存储，程序运行中仍有部分CIL的byte code需要JIT编译。 完全静态编译（Full ahead of time,Full-AOT）：程序运行前，将所有源码编译成目标平台的原生码。
+Unity跨平台的原理 Mono运行时编译器支持将IL代码转为对应平台原生码 IL可以在任何支持CLI,通用语言环境结构)中运行，IL的运行是依托于Mono运行时。
+IOS不支持jit编译原因： 机器码被禁止映射到内存，即封存了内存的可执行权限，变相的封锁了jit编译方式。
+JIT编译 将IL代码转为对应平台原生码并且将原生码映射到虚拟内存中执行。JIT编译的时候IL是在依托Mono运行时，转为对应的原生码后在依托本地运行。
+优点： 构建应用非常快 由于Mono的JIT(Just In Time compilation ) 机制, 所以支持更多托管类库 支持运行时代码执行 必须将代码发布成托管程序集(.dll 文件 , 由mono或者.net 生成 ) Mono VM在各个平台移植异常麻烦，有几个平台就得移植几个VM（WebGL和UWP这两个平台只支持 IL2CPP） Mono版本授权受限，C#很多新特性无法使用 iOS仍然支持Mono , 但是不再允许Mono(32位)应用提交到Apple Store IL2CPP介绍 IL2CPP 是 Unity一种新的脚本后处理(Scripting Backend)方式，针对.Net平台编译输出的IL（中间语言）进行处理。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2022-03-12 16:46:56 +0800 CST'>March 12, 2022</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to Unity-底层原理" href="http://localhost:1313/posts/unity/unity-%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86/"></a>
+</article>
+
+<article class="post-entry"> 
+<figure class="entry-cover">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211192022487.jpg" alt="">
+</figure>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Unity-Shader
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Mesh MeshFilter 网格过滤器
+主要从众多的资源中挑选需要的Mesh，把它丢给MeshRender。
+MeshRenderer 网格渲染器
+主要是负责把MeshFilter丢过来的Mesh，绘制显示到我们的场景中，当然这项工作是非常复杂的。
+Material 材质球
+Material是MeshRenderer中非常重要的角色，它的配置决定了物体表面的外观将以怎样的质地呈现到我们眼前。如果天MeshRenderer不小心弄丢了Material，那这个物体就会变成让人烦躁的品红色。其实它跟大家经常看到的网页Error404差不多，RGB调成101就是这个颜色啦。
+如果说Material是MeshRenderer的灵魂，那Shader就是Material的灵魂，但凡Shader哪里不开心了，即使MeshRenderer没有弄丢Material，物体依旧会变成前面所说的101颜色。
+Mesh 网格
+Mesh指的就是模型的网格，它决定了物体的表面形状是怎样的，一个模型的表面大多是由多个彼此相连的三角面构成，当然也有其它类型。我们平时听到的建模，可以简单理解为就是在建网格，那为什么Unity中的网格大多都是三角形而不是四边形呢？正所谓一生二，二生三，三生万物。三角形可以说是最为基础的面了，可以简单理解为三角形具有更广泛的适用性，而Mesh则是构成这些三角面所需的信息集合。
+通过 Mesh data - Unity 手册 我们可以看到构成这些三角面所需的信息。
+Vertices 顶点数组 Vector3[]
+顾名思义它存储的是顶点的相关信息，所谓点成线，线成面，可以理解为这里面存储的是构成网格面全部的点
+Topology 拓扑类型
+它存储的就是一个类型信息，可以理解为它是图形表面排列结构的组成方式，Unity给我们提供了5种拓扑类型，三角面、四边形、线条、虚线、点阵，最常用的则是三角面。
+Indices 索引数组 int[]
+它是每个三角面顶点 的索引，可以理解为他存储了构网格三角面所用到的顶点索引。
+Vertex data 顶点数据
+它包含了顶点的位置、法线、切线、UV等属性
+Normal 法线 Vector3[]
+法线就是垂直于该顶点三角面的一条三维向量，它只有方向，没有大小。法线的方向就是顶点三角面朝外的方向。假设我们面前有一面镜子，它的正中心会有一条法线垂直于镜面指向我们，指向我们的面就是正面，相反就是背面
+Tangent 切线 Vector3[]
+它是垂直于法线的一条向量，而由于垂直于法线的向量有无数条，所以切线最终是由UV坐标来决定朝向的
+UV 纹理坐标 Vector2[]
+上面所说的UV坐标其实就是它，U增长的方向就是切线的方向，它和三维空间的X, Y, Z较为类似，它是一个二维的坐标系统，模型网格除了有三维空间的xyz坐标外，还有一个二维的UV坐标，在UV坐标中，U和V分别代表顶点在Texture水平和垂直方向上的采样坐标，这些坐标通常位于(0，0)和(1，1)之间，（0，0）代表最左下角，而（1，1）代表最右上角。这就跟平时装修房子贴墙纸一样，可以理解为它是Texture映射到模型表面的依据，模型顶点 会依据UV坐标对Texture进行采样。
+Index data 索引数据
+这个数据取决于拓扑类型，如果是三角面他储存的就是[0,1,2]，四边形储存的就是[0,1,2,3]，这个索引数值对应的就是顶点数组的下标。
+渲染 渲染管线 渲染管线通常来说就是在虚拟相机、三维物体、光源、照明模式、纹理等诸多条件都给定的情况下，生成或是绘制一幅二维图像的过程。而这个过程会有很多步骤，这些步骤就渲染阶段。
+一般这个过程会分为四个主要阶段：应用程序阶段、几何阶段、光栅化阶段、像素处理阶段。而每个阶段 又会分为很多个部分。
+应用程序阶段 （The Application Stage） CPU
+它最主要是负责数据的准备，也就是准备后面的阶段 所需的数据，像如模型，贴图，光照，相机位置等信息。
+-————————————————————————————————————
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2022-03-06 22:25:02 +0800 CST'>March 6, 2022</span>&nbsp;·&nbsp;<span>11 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to Unity-Shader" href="http://localhost:1313/posts/unity/unity-shader/"></a>
+</article>
+
+<article class="post-entry"> 
+<figure class="entry-cover">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211192048985.png" alt="">
+</figure>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Unity-简易对象池
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>在Unity中我们经常会用到对象池，使用对象池无非就是解决两个问题:
+一是减少 new 时候寻址造成的消耗，该消耗的原因是内存碎片。 二是减少 Object.Instantiate 时内部进行序列化和反序列化而造成的CPU消耗。 设计： 从字面上理解对象池，池的意思就是容器。我们可以从池中获取一个对象(一条鱼)，也可以向池中放入一个对象(一条鱼)。获取的操作我们叫Allocate(分配),而放入一个对象我们叫Recycle(回收)。所以我们可以定义池的接口为如下:
+public interface IPool&lt;T&gt;{T Allocate();bool Recycle(T obj);} 为什么要用泛型呢？如何实现一个精简并且灵活的对象池。这个灵活很大一部分是通过泛型体现的。
+池是容器的意思，在C#中可以是List,Queue或者Stack甚至是数组。所以对象池本身要维护一个容器。本篇我们选取Stack来作为池容器，原因是当我们在Allocate和Recycle时并不关心缓存的存储的顺序，只要求缓存对象的地址是连续的。代码如下所示:
+using System.Collections.Generic;public abstract class Pool&lt;T&gt; : IPool&lt;T&gt;{...protected Stack&lt;T&gt; mCacheStack = new Stack&lt;T&gt;();...} Pool是个抽象类，实现一个精简并且灵活的对象池。这个灵活很大一部分是通过抽象类体现的。
+现在对象的存取和缓存接口都设计好了，那么这些对象是从哪里来的呢？我们分析下，创建对象我们知道有两种方式，反射构造方法和new一个对象。对象池的一个重要功能就是缓存，要想实现缓存就要求对象可以在对象池内部进行创建。所以我们要抽象出一个对象的工厂，代码如下所示:
+public interface IObjectFactory&lt;T&gt;{T Create();} 为什么要用工厂? 实现一个精简并且灵活的对象池。这个灵活很大一部分是通过工厂体现的。
+OK，现在对象的创建，存取，缓存的接口都设计好了。下面放出Pool的全部代码。
+using System.Collections.Generic;public abstract class Pool&lt;T&gt; : IPool&lt;T&gt;{#region ICountObserverable/// &lt;summary&gt;/// Gets the current count./// &lt;/summary&gt;/// &lt;value&gt;The current count.&lt;/value&gt;public int CurCount{get { return mCacheStack.Count; }}#endregionprotected IObjectFactory&lt;T&gt; mFactory;protected Stack&lt;T&gt; mCacheStack = new Stack&lt;T&gt;();/// &lt;summary&gt;/// default is 5/// &lt;/summary&gt;protected int mMaxCount = 5;public virtual T Allocate(){return mCacheStack.Count == 0? mFactory.Create(): mCacheStack.Pop();}public abstract bool Recycle(T obj);} 对象池实现 首先要实现一个对象的创建器,代码如下所示:
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2022-03-01 22:51:57 +0800 CST'>March 1, 2022</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to Unity-简易对象池" href="http://localhost:1313/posts/unity/unity-%E7%AE%80%E6%98%93%E5%AF%B9%E8%B1%A1%E6%B1%A0/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/">
       «&nbsp;Prev&nbsp;
+    </a>
+    <a class="next" href="http://localhost:1313/page/3/">Next&nbsp;&nbsp;»
     </a>
   </nav>
 </footer>
