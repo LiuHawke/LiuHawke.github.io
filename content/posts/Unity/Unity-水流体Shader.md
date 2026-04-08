@@ -7,9 +7,6 @@ tags:
 
 categories:
   - Unity
-
-cover:
-  image: https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211192022487.jpg
 ---
 
 # 水流体Shader
