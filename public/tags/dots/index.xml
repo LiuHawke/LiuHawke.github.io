@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Dots on LiuYingbo Blog</title>
+    <link>http://localhost:1313/tags/dots/</link>
+    <description>Recent content in Dots on LiuYingbo Blog</description>
+    <generator>Hugo -- 0.155.2</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 10 Apr 2023 13:10:43 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/dots/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Unity-Dots</title>
+      <link>http://localhost:1313/posts/unity/unity-dots/</link>
+      <pubDate>Mon, 10 Apr 2023 13:10:43 +0800</pubDate>
+      <guid>http://localhost:1313/posts/unity/unity-dots/</guid>
+      <description>&lt;h1 id=&#34;dots前置&#34;&gt;Dots前置&lt;/h1&gt;
+&lt;h2 id=&#34;dots简介&#34;&gt;Dots简介&lt;/h2&gt;
+&lt;h3 id=&#34;dots是什么&#34;&gt;DOTS是什么&lt;/h3&gt;
+&lt;p&gt;Data-Oriented Technology Stack(面向数据的技术栈）&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;The C# job system&lt;/li&gt;
+&lt;li&gt;The Burst compiler&lt;/li&gt;
+&lt;li&gt;Unity Mathematics&lt;/li&gt;
+&lt;li&gt;Unity Collections&lt;/li&gt;
+&lt;li&gt;Entities ( Entity-Component System)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Entities.Graphics ( Hybird Renderer )&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Netcode&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Physics&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Animation (WIP)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Audio(WIP)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;dots可以应用到哪些地方&#34;&gt;DOTS可以应用到哪些地方？&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;具有大世界流式加载的游戏&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;具有复杂的大规模模拟的游戏&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;具有多种网络类型的多人联线游戏&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;具有需要客户端模拟预测的网络游戏，如射击游戏&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;为什么我们需要dots&#34;&gt;为什么我们需要DOTS?&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;CPU与Memory的速度发展不均衡以及带宽限制&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;添加高速的缓存Cache内存层级结构去弥补&lt;/strong&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;摩尔定律的延续与现代CPU设计。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;越来越好的工艺&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;越来越多的核&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;分工越来越细的处理单元与存储&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;SIMD/SIMT&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;3.并行编程的发展&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;OpenMP&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;TBB—-Intel Threading Building Blocks&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;CUDA&amp;ndash;Compute Unified Divice Architecture&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;OpencL-—Open Computing Language&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;MPI/OpenMPI-—Message Passing Interface&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;OOD ==&amp;gt;DOD&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;image-20230410132100824&#34; loading=&#34;lazy&#34; src=&#34;https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202304101321851.png&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;面向数据设计odo&#34;&gt;面向数据设计（ODO）&lt;/h2&gt;
+&lt;h3 id=&#34;程序设计方法&#34;&gt;程序设计方法&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Instructional Programming 指令化编程&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Functional Programming 函数化编程&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

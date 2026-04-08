@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>语法 | LiuYingbo Blog</title>
+<meta name="keywords" content="">
+<meta name="description" content="LiuYingbo 的博客">
+<meta name="author" content="LiuYingbo">
+<link rel="canonical" href="http://localhost:1313/tags/%E8%AF%AD%E6%B3%95/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.a29c24210eb31d9ce56f669c66a35c9c51b17376b7764e336a49af7dec914cf0.css" integrity="sha256-opwkIQ6zHZzlb2acZqNcnFGxc3a3dk4zakmvfeyRTPA=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/tags/%E8%AF%AD%E6%B3%95/index.xml" title="rss">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/tags/%E8%AF%AD%E6%B3%95/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="LiuYingbo Blog (Alt + H)">LiuYingbo Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/categories/" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives/" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+<header class="page-header"><div class="breadcrumbs"><a href="http://localhost:1313/">Home</a>&nbsp;»&nbsp;<a href="http://localhost:1313/tags/">Tags</a></div>
+  <h1>
+    语法
+  </h1>
+</header>
+
+<article class="post-entry tag-entry"> 
+<figure class="entry-cover">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191917907.png" alt="">
+</figure>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">C# LINQ
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>LINQ 是 Language INtegrated Query 单词的首字母缩写，翻译过来是语言集成查询。它为查询跨各种数据源和格式的数据提供了一致的模型，所以叫集成查询。由于这种查询并没有制造新的语言而只是在现有的语言基础上来实现，所以叫语言集成查询。
+基础 在 C# 中，从功能上 LINQ 可分为两类：LINQ to Object 和 LINQ to XML；从语法上 LINQ 可以分为 LINQ to Object 和 LINQ 扩展方法
+纠正：
+从功能上 LINQ 可分为两类：
+LINQ to Object，查询内存集合，直接把查询编译成 .NET 代码执行。 LINQ to Provider，查询自定义数据源，由开发者提供相应数据源的 Provider 并翻译和执行自定义查询，如 XML、JSON 等都可以作为 Provider 对应的数据源，数据源对应的 LINQ 查询叫 LINQ to &lt;数据源&gt;，比如：LINQ to XML。 从语法上 LINQ 可以分为：
+SQL风格：语法和 SQL 相似，部分复杂查询用 SQL 风格语义会更清晰明了，比如 SelectMany 和 Join 查询。SQL 风格的可读性有绝对优势，但不支持全部标准 LINQ 函数，不支持自定义函数。纯粹的语法糖。 函数风格：以 C# 扩展方法的方式实现，扩展方法即可以是标准库提供的也可以是自己实现的，完全的原生编程风格，编译后的代码都是函数调用。支持全部标准 LINQ 函数和任何自定义函数。随着查询复杂度的提高，可读性不如 SQL 风格。 感谢 @coredx 的纠正。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2022-11-24 22:49:16 +0000 UTC'>November 24, 2022</span>&nbsp;·&nbsp;<span>12 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to C# LINQ" href="http://localhost:1313/posts/%E8%AF%AD%E6%B3%95/c-linq/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+<figure class="entry-cover">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191917907.png" alt="">
+</figure>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">C#数据结构与算法
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>数据结构与算法 什么是数据结构与算法？ 在学习数据结构与算法的时候，常常会思考一个问题：什么是数据结构与算法？
+这里比较找到了一个比较好的答案。
+从宏观来讲：
+数据结构是一组数据的存储结构。 算法就是操作数据的方法。 数据结构为算法服务，算法要作用在特定的数据结构中。 从狭义上来讲，就是数据结构与算法这门学科就是去学习比较经典的数据结构和算法。
+有点像学习设计模式一样，学习 23 种设计模式。
+如何学习数据结构与算法？ 说到设计模式，学习数据结构与算法与学习设计模式非常相似的。
+我们知道设计模式有 23 种，而一般一个开发者学习设计模式的时候，往往会对 23 个设计模式都从头到尾学一遍，但是学完之后发现除了记了个名字之外没啥卵用，就连名字也不一定记得住。
+那么是以为 23 种设计模式的核心并不是设计模式本身，而是 23 种设计模式所遵循的 SOLID 原则，即六大设计原则，而开发者一开始最应该掌握的是六大设计原则，而不是设计模式，六大设计原则是核心，而 23 种设计模式算是 23 种对于六大设计原则的案例一样，一定要先搞清楚这一点。否则学习就会事倍功半，当然如果有一定的编码经验再去学设计模式更好一些。
+学习数据结构与算法也是一样的，数据结构与算法的核心是时间复杂度和空间复杂度，就像对于设计模式中的六大设计原则一样，掌握了时间复杂度和空间复杂度的评估，那么剩下的经典的常用的数据结构和算法就是一个个案例而已，而不用死记硬背，当然有一定的编码经验再去学习会更好一些。
+这就是数据结构与算法的学习思路。
+为什么要学习数据结构与算法？ 国内大厂的面试比较爱考，但是考得不是很难 Google、Facebook、微软等更爱考，而且非常难。 可以评估代码性能，写出高性能的代码 开发时选择合适的数据结构 比较有名的基础框架，都柔和了很多基础数据解耦股和算法的设计思想 阅读源码的时候可以减少阻碍（比如遇到一些算法的实现） 提高编程能力 思维提升 简历上可以写一个精通数据结构与算法 数据结构与算法是不是高智商开发者的专属？ 当然不是，数据结构与算法的常用的知识点不多，而且也不需要高智商。重点还是熟能生巧。
+数据结构与算法学科的解决问题重点是什么？ 更省更快地存储和处理数据的问题 时间复杂度 时间复杂度的定义很简单：
+算法的执行时间与数据规模之间的增长关系 时间复杂度的全称其实叫做：渐进时间复杂度，我们就叫时间复杂度即可。
+时间复杂度的定义难得的清晰，不像一些设计模式这样的定义非常抽象。
+OK，既然时间复杂度的定义这么简单，那么我们也顺便说一下空间复杂度吧，空间复杂度的定义如下：
+算法的存储空间与数据规模之间的增长关系。 空间复杂度的定义也非常直白。
+List 的遍历，代码如下：
+var list = new List&lt;string&gt;(){&#34;a&#34;,&#34;b&#34;,&#34;c&#34;}; foreach (var s in list) { Debug.Log(s); } 代码中的 list 的数据规模是 3，其实就是数据量，那么这一段代码所执行的时间就是， Debug.Log(s) 所执行的时间 x 3。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2022-02-10 22:17:46 +0000 UTC'>February 10, 2022</span>&nbsp;·&nbsp;<span>6 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to C#数据结构与算法" href="http://localhost:1313/posts/%E8%AF%AD%E6%B3%95/c-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+<figure class="entry-cover">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191917907.png" alt="">
+</figure>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">c# async/await
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Talk is cheap, Show you the code first！
+private void button1_Click(object sender, EventArgs e) { Console.WriteLine(&#34;111 balabala. My Thread ID is :&#34; &#43; Thread.CurrentThread.ManagedThreadId); AsyncMethod(); Console.WriteLine(&#34;222 balabala. My Thread ID is :&#34; &#43; Thread.CurrentThread.ManagedThreadId); } private async Task AsyncMethod() { var ResultFromTimeConsumingMethod = TimeConsumingMethod(); string Result = await ResultFromTimeConsumingMethod &#43; &#34; &#43; AsyncMethod. My Thread ID is :&#34; &#43; Thread.CurrentThread.ManagedThreadId; Console.WriteLine(Result); //返回值是Task的函数可以不用return } //这个函数就是一个耗时函数，可能是IO操作，也可能是cpu密集型工作。 private Task&lt;string&gt; TimeConsumingMethod() { var task = Task.Run(()=&gt; { Console.WriteLine(&#34;Helo I am TimeConsumingMethod. My Thread ID is :&#34; &#43; Thread.CurrentThread.ManagedThreadId); Thread.Sleep(5000); Console.WriteLine(&#34;Helo I am TimeConsumingMethod after Sleep(5000). My Thread ID is :&#34; &#43; Thread.CurrentThread.ManagedThreadId); return &#34;Hello I am TimeConsumingMethod&#34;; }); return task; } 异步方法的结构 上面是一个的使用async/await的例子（为了方便解说原理我才写的这样复杂的）。 使用async/await能非常简单的创建异步方法，防止耗时操作阻塞当前线程。 使用async/await来构建的异步方法，逻辑上主要有下面三个结构：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2021-12-05 21:29:02 +0000 UTC'>December 5, 2021</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to c# async/await" href="http://localhost:1313/posts/%E8%AF%AD%E6%B3%95/c%23%E5%AD%A6%E4%B9%A0-async-await/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+<figure class="entry-cover">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191917907.png" alt="">
+</figure>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">C#反射机制
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>C#反射机制 资料转载自知乎:https://zhuanlan.zhihu.com/p/41282759
+何为反射? 首先我们通过两个实例来说明反射的大体概念。
+B超:大家体检的时候大概都做过B超,B超可以透过肚皮探测到你内脏的生理情况。这是如何做到的呢?B超是B型超声波,它可以透过肚皮通过向你体内发射B型超声波,当超声波遇到内脏壁的时候就会产生一定的“回音”反射,然后把“回音”进行处理就可以显示出内脏的情况了。
+地球内部结构:地球的内部结构大体可以分为三层:地壳、地幔和地核。如何在地球表面不用深入地球内部就知道其内部的构造呢?我们可以向地球发射“地震波”,“地震波”分两种一种是“横波”,另一种是“纵波”。“横波”只能穿透固体,而“纵波”既可穿透固体又可以穿透液体。通过在地面对纵波和横波的反回情况,我们就可以大体断定地球内部的构造了。
+大家注意到这两个例子的共同特点,就是从一个对象的外部去了解对象内部的构造,而且都是利用了波的反射功能。在.NET中的反射也可以实现从对象的外部来了解对象(或程序集)内部结构的功能,哪怕你不知道这个对象(或程序集)是个什么东西,另外.NET中的反射还可以运态创建出对象并执行它其中的方法。
+反射是.NET中的重要机制,通过反射,可以在运行时获得程序或程序集中每一个类型(包括类、结构、委托、接口和枚举等)的成员和成员的信息。有了反射,即可对每一个类型了如指掌。另外我还可以直接创建对象,即使这个对象的类型在编译时还不知道。
+为什么使用反射,而不直接引用它的dll或者类型呢?
+例如你有个main.exe,需要使用say.dll,draw.dll,突然客户说我们要添加一个跑的功能,那么只需要按照我们约定的规则做一个run的dll,之前的main.exe不需要做任何修改(就是不需要再去导入run.dll,其中需要其他的设计来规范),在main.exe中就能直接使用run.dll了。
+其实,我们已经在不自觉地使用它了,举个最简单的例子,当你在VS的设计器里拖入一个控件后,设计器会通过反射获取这个控件的属性,并提供你进行设置。那么,问题来了,为什么要用反射呢?因为设计器在做的时候,根本不可能预知将来有什么控件会被你拖入进去。
+反射的用途简要介绍 反射的用途大体总结如下,我们会在下面详细的进行介绍。 (1)使用Assembly定义和加载程序集,加载在程序集清单中列出模块,以及从此程序集中查找类型并创建该类型的实例。 (2)使用Module了解包含模块的程序集以及模块中的类等,还可以获取在模块上定义的所有全局方法或其他特定的非全局方法。 (3)使用ConstructorInfo了解构造函数的名称、参数、访问修饰符(如pulic 或private)和实现详细信息(如abstract或virtual)等。 (4)使用MethodInfo了解方法的名称、返回类型、参数、访问修饰符(如pulic 或private)和实现详细信息(如abstract或virtual)等。 (5)使用FiedInfo了解字段的名称、访问修饰符(如public或private)和实现详细信息(如static)等,并获取或设置字段值。 (6)使用EventInfo了解事件的名称、事件处理程序数据类型、自定义属性、声明类型和反射类型等,添加或移除事件处理程序 (7)使用PropertyInfo了解属性的名称、数据类型、声明类型、反射类型和只读或可写状态等,获取或设置属性值。 (8)使用ParameterInfo了解参数的名称、数据类型、是输入参数还是输出参数,以及参数在方法签名中的位置等。
+反射用到的主要类:
+System.Type 类–通过这个类可以访问任何给定数据类型的信息。 System.Reflection.Assembly类–它可以用于访问给定程序集的信息,或者把这个程序集加载到程序中。 System.Type类:System.Type 类对于反射起着核心的作用。但它是一个抽象的基类,Type有与每种数据类型对应的派生类,我们使用这个派生类的对象的方法、字段、属性来查找有关该类型的所有信息。获取给定类型的Type引用有3种常用方式:
+Type类的属性: Name 数据类型名
+FullName 数据类型的完全限定名(包括命名空间名) Namespace 定义数据类型的命名空间名 IsAbstract 指示该类型是否是抽象类型
+IsArray 指示该类型是否是数组
+IsClass 指示该类型是否是类 IsEnum 指示该类型是否是枚举 IsInterface 指示该类型是否是接口 IsPublic 指示该类型是否是公有的 IsSealed 指示该类型是否是密封类 IsValueType 指示该类型是否是值类型
+Type类的方法: GetConstructor(), GetConstructors():返回 ConstructorInfo类型,用于取得该类的构造函数的信息 GetEvent(), GetEvents():返回EventInfo类型,用于取得该类的事件的信息 GetField(), GetFields():返回FieldInfo类型,用于取得该类的字段(成员变量)的信息 GetInterface(), GetInterfaces():返回InterfaceInfo类型,用于取得该类实现的接口的信息 GetMember(), GetMembers():返回MemberInfo类型,用于取得该类的所有成员的信息 GetMethod(), GetMethods():返回MethodInfo类型,用于取得该类的方法的信息 GetProperty(), GetProperties():返回PropertyInfo类型,用于取得该类的属性的信息可以调用这些成员,其方式是调用Type的InvokeMember()方法,或者调用MethodInfo, PropertyInfo和其他类的Invoke()方法。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2021-12-05 21:26:10 +0000 UTC'>December 5, 2021</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to C#反射机制" href="http://localhost:1313/posts/%E8%AF%AD%E6%B3%95/c%23-%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+<figure class="entry-cover">
+        <img loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191917907.png" alt="">
+</figure>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">C#学习-C# 1.0
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>C# 1.0 我们先罗列一下 C# 1.0 发布时所包含的语法特性，如下：
+类（class） 结构（struct） 接口（interface） 事件（event） 属性（property） 委托（delegates） 表达式 语句 特性（有时候也叫属性）（Attribute） C# 1.0 的特性只有以上这些。
+基本上它涵盖了 C# 中最常用、最核心、最基础部分的内容。C# 使用进阶，一些非常基础的东西就不记录了。
+类 单纯从功能上来说，类可以：
+包含变量（属性） 包含方法（行为） 继承 用来创建对象 面向对象与面向过程 有了类我们比较容易地进行面向对象编程，没有类当然也可以面向对象编程，只不过会不那么容易做到。
+那么什么是面向对象编程呢？
+我的理解只有两个字，建模。
+建模就是对需要实现的功能或者需要解决的问题建立业务模型。
+比如要实现购买商品功能，就需要我们创建商品对象，还要把购买商品的行为归属到另一个对象中，这个对象有可能是顾客对象，也有可能是平台对象。
+这就是非常典型的面向对象建模案例。
+那么如果是面向过程中的购买商品会是什么样的呢？
+我们也许这样考虑，购买商品先创建一个购买商品函数，然后函数可能需要调用数据库，那就再写一个调用数据库的函数交媾购买商品函数调用，依次类推。
+其实要区分面向对象编程与面向过程编程非常容易。
+面向对象编程是以对象为基础进行思考的，而面向过程是以功能（函数）为基础进行思考的。
+这就是两者的差别。
+面向对象与面向过程是对立的吗？ 不是对立的，面向对象更擅设计，而面向过程更擅长实现。
+在使用 C# 的时候，两种编程思维都是会用到的。
+没有类如何面向对象编程？ 面向对象编程，当然要有对象了，如果没有类的话，其实也可以实现面向对象编程。
+c 语言虽然不支持类，但是也可以通过宏或者一些模拟的手段支持类和对象的。
+Lua 语言也没有提供类功能，但是通过元表也是能够模拟类和对象的。
+OK，到此，面向对象这个话题可能与我们的专栏话题不太对题，但是一想到类，就不自觉地扯到面向对象这个话题了。
+总是面向对象编程的核心就是两个字：建模。
+引用类型和值类型 几乎在每一本编程语言书籍上都会谈到引用类型和值类型这两个概念。
+具体的引用类型和值类型相关的细节，大家在网上找各种文章就可以了。
+引用类型，是用类创建的类型就是引用类型。
+值类型包含基础类型和结构体（struct）创建出来的类型。
+如下： 就是这么简单。
+定义 值类型直接存储其值，而引用类型存储对其值的引用
+值类型 和 引用类型 是非常重要且非常基础的话题，所以想深入研究，网上能够找到一大堆文章。
+类是引用类型 记住这句话就行。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2021-12-01 22:32:41 +0000 UTC'>December 1, 2021</span>&nbsp;·&nbsp;<span>7 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span></footer>
+  <a class="entry-link" aria-label="post link to C#学习-C# 1.0" href="http://localhost:1313/posts/%E8%AF%AD%E6%B3%95/c%23%E5%AD%A6%E4%B9%A0-c%23-1.0/"></a>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">LiuYingbo Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

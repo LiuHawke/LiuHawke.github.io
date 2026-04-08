@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Hexo on LiuYingbo Blog</title>
+    <link>http://localhost:1313/categories/hexo/</link>
+    <description>Recent content in Hexo on LiuYingbo Blog</description>
+    <generator>Hugo -- 0.155.2</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Tue, 30 Nov 2021 23:36:13 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/categories/hexo/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>GitHub&#43;Hexo 搭建个人博客（四）：SEO 优化及站点被搜索引擎收录设置</title>
+      <link>http://localhost:1313/posts/hexo/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E5%9B%9B/</link>
+      <pubDate>Tue, 30 Nov 2021 23:36:13 +0800</pubDate>
+      <guid>http://localhost:1313/posts/hexo/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E5%9B%9B/</guid>
+      <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
+&lt;p&gt;我们必须把我们的网站推送到搜索引擎那， 不然别人除了输入我们的域名或者搜索文章，是没法发现我们的博文。&lt;/p&gt;
+&lt;p&gt;如何查看我的网站是否被收录：&lt;/p&gt;
+&lt;p&gt;site:你的网站
+比如我的：site:liuyingbo.com&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;image-20211128150936068&#34; loading=&#34;lazy&#34; src=&#34;https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211162354633.png&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;站点地图&#34;&gt;站点地图&lt;/h2&gt;
+&lt;p&gt;站点地图即 &lt;a href=&#34;https://baike.baidu.com/item/sitemap/6241567?fr=aladdin&#34;&gt;sitemap&lt;/a&gt;， 是一个页面，上面放置了网站上需要搜索引擎抓取的所有页面的链接。站点地图可以告诉搜索引擎网站上有哪些可供抓取的网页，以便搜索引擎可以更加智能地抓取网站。所以我们首先需要生成一个站点地图&lt;/p&gt;
+&lt;p&gt;安装百度和 Google 的站点地图生成插件：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;npm install hexo-generator-baidu-sitemap --save
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;npm install hexo-generator-sitemap --save
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;然后来到站点目录配置文件&lt;code&gt;_config.yml&lt;/code&gt;，在下面添加：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 站点地图&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sitemap:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  path: sitemap.xml
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;baidusitemap:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  path: baidusitemap.xml
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;然后重新推送到服务器，在访问如下 URL:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;https://你的域名/sitemap.xml
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;https://你的域名/baidusitemap.xml
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;看看有没有出现代码。有的话就成功。&lt;/p&gt;
+&lt;p&gt;给你的 hexo 网站添加蜘蛛协议 robots.txt, 把 robots.txt 放在你的 hexo 站点的 source 文件下即可。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# hexo robots.txt&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;User-agent: *
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Allow: /
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Sitemap: https://liuyyingbo.com/sitemap.xml
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Sitemap: https://liuyingbo.com/baidusitemap.xml
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;百度收录&#34;&gt;百度收录&lt;/h2&gt;
+&lt;h3 id=&#34;提交网站&#34;&gt;提交网站&lt;/h3&gt;
+&lt;p&gt;通过百度站长平台进行链接提交，增加网站的索引量。先去注册并登录：&lt;a href=&#34;ziyuan.baidu.com&#34;&gt;百度站长平台&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;百度站长平台&#34; loading=&#34;lazy&#34; src=&#34;https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211162354058.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;然后需要验证网站，我选择的是&lt;code&gt;https://&lt;/code&gt;，这根据你前面是否添加 SSL 证书来选择。并且我使用的是不带 www 的，看个人。然后到第三步，我使用的 &lt;strong&gt;HTML 标签验证&lt;/strong&gt;。你也可以选择自己喜欢的方式&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>GitHub&#43;Hexo 搭建个人博客（三）：使用 GitHub Actions 实现 Hexo 博客自动部署</title>
+      <link>http://localhost:1313/posts/hexo/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E4%B8%89/</link>
+      <pubDate>Tue, 30 Nov 2021 23:35:16 +0800</pubDate>
+      <guid>http://localhost:1313/posts/hexo/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E4%B8%89/</guid>
+      <description>&lt;h2 id=&#34;hexo-相关知识点&#34;&gt;Hexo 相关知识点&lt;/h2&gt;
+&lt;p&gt;静态博客简单，但是发布博文时稍显麻烦，一般需要下面两步：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;hexo clean
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;hexo g -d // 相当于 hexo g + hexo d
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;如果考虑到同步源文件，还需要每次更改后，将源文件 push 到指定仓库：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;git push origin main
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;我们可以将 Hexo 文件分为两类，一类是源文件，即下面这些文件：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;.
+├── _config.yml
+├── package.json
+├── scaffolds
+├── source
+|   ├── _drafts
+|   └── _posts
+└── themes
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;一类是 public 文件，即网站文件：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;public
+├── 2020
+├── categories
+├── tags
+....
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;发布博文的这三个操作代表：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;hexo clean：删除网站（public）文件&lt;/li&gt;
+&lt;li&gt;hexo g：生成网站（public）文件&lt;/li&gt;
+&lt;li&gt;hexo d：将本地网站（public）文件同步到指定仓库（如：yourname.github.io）中&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;我使用一个私有仓库存放 Hexo 源文件，在 deppwang/deppwang.github.io 中存放网站文件。所以每次发布或者更新博文时，需要使用 push 操作更新源文件，再执行 &lt;code&gt;hexo clean&lt;/code&gt;、&lt;code&gt;hexo g -d&lt;/code&gt; 更新博客，比较麻烦,而且github在国内经常登录不上。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>GitHub&#43;Hexo 搭建个人博客（二）：使用GitHub PicGod搭建图床</title>
+      <link>http://localhost:1313/posts/hexo/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E4%BA%8C/</link>
+      <pubDate>Tue, 30 Nov 2021 23:32:59 +0800</pubDate>
+      <guid>http://localhost:1313/posts/hexo/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E4%BA%8C/</guid>
+      <description>&lt;h2 id=&#34;图床&#34;&gt;图床&lt;/h2&gt;
+&lt;p&gt;图床这是个老生常谈的问题了，流行过不少的图床但是基本都凉凉了。&lt;/p&gt;
+&lt;h2 id=&#34;背景&#34;&gt;背景&lt;/h2&gt;
+&lt;p&gt;图床是个啥东西就不用过多介绍了，先来对比一下各路图床：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;del&gt;微博图床：以前用的人比较多，从2019年4月开始开启了防盗链，凉凉&lt;/del&gt;&lt;/li&gt;
+&lt;li&gt;&lt;del&gt;SM.MS：运营四年多了，也变得越来越慢了，到了晚上直接打不开图片，速度堪忧&lt;/del&gt;&lt;/li&gt;
+&lt;li&gt;&lt;del&gt;其他小众图床：随时有挂掉的风险&lt;/del&gt;&lt;/li&gt;
+&lt;li&gt;&lt;del&gt;Imgur等国外图床：国内访问速度太慢，随时有被墙的风险&lt;/del&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;ul&gt;
+&lt;li&gt;语雀图床，语雀用的oss本来挺好用，也开启防盗链了&lt;/li&gt;
+&lt;li&gt;大厂储存服务：例如七牛云、又拍云、腾讯云COS、阿里云OSS等，容量限制，操作繁琐，又是实名认证又是域名备案的，麻烦，而且还要花钱（有钱又不怕麻烦的当我没说）&lt;/li&gt;
+&lt;li&gt;Github图床
+Gitee 图床&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;如果舍得花钱可以选择大厂存储服务，定期交流量费即可。略过第2步直接往下看，如果喜欢稳定且免费的图床可以继续往下看gitee 就是github在国内的一个翻版，操作基本一致，github有时候访问会有抽风现象，原因你懂的 毕竟方校长的GFW不是吃素的。&lt;/p&gt;
+&lt;p&gt;因此，GitHub 图床是个不错的选择，利用 jsDelivr CDN 加速访问（jsDelivr 是一个免费开源的 CDN 解决方案），PicGo 工具一键上传，操作简单高效，GitHub 和 jsDelivr 都是大厂，不用担心跑路问题，不用担心速度和容量问题，而且完全免费，可以说是目前免费图床的最佳解决方案！&lt;/p&gt;
+&lt;h2 id=&#34;搭建github仓库图床&#34;&gt;搭建github仓库图床&lt;/h2&gt;
+&lt;p&gt;登录/注册GitHub，新建一个仓库，填写好仓库名，仓库描述，根据需求选择是否为仓库初始化一个README.md描述文件&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;在这里插入图片描述&#34; loading=&#34;lazy&#34; src=&#34;https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211162349301.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;在这里插入图片描述&#34; loading=&#34;lazy&#34; src=&#34;https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211162349469.png&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;生成Token&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;在主页依次选择【Settings】-【Developer settings】-【Personal access tokens】-【Generate new token】，填写好描述，勾选【repo】，然后点击【Generate token】生成一个Token，注意这个Token只会显示一次，自己先保存下来，或者等后面配置好PicGo后再关闭此网页&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;在这里插入图片描述&#34; loading=&#34;lazy&#34; src=&#34;https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211162349632.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;在这里插入图片描述&#34; loading=&#34;lazy&#34; src=&#34;https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211162350079.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;在这里插入图片描述&#34; loading=&#34;lazy&#34; src=&#34;https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211162350638.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;在这里插入图片描述&#34; loading=&#34;lazy&#34; src=&#34;https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211162350187.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;在这里插入图片描述&#34; loading=&#34;lazy&#34; src=&#34;https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211162350841.png&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;配置picgo&#34;&gt;配置PicGo&lt;/h2&gt;
+&lt;p&gt;前往&lt;a href=&#34;https://github.com/Molunerfinn/picgo/releases&#34;&gt;下载PicGo&lt;/a&gt;，安装好后开始配置图床&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;在这里插入图片描述&#34; loading=&#34;lazy&#34; src=&#34;https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211162350359.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;设定仓库名：按照【用户名/图床仓库名】的格式填写&lt;/p&gt;
+&lt;p&gt;设定分支名：【main】&lt;/p&gt;
+&lt;p&gt;设定Token：粘贴之前生成的【Token】&lt;/p&gt;
+&lt;p&gt;指定存储路径：填写想要储存的路径，如【ITRHX-PIC/】，这样就会在仓库下创建一个名为 ITRHX-PIC 的文件夹，图片将会储存在此文件夹中&lt;/p&gt;
+&lt;p&gt;设定自定义域名：它的作用是，在图片上传后，PicGo 会按照【自定义域名+储存路径+上传的图片名】的方式生成访问链接，并放到粘贴板上，因为我们要使用 jsDelivr 加速访问，所以可以设置为【https://cdn.jsdelivr.net/gh/用户名/图床仓库名 】，上传完毕后，我们就可以通过【https://cdn.jsdelivr.net/gh/用户名/图床仓库名/图片路径 】加速访问我们的图片了，比如上图的图片链接为：https://cdn.jsdelivr.net/gh/TRHX/ImageHosting/ITRHX-PIC/A27/08.jpg&lt;/p&gt;
+&lt;p&gt;参考上面创建了一个仓库如下图&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;在这里插入图片描述&#34; loading=&#34;lazy&#34; src=&#34;https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211162350040.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;至此免费图床搭建完成。可以使用PicGo 工具 愉快的上传图片了，直接粘贴在markdown博客编写工具中就可以了。&lt;/p&gt;
+&lt;p&gt;图片不能重复上传，因为都会在同一个目录下，重复上传会有重名错误。&lt;/p&gt;
+&lt;h2 id=&#34;进行图片上传&#34;&gt;进行图片上传&lt;/h2&gt;
+&lt;p&gt;配置好PicGo后，我们就可以进行高效创作了，将图片拖拽到上传区，将会自动上传并复制访问链接，将链接粘贴到博文中就行了，访问速度杠杠的，此外PicGo还有相册功能，可以对已上传的图片进行删除，修改链接等快捷操作，PicGo还可以生成不同格式的链接、支持批量上传、快捷键上传、自定义链接格式、上传前重命名等，更多功能自己去探索吧！&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>GitHub&#43;Hexo 搭建个人博客（一）</title>
+      <link>http://localhost:1313/posts/hexo/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E4%B8%80/</link>
+      <pubDate>Thu, 11 Nov 2021 22:12:57 +0800</pubDate>
+      <guid>http://localhost:1313/posts/hexo/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E4%B8%80/</guid>
+      <description>&lt;h2 id=&#34;什么是hexo-&#34;&gt;&lt;strong&gt;什么是Hexo ?&lt;/strong&gt;&lt;/h2&gt;
+&lt;p&gt;&lt;img alt=&#34;img&#34; loading=&#34;lazy&#34; src=&#34;https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211162345842.jpg&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Hexo是一款基于Node.js的静态博客框架，依赖少易于安装使用，可以方便的生成静态网页托管在GitHub和Heroku上，是搭建博客的首选框架。这里我们选用的是GitHub，你没看错，全球最大的同性恋交友网站（逃……）。Hexo同时也是GitHub上的开源项目，参见：&lt;a href=&#34;https://link.zhihu.com/?target=https%3A//github.com/hexojs/hexo&#34;&gt;hexojs/hexo&lt;/a&gt; 如果想要更加全面的了解Hexo，可以到其官网 &lt;a href=&#34;https://link.zhihu.com/?target=https%3A//hexo.io/&#34;&gt;Hexo&lt;/a&gt; 了解更多的细节，因为Hexo的创建者是台湾人，对中文的支持很友好，可以选择中文进行查看。这里，默认各位猿/媛儿都知道GitHub就不再赘述。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;这是我的个人博客效果:&lt;/strong&gt; &lt;a href=&#34;liuyingbo.com&#34;&gt;刘英博 · Hawk&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;下面正式从零开始搭建年轻人的第一个网站。&lt;/p&gt;
+&lt;h2 id=&#34;环境准备&#34;&gt;环境准备&lt;/h2&gt;
+&lt;h3 id=&#34;获得个人网站域名&#34;&gt;获得个人网站域名&lt;/h3&gt;
+&lt;p&gt;域名是网站的入口，也是网站的第一印象，比如饿了么的官网的域名是：&lt;a href=&#34;https://link.zhihu.com/?target=https%3A//www.ele.me/&#34;&gt;https://www.ele.me/&lt;/a&gt; ，很是巧妙。常见的有com,cn,net,org等后缀，也有小众的xyz,me,io等后缀，根据你自己的喜好，选择不同的后缀，比如我选择就是常见的com后缀。很多小众奇特的后缀在大陆是没办法备案的，网站也就无法上线。然而使用GitHub托管我们的网站，完全不需要备案，因为托管我们的网站内容的服务器在美国，而且在国内备案流程也比较繁杂，时间需要一周左右。&lt;/p&gt;
+&lt;p&gt;申请域名的地方有很多，这里推荐阿里云：&lt;a href=&#34;https://link.zhihu.com/?target=https%3A//www.aliyun.com/&#34;&gt;阿里云-为了无法计算的价值&lt;/a&gt; 申请入口：&lt;a href=&#34;https://link.zhihu.com/?target=https%3A//wanwang.aliyun.com/domain/&#34;&gt;域名注册&lt;/a&gt; 购买域名这也是我们整个搭建过程中惟一一个需要花钱的地方。如果你已经有了空闲域名就无需购买，直接使用即可。&lt;/p&gt;
+&lt;h3 id=&#34;github创建个人仓库&#34;&gt;&lt;strong&gt;GitHub创建个人仓库&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;登录到GitHub,如果没有GitHub帐号，使用你的邮箱注册GitHub帐号：&lt;a href=&#34;https://link.zhihu.com/?target=https%3A//github.com/&#34;&gt;Build software better, together&lt;/a&gt; 点击GitHub中的New repository创建新仓库，仓库名应该为：&lt;strong&gt;用户名&lt;/strong&gt;.&lt;a href=&#34;https://link.zhihu.com/?target=http%3A//github.io&#34;&gt;http://github.io&lt;/a&gt; 这个&lt;strong&gt;用户名&lt;/strong&gt;使用你的GitHub帐号名称代替，这是固定写法&lt;/p&gt;
+&lt;h3 id=&#34;安装git&#34;&gt;&lt;strong&gt;安装Git&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;什么是Git ?简单来说Git是开源的分布式版本控制系统，用于敏捷高效地处理项目。我们网站在本地搭建好了，需要使用Git同步到GitHub上。如果想要了解Git的细节，参看&lt;a href=&#34;https://link.zhihu.com/?target=http%3A//weibo.com/liaoxuefeng&#34;&gt;廖雪峰&lt;/a&gt;老师的Git教程：&lt;a href=&#34;https://link.zhihu.com/?target=http%3A//www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000&#34;&gt;Git教程&lt;/a&gt; 从Git官网下载：&lt;a href=&#34;https://link.zhihu.com/?target=https%3A//git-scm.com/download/win&#34;&gt;Git - Downloading Package&lt;/a&gt; 现在的机子基本都是64位的，选择64位的安装包，下载后安装，在命令行里输入&lt;code&gt;git --version&lt;/code&gt;测试是否安装成功，若安装失败，参看其他详细的Git安装教程。安装成功后，将你的Git与GitHub帐号绑定。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;liuyingbo@liuyingbodeMacBook-Pro ~ % git --version
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;git version 2.32.0 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;Apple Git-132&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;在命令行里，设置user.name和user.email配置信息：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;git config --global user.name &lt;span class=&#34;s2&#34;&gt;&amp;#34;你的GitHub用户名&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;git config --global user.email &lt;span class=&#34;s2&#34;&gt;&amp;#34;你的GitHub注册邮箱&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;生成ssh密钥文件：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ssh-keygen -t
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;然后直接三个回车即可，默认不需要设置密码
+然后找到生成的.ssh的文件夹中的id_rsa.pub密钥，将内容全部复，Mac打开隐藏文件显示&lt;code&gt;Shift+Command+.&lt;/code&gt;，windows应该在C盘。&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;image-20211219141017633&#34; loading=&#34;lazy&#34; src=&#34;https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211162330967.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;打开&lt;a href=&#34;https://link.zhihu.com/?target=https%3A//github.com/settings/keys&#34;&gt;GitHub_Settings_keys&lt;/a&gt; 页面，新建new SSH Key&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;img&#34; loading=&#34;lazy&#34; src=&#34;https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211162330086.jpg&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Title为标题，任意填即可，将刚刚复制的id_rsa.pub内容粘贴进去，最后点击Add SSH key。
+在Git Bash中检测GitHub公钥设置是否成功，输入&lt;code&gt;ssh git@github.com&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;liuyingbo@liuyingbodeMacBook-Pro ~ % ssh git@github.com
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;PTY allocation request failed on channel &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Hi liuyingbor! You&lt;span class=&#34;err&#34;&gt;&amp;#39;&lt;/span&gt;ve successfully authenticated, but GitHub does not provide shell access.
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Connection to github.com closed.
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;如上则说明成功。这里之所以设置GitHub密钥原因是，通过非对称加密的公钥与私钥来完成加密，公钥放置在GitHub上，私钥放置在自己的电脑里。GitHub要求每次推送代码都是合法用户，所以每次推送都需要输入账号密码验证推送用户是否是合法用户，为了省去每次输入密码的步骤，采用了ssh，当你推送的时候，git就会匹配你的私钥跟GitHub上面的公钥是否是配对的，若是匹配就认为你是合法用户，则允许推送。这样可以保证每次的推送都是正确合法的。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

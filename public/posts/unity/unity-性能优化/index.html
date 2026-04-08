@@ -1,0 +1,1715 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Unity-性能优化 | LiuYingbo Blog</title>
+<meta name="keywords" content="Unity">
+<meta name="description" content="一个B站UP主的教程，后半部分涉及到很多urp源码修改暂时还看不懂，只记录了前半部的内容
+视频地址：https://www.bilibili.com/video/BV1AL4y1b75c/?spm_id_from=333.999.0.0&amp;vd_source=4c7b49a270731b8ec068bfb156c5af6a
+资源优化
+Unity资源检测工具
+Asset Checker
+用于本地资源检测，帮助开发者尽早发现资源文件中存在的问题
+
+支持所有版本的Unity项目
+不依赖Unity Editor，无需安装绿色运行
+检测速度极快，可在UPR中查阅检测结果
+支持命令行模式，可与CI/CD工具轻松集成，实现自动化检测
+规则库持续更新
+支持AssetBundle冗余检测
+支持静态代码分析
+Asset Checker 官方教程地址（包含工具下载地址）
+
+Audio导入设置检查与优化
+
+根据平台选择合理的音频设置，原始音频资源尽量采用未压缩WAV格式
+移动平台对音乐音效统一采用单通道设置（Force to Mono）,并将音乐采样频率设置为22050Hz
+一般勾选了强制单声道之后也要勾选Normalize选项，这样引擎内部会选择最合适的方式来强行转换单声道。
+移动平台大多数声音尽量采用Vorbis压缩设置，IOS平台或不打算循环的声音可以选择MP3格式，对于简短、常用的音效，可以采用解码速度快的ADPCM格式（PCM为未压缩格式）
+音频片段加载类型说明
+
+简短音效导入后小于200kb，采用Decompress on Load模式
+对于复杂音效，大小大于200kb，长度超过5秒的音效采用Compressed In Memory模式
+对于长度较长的音效或背景音乐则采用Streaming模式，虽然会有CPU额外开销，但节省内存并且加载不卡顿
+
+当实现静音功能时，不要简单的将音量设置为0，应销毁音频（AudioSource）组件，将音频从内存中卸载。
+优化前后真机对比（Android）
+Apk包体由原来的560.7M下降到544.6M
+Audio部分的内存由76.1M下降到6.9M
+CPU开销由2.5%左右上升到5%左右，这是由于部分音频资源才用了Streaming模式加载
+
+Model导入设置检查与优化
+DCC中模型导出
+Unity 支持多种标准和专有模型文件格式（DCC）。Unity 内部使用 .fbx 文件格式作为其导入链。最佳做法尽可能使用 .fbx 文件格式，并且不应在生产中使用专有文件格式。
+优化原始导入模型文件，删除不需要的数据
+
+统一单位
+导出的网格必须是多边形拓扑网格，不能是贝塞尔曲线、样条曲线、NURBS、NURMS、细分曲面等
+烘培Deformers,在导出之前，确保变形体被烘培到网格模型上，如骨骼形变烘培到蒙皮权重上
+不建议模型使用到的纹理随模型导出
+如果你需要导入blend shape normals，必须要指定光滑组smooth groups
+DCC导出面板设置, 不建议携带场景信息导出，如不建议导出摄像机、灯光、材质等信息，因为这些的信息与Unity内默认都不同。除非你自己为某DCC做过自定义导出插件。
+
+Unity模型导入流程
+
+原始模型文件对性能的影响点
+
+最小化面数，不要使用微三角形，分布尽量均匀
+合理的网络拓扑和平滑组
+尽量少的使用材质个数
+尽可能少的使用蒙皮网格
+尽可能少的骨骼数量
+FK与IK节点没分离，IK节点没删除
+
+模型优化
+
+尽可能的将网格合并到一起，（）
+尽可能使用共享材质
+不要使用网格碰撞体
+不必要不要开启网格读写
+使用合理的LOD级别
+Skin Weights受骨骼影响个过多
+合理压缩网格
+不需要rigs和BlendShapes尽量关闭
+如果可能，禁用法线或切线
+多套模型
+
+资源检查报告
+FBX部分问题解读">
+<meta name="author" content="LiuYingbo">
+<link rel="canonical" href="http://localhost:1313/posts/unity/unity-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.a29c24210eb31d9ce56f669c66a35c9c51b17376b7764e336a49af7dec914cf0.css" integrity="sha256-opwkIQ6zHZzlb2acZqNcnFGxc3a3dk4zakmvfeyRTPA=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/unity/unity-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="LiuYingbo Blog (Alt + H)">LiuYingbo Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/categories/" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives/" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">Home</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Unity-性能优化
+    </h1>
+    <div class="post-meta"><span title='2023-03-05 21:31:20 +0800 CST'>March 5, 2023</span>&nbsp;·&nbsp;<span>9 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span>
+
+</div>
+  </header> 
+<figure class="entry-cover">
+        <img loading="eager" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303052044934.jpg" alt="">
+        
+</figure><div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e8%b5%84%e6%ba%90%e4%bc%98%e5%8c%96" aria-label="资源优化">资源优化</a><ul>
+                        
+                <li>
+                    <a href="#unity%e8%b5%84%e6%ba%90%e6%a3%80%e6%b5%8b%e5%b7%a5%e5%85%b7" aria-label="Unity资源检测工具">Unity资源检测工具</a><ul>
+                        
+                <li>
+                    <a href="#asset-checker" aria-label="Asset Checker">Asset Checker</a></li></ul>
+                </li>
+                <li>
+                    <a href="#audio%e5%af%bc%e5%85%a5%e8%ae%be%e7%bd%ae%e6%a3%80%e6%9f%a5%e4%b8%8e%e4%bc%98%e5%8c%96" aria-label="Audio导入设置检查与优化">Audio导入设置检查与优化</a><ul>
+                        
+                <li>
+                    <a href="#%e4%bc%98%e5%8c%96%e5%89%8d%e5%90%8e%e7%9c%9f%e6%9c%ba%e5%af%b9%e6%af%94android" aria-label="优化前后真机对比（Android）">优化前后真机对比（Android）</a></li></ul>
+                </li>
+                <li>
+                    <a href="#model%e5%af%bc%e5%85%a5%e8%ae%be%e7%bd%ae%e6%a3%80%e6%9f%a5%e4%b8%8e%e4%bc%98%e5%8c%96" aria-label="Model导入设置检查与优化">Model导入设置检查与优化</a><ul>
+                        
+                <li>
+                    <a href="#dcc%e4%b8%ad%e6%a8%a1%e5%9e%8b%e5%af%bc%e5%87%ba" aria-label="DCC中模型导出">DCC中模型导出</a></li>
+                <li>
+                    <a href="#unity%e6%a8%a1%e5%9e%8b%e5%af%bc%e5%85%a5%e6%b5%81%e7%a8%8b" aria-label="Unity模型导入流程">Unity模型导入流程</a></li>
+                <li>
+                    <a href="#%e5%8e%9f%e5%a7%8b%e6%a8%a1%e5%9e%8b%e6%96%87%e4%bb%b6%e5%af%b9%e6%80%a7%e8%83%bd%e7%9a%84%e5%bd%b1%e5%93%8d%e7%82%b9" aria-label="原始模型文件对性能的影响点">原始模型文件对性能的影响点</a></li>
+                <li>
+                    <a href="#%e6%a8%a1%e5%9e%8b%e4%bc%98%e5%8c%96" aria-label="模型优化">模型优化</a></li>
+                <li>
+                    <a href="#%e8%b5%84%e6%ba%90%e6%a3%80%e6%9f%a5%e6%8a%a5%e5%91%8a" aria-label="资源检查报告">资源检查报告</a></li></ul>
+                </li>
+                <li>
+                    <a href="#texture%e5%9f%ba%e7%a1%80%e6%a6%82%e5%bf%b5" aria-label="Texture基础概念">Texture基础概念</a><ul>
+                        
+                <li>
+                    <a href="#%e7%ba%b9%e7%90%86%e7%b1%bb%e5%9e%8b" aria-label="纹理类型">纹理类型</a></li>
+                <li>
+                    <a href="#%e7%ba%b9%e7%90%86%e5%a4%a7%e5%b0%8f" aria-label="纹理大小">纹理大小</a></li>
+                <li>
+                    <a href="#%e7%ba%b9%e7%90%86%e9%a2%9c%e8%89%b2%e7%a9%ba%e9%97%b4" aria-label="纹理颜色空间">纹理颜色空间</a></li>
+                <li>
+                    <a href="#%e7%ba%b9%e7%90%86%e5%8e%8b%e7%bc%a9" aria-label="纹理压缩">纹理压缩</a></li>
+                <li>
+                    <a href="#%e7%ba%b9%e7%90%86%e5%9b%be%e9%9b%86" aria-label="纹理图集">纹理图集</a></li>
+                <li>
+                    <a href="#%e7%ba%b9%e7%90%86%e8%bf%87%e6%bb%a4" aria-label="纹理过滤">纹理过滤</a></li>
+                <li>
+                    <a href="#%e7%ba%b9%e7%90%86mipmap" aria-label="纹理Mipmap">纹理Mipmap</a></li></ul>
+                </li>
+                <li>
+                    <a href="#texture%e5%af%bc%e5%85%a5%e8%ae%be%e7%bd%ae%e6%a3%80%e6%9f%a5%e4%b8%8e%e4%bc%98%e5%8c%96" aria-label="Texture导入设置检查与优化">Texture导入设置检查与优化</a><ul>
+                        
+                <li>
+                    <a href="#texture-shape" aria-label="Texture Shape">Texture Shape</a></li>
+                <li>
+                    <a href="#alpha-source" aria-label="Alpha Source">Alpha Source</a></li>
+                <li>
+                    <a href="#alpha-is-transparency" aria-label="Alpha Is Transparency">Alpha Is Transparency</a></li>
+                <li>
+                    <a href="#ignore-png-file-gamma" aria-label="Ignore Png file gamma">Ignore Png file gamma</a></li>
+                <li>
+                    <a href="#readwrite" aria-label="Read/Write">Read/Write</a></li>
+                <li>
+                    <a href="#generate-mip-maps" aria-label="Generate Mip Maps">Generate Mip Maps</a></li>
+                <li>
+                    <a href="#%e9%80%89%e6%8b%a9%e5%90%88%e9%80%82%e7%ba%b9%e7%90%86%e8%bf%87%e6%bb%a4%e7%9a%84%e6%9c%80%e4%bd%b3%e7%bb%8f%e9%aa%8c" aria-label="选择合适纹理过滤的最佳经验：">选择合适纹理过滤的最佳经验：</a></li>
+                <li>
+                    <a href="#%e5%85%b6%e4%bb%96%e5%8f%af%e8%83%bd%e6%9c%89%e9%97%ae%e9%a2%98%e7%9a%84%e7%ba%b9%e7%90%86%e7%b1%bb%e5%9e%8b" aria-label="其他可能有问题的纹理类型">其他可能有问题的纹理类型</a></li></ul>
+                </li>
+                <li>
+                    <a href="#animation%e5%af%bc%e5%85%a5%e8%ae%be%e7%bd%ae%e6%a3%80%e6%9f%a5%e4%b8%8e%e4%bc%98%e5%8c%96" aria-label="Animation导入设置检查与优化">Animation导入设置检查与优化</a><ul>
+                        
+                <li>
+                    <a href="#rig%e6%a0%87%e7%ad%be%e9%a1%b5" aria-label="Rig标签页">Rig标签页</a><ul>
+                        
+                <li>
+                    <a href="#animation-type" aria-label="Animation Type">Animation Type</a><ul>
+                        
+                <li>
+                    <a href="#%e9%80%89%e6%8b%a9%e5%8e%9f%e5%88%99" aria-label="选择原则：">选择原则：</a></li></ul>
+                </li>
+                <li>
+                    <a href="#skin-weights" aria-label="Skin Weights">Skin Weights</a></li>
+                <li>
+                    <a href="#optimize-bones" aria-label="Optimize Bones">Optimize Bones</a></li>
+                <li>
+                    <a href="#optimize-game-objects" aria-label="Optimize Game Objects">Optimize Game Objects</a></li></ul>
+                </li>
+                <li>
+                    <a href="#animation%e6%a0%87%e7%ad%be%e9%a1%b5" aria-label="Animation标签页">Animation标签页</a><ul>
+                        
+                <li>
+                    <a href="#resmple-curves" aria-label="Resmple Curves">Resmple Curves</a></li>
+                <li>
+                    <a href="#animcompression" aria-label="Anim.Compression">Anim.Compression</a></li>
+                <li>
+                    <a href="#animation-custom-properties" aria-label="Animation Custom Properties">Animation Custom Properties</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%8a%a8%e7%94%bb%e6%9b%b2%e7%ba%bf%e6%95%b0%e6%8d%ae%e4%bf%a1%e6%81%af" aria-label="动画曲线数据信息">动画曲线数据信息</a></li>
+                <li>
+                    <a href="#%e5%8a%a8%e7%94%bb%e6%96%87%e4%bb%b6%e5%af%bc%e5%85%a5%e8%ae%be%e7%bd%ae%e4%bc%98%e5%8c%96%e5%90%8e%e4%bf%a1%e6%81%af%e6%9f%a5%e7%9c%8b%e5%8e%9f%e5%88%99" aria-label="动画文件导入设置优化后信息查看原则">动画文件导入设置优化后信息查看原则</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%b7%a5%e7%a8%8b%e7%9b%ae%e5%bd%95%e4%b8%8eassets%e7%9b%ae%e5%bd%95%e8%ae%be%e7%bd%ae" aria-label="工程目录与Assets目录设置">工程目录与Assets目录设置</a><ul>
+                        
+                <li>
+                    <a href="#unity%e5%b7%a5%e7%a8%8b%e7%9b%ae%e5%bd%95%e7%bb%93%e6%9e%84%e5%8f%8a%e7%94%a8%e9%80%94" aria-label="Unity工程目录结构及用途">Unity工程目录结构及用途</a></li>
+                <li>
+                    <a href="#unity-assets%e7%9b%ae%e5%bd%95%e4%b8%ad%e7%9a%84%e7%89%b9%e6%ae%8a%e6%96%87%e4%bb%b6%e5%a4%b9%e5%8f%8a%e7%94%a8%e9%80%94" aria-label="Unity Assets目录中的特殊文件夹及用途">Unity Assets目录中的特殊文件夹及用途</a></li>
+                <li>
+                    <a href="#assets%e7%9b%ae%e5%bd%95%e7%bb%93%e6%9e%84%e8%ae%be%e8%ae%a1" aria-label="Assets目录结构设计">Assets目录结构设计</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e8%b5%84%e6%ba%90%e5%af%bc%e5%85%a5%e5%b7%a5%e4%bd%9c%e6%b5%81" aria-label="资源导入工作流">资源导入工作流</a><ul>
+                        
+                <li>
+                    <a href="#%e8%b5%84%e6%ba%90%e5%af%bc%e5%85%a5%e5%b7%a5%e4%bd%9c%e6%b5%81%e7%9a%84%e4%b8%89%e7%a7%8d%e6%96%b9%e6%a1%88" aria-label="资源导入工作流的三种方案">资源导入工作流的三种方案</a><ul>
+                        
+                <li>
+                    <a href="#1-%e6%89%8b%e5%8a%a8%e7%bc%96%e5%86%99%e5%b7%a5%e5%85%b7" aria-label="1. 手动编写工具">1. 手动编写工具</a></li>
+                <li>
+                    <a href="#2-%e5%88%a9%e7%94%a8presets%e5%8a%9f%e8%83%bd" aria-label="2. 利用Presets功能">2. 利用Presets功能</a></li>
+                <li>
+                    <a href="#3-%e5%88%a9%e7%94%a8assetgraph%e5%b7%a5%e5%85%b7" aria-label="3. 利用AssetGraph工具">3. 利用AssetGraph工具</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#%e7%bc%96%e8%be%91%e5%99%a8%e8%b5%84%e6%ba%90%e4%bc%98%e5%8c%96" aria-label="编辑器资源优化">编辑器资源优化</a><ul>
+                        
+                <li>
+                    <a href="#%e5%9c%ba%e6%99%af" aria-label="场景">场景</a></li>
+                <li>
+                    <a href="#%e9%a2%84%e5%88%b6%e4%bd%93" aria-label="预制体">预制体</a></li></ul>
+                </li>
+                <li>
+                    <a href="#ugui" aria-label="UGUI">UGUI</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#unity-ui%e6%80%a7%e8%83%bd%e7%9a%84%e5%9b%9b%e7%b1%bb%e9%97%ae%e9%a2%98" aria-label="Unity UI性能的四类问题">Unity UI性能的四类问题</a></li>
+                <li>
+                    <a href="#canvas%e7%94%bb%e5%b8%83" aria-label="Canvas画布">Canvas画布</a></li>
+                <li>
+                    <a href="#canvas-re-batch%e8%bf%87%e7%a8%8b" aria-label="Canvas Re-batch过程">Canvas Re-batch过程</a></li>
+                <li>
+                    <a href="#ugui%e6%b8%b2%e6%9f%93%e7%bb%86%e8%8a%82" aria-label="UGUI渲染细节">UGUI渲染细节</a></li>
+                <li>
+                    <a href="#re-build%e8%bf%87%e7%a8%8b" aria-label="Re-Build过程">Re-Build过程</a></li>
+                <li>
+                    <a href="#%e4%bd%bf%e7%94%a8canvas%e7%9a%84%e5%9f%ba%e6%9c%ac%e5%87%86%e5%88%99" aria-label="使用Canvas的基本准则：">使用Canvas的基本准则：</a></li>
+                <li>
+                    <a href="#ugui%e5%b0%84%e7%ba%bfraycaster%e4%bc%98%e5%8c%96" aria-label="UGUI射线（Raycaster）优化：">UGUI射线（Raycaster）优化：</a></li>
+                <li>
+                    <a href="#%e6%bb%9a%e5%8a%a8%e8%a7%86%e5%9b%bescroll-view%e4%bc%98%e5%8c%96" aria-label="滚动视图Scroll View优化">滚动视图Scroll View优化</a></li>
+                <li>
+                    <a href="#ui%e5%ad%97%e4%bd%93" aria-label="UI字体">UI字体</a></li></ul>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#%e7%89%a9%e7%90%86" aria-label="物理">物理</a><ul>
+                        
+                <li>
+                    <a href="#unity%e4%b8%ad%e7%9a%84%e7%89%a9%e7%90%86%e8%a7%a3%e5%86%b3%e6%96%b9%e6%a1%88" aria-label="Unity中的物理解决方案">Unity中的物理解决方案</a></li>
+                <li>
+                    <a href="#unity%e4%b8%ad%e7%9a%84%e7%89%a9%e7%90%86%e7%bb%84%e4%bb%b6collider%e9%83%a8%e5%88%86%e7%9a%84%e4%bc%98%e5%8c%96" aria-label="Unity中的物理组件Collider部分的优化">Unity中的物理组件Collider部分的优化</a></li>
+                <li>
+                    <a href="#unity%e4%b8%ad%e7%9a%84%e7%89%a9%e7%90%86%e7%bb%84%e4%bb%b6collider%e9%83%a8%e5%88%86%e7%9a%84%e4%bc%98%e5%8c%96-1" aria-label="Unity中的物理组件Collider部分的优化">Unity中的物理组件Collider部分的优化</a></li>
+                <li>
+                    <a href="#unity%e4%b8%ad%e7%9a%84%e7%89%a9%e7%90%86%e7%bb%84%e4%bb%b6rigidbody%e9%83%a8%e5%88%86%e7%9a%84%e4%bc%98%e5%8c%96" aria-label="Unity中的物理组件RigidBody部分的优化">Unity中的物理组件RigidBody部分的优化</a></li>
+                <li>
+                    <a href="#unity%e4%b8%ad%e7%9a%84raycast%e4%b8%8eoverlap%e9%83%a8%e5%88%86%e7%9a%84%e4%bc%98%e5%8c%96" aria-label="Unity中的RayCast与Overlap部分的优化">Unity中的RayCast与Overlap部分的优化</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%8a%a8%e7%94%bb" aria-label="动画">动画</a><ul>
+                        
+                <li>
+                    <a href="#animation%e7%9a%84%e4%b8%80%e4%ba%9b%e7%bb%86%e8%8a%82" aria-label="Animation的一些细节">Animation的一些细节</a></li>
+                <li>
+                    <a href="#animator%e7%9a%84%e4%b8%80%e4%ba%9b%e7%bb%86%e8%8a%82" aria-label="Animator的一些细节">Animator的一些细节</a></li>
+                <li>
+                    <a href="#internal-animation-update" aria-label="Internal Animation Update">Internal Animation Update</a></li>
+                <li>
+                    <a href="#animator-vs-animation" aria-label="Animator VS Animation">Animator VS Animation</a></li>
+                <li>
+                    <a href="#playable-api-vs-animator" aria-label="Playable API VS Animator">Playable API VS Animator</a><ul>
+                        
+                <li>
+                    <a href="#playable-api%e4%bc%98%e7%82%b9" aria-label="Playable API优点">Playable API优点</a></li>
+                <li>
+                    <a href="#playable-api%e7%bc%ba%e7%82%b9" aria-label="Playable API缺点">Playable API缺点</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e8%a7%a3%e5%86%b3%e6%96%b9%e6%a1%88%e9%80%89%e6%8b%a9" aria-label="解决方案选择">解决方案选择</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96%e4%b9%8b%e9%81%93" aria-label="性能优化之道">性能优化之道</a><ul>
+                        
+                <li>
+                    <a href="#%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96%e9%97%ae%e9%a2%98%e7%9a%84%e6%9c%ac%e8%b4%a8" aria-label="性能优化问题的本质">性能优化问题的本质</a></li>
+                <li>
+                    <a href="#%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96%e7%9a%84%e6%b5%81%e7%a8%8b" aria-label="性能优化的流程">性能优化的流程</a></li>
+                <li>
+                    <a href="#%e5%bd%b1%e5%93%8d%e6%80%a7%e8%83%bd%e7%9a%84%e5%9b%9b%e5%a4%a7%e7%b1%bb%e9%97%ae%e9%a2%98" aria-label="影响性能的四大类问题">影响性能的四大类问题</a></li>
+                <li>
+                    <a href="#%e9%9a%90%e8%97%8f%e7%9a%84%e5%87%a0%e7%b1%bb%e5%b0%8f%e9%97%ae%e9%a2%98" aria-label="隐藏的几类小问题">隐藏的几类小问题</a></li>
+                <li>
+                    <a href="#%e6%80%a7%e8%83%bd%e9%97%ae%e9%a2%98%e5%8f%af%e8%83%bd%e7%9a%84%e6%83%85%e5%86%b5" aria-label="性能问题可能的情况">性能问题可能的情况</a></li>
+                <li>
+                    <a href="#%e7%bb%8f%e5%b8%b8%e7%94%a8%e7%9a%84%e4%bc%98%e5%8c%96%e6%80%9d%e8%b7%af" aria-label="经常用的优化思路">经常用的优化思路</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96%e5%ae%9e%e8%b7%b5" aria-label="性能优化实践">性能优化实践</a><ul>
+                        
+                <li>
+                    <a href="#%e7%a7%bb%e5%8a%a8%e5%b9%b3%e5%8f%b0%e4%bc%98%e5%8c%96%e9%a1%ba%e5%ba%8f" aria-label="移动平台优化顺序">移动平台优化顺序</a></li>
+                <li>
+                    <a href="#%e5%b8%b8%e7%94%a8%e6%80%a7%e8%83%bd%e6%a3%80%e6%b5%8b" aria-label="常用性能检测">常用性能检测</a><ul>
+                        
+                <li>
+                    <a href="#%e6%80%a7%e8%83%bd%e6%a3%80%e6%b5%8b%e5%b7%a5%e5%85%b7" aria-label="性能检测工具">性能检测工具</a><ul>
+                        
+                <li>
+                    <a href="#unity-profiler" aria-label="Unity Profiler">Unity Profiler</a></li>
+                <li>
+                    <a href="#framedeubgger" aria-label="FrameDeubgger">FrameDeubgger</a></li>
+                <li>
+                    <a href="#upr" aria-label="UPR">UPR</a></li>
+                <li>
+                    <a href="#xoce%e4%b8%admetal-capture" aria-label="Xoce中Metal Capture">Xoce中Metal Capture</a><ul>
+                        
+                <li>
+                    <a href="#enabling-frame-capture" aria-label="Enabling Frame Capture">Enabling Frame Capture</a><ul>
+                        
+                <li>
+                    <a href="#navigate-to-the-metal-scheme-settings" aria-label="Navigate to the Metal Scheme Settings">Navigate to the Metal Scheme Settings</a></li>
+                <li>
+                    <a href="#choose-a-gpu-frame-capture-option" aria-label="Choose a GPU Frame Capture Option">Choose a GPU Frame Capture Option</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%b8%b8%e6%88%8f%e6%80%a7%e8%83%bd%e8%b0%83%e8%af%95%e5%b7%a5%e5%85%b7%e6%b1%87%e6%80%bb" aria-label="游戏性能调试工具汇总">游戏性能调试工具汇总</a><ul>
+                        
+                <li>
+                    <a href="#pc%e9%80%9a%e7%94%a8%e6%80%a7%e8%83%bd%e5%88%86%e6%9e%90%e5%b7%a5%e5%85%b7%e6%9f%90%e4%ba%9b%e9%9c%80%e8%a6%81%e7%89%b9%e6%ae%8a%e7%a1%ac%e4%bb%b6%e6%94%af%e6%8c%81" aria-label="PC通用性能分析工具（某些需要特殊硬件支持）">PC通用性能分析工具（某些需要特殊硬件支持）</a></li>
+                <li>
+                    <a href="#%e5%b9%b3%e5%8f%b0%e6%80%a7%e8%83%bd%e5%88%86%e6%9e%90%e5%b7%a5%e5%85%b7%e9%9c%80%e8%a6%81%e7%89%b9%e6%ae%8a%e6%93%8d%e4%bd%9c%e7%b3%bb%e7%bb%9f%e6%b5%8f%e8%a7%88%e5%99%a8%e6%88%96%e7%a1%ac%e4%bb%b6%e6%94%af%e6%8c%81" aria-label="平台性能分析工具（需要特殊操作系统、浏览器或硬件支持）">平台性能分析工具（需要特殊操作系统、浏览器或硬件支持）</a></li></ul>
+                </li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%b8%b2%e6%9f%93%e4%bc%98%e5%8c%96" aria-label="渲染优化">渲染优化</a><ul>
+                        
+                <li>
+                    <a href="#ssao%e4%bc%98%e5%8c%96" aria-label="SSAO优化">SSAO优化</a><ul>
+                        
+                <li>
+                    <a href="#%e4%bb%80%e4%b9%88%e6%98%afssao" aria-label="什么是SSAO">什么是SSAO</a></li>
+                <li>
+                    <a href="#unity%e4%b8%ad%e7%9a%84ssao%e8%ae%be%e7%bd%ae" aria-label="Unity中的SSAO设置">Unity中的SSAO设置</a></li>
+                <li>
+                    <a href="#ssao%e8%bf%9b%e4%b8%80%e6%ad%a5%e4%bc%98%e5%8c%96" aria-label="SSAO进一步优化">SSAO进一步优化</a></li></ul>
+                </li>
+                <li>
+                    <a href="#aa%e5%8f%8d%e8%b5%b0%e6%a0%b7%e4%bc%98%e5%8c%96" aria-label="AA反走样优化">AA反走样优化</a><ul>
+                        
+                <li>
+                    <a href="#%e4%bb%80%e4%b9%88%e6%98%afaa" aria-label="什么是AA">什么是AA</a></li>
+                <li>
+                    <a href="#%e5%8f%8d%e8%b5%b0%e6%a0%b7%e6%96%b9%e6%a1%88%e7%9a%84%e5%8f%91%e5%b1%95" aria-label="反走样方案的发展">反走样方案的发展</a></li>
+                <li>
+                    <a href="#uniy%e4%b8%ad%e7%9a%84aa%e8%ae%be%e7%bd%ae" aria-label="Uniy中的AA设置">Uniy中的AA设置</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%90%8e%e5%a4%84%e7%90%86%e4%bc%98%e5%8c%96" aria-label="后处理优化">后处理优化</a><ul>
+                        
+                <li>
+                    <a href="#%e4%bb%80%e4%b9%88%e6%98%af%e5%90%8e%e5%a4%84%e7%90%86" aria-label="什么是后处理">什么是后处理</a></li>
+                <li>
+                    <a href="#unity%e4%b8%ad%e7%9a%84%e5%90%8e%e5%a4%84%e7%90%86%e8%ae%be%e7%bd%ae" aria-label="Unity中的后处理设置">Unity中的后处理设置</a></li>
+                <li>
+                    <a href="#unity-urp%e4%b8%8b%e6%94%af%e6%8c%81%e7%9a%84%e5%90%8e%e5%a4%84%e7%90%86%e6%95%88%e6%9e%9c%e5%88%86%e7%b1%bb" aria-label="Unity URP下支持的后处理效果分类">Unity URP下支持的后处理效果分类</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%b8%b2%e6%9f%93%e6%8f%90%e5%89%8d%e4%bc%98%e5%8c%96" aria-label="渲染提前优化">渲染提前优化</a><ul>
+                        
+                <li>
+                    <a href="#culling-%e5%89%94%e9%99%a4" aria-label="Culling-剔除">Culling-剔除</a><ul>
+                        
+                <li>
+                    <a href="#%e5%93%aa%e4%ba%9b%e6%98%af%e9%9c%80%e8%a6%81%e5%89%94%e9%99%a4%e7%9a%84%e5%86%85%e5%ae%b9" aria-label="哪些是需要剔除的内容">哪些是需要剔除的内容</a></li>
+                <li>
+                    <a href="#unity%e4%b8%ad%e7%9a%84%e5%89%94%e9%99%a4" aria-label="Unity中的剔除">Unity中的剔除</a></li>
+                <li>
+                    <a href="#%e7%94%a8%e6%88%b7%e6%8a%a4%e5%b1%95%e5%89%94%e9%99%a4" aria-label="用户护展剔除">用户护展剔除</a></li></ul>
+                </li>
+                <li>
+                    <a href="#simplization-%e7%ae%80%e5%8c%96" aria-label="Simplization-简化">Simplization-简化</a><ul>
+                        
+                <li>
+                    <a href="#%e5%93%aa%e4%ba%9b%e6%98%af%e9%9c%80%e8%a6%81%e7%ae%80%e5%8c%96%e7%9a%84%e5%86%85%e5%ae%b9" aria-label="哪些是需要简化的内容">哪些是需要简化的内容</a></li>
+                <li>
+                    <a href="#unity%e4%b8%8b%e7%9a%84%e7%ae%80%e5%8c%96" aria-label="Unity下的简化">Unity下的简化</a></li>
+                <li>
+                    <a href="#%e7%94%a8%e6%88%b7%e6%89%a9%e5%b1%95%e7%ae%80%e5%8c%96" aria-label="用户扩展简化">用户扩展简化</a></li></ul>
+                </li>
+                <li>
+                    <a href="#batching-%e5%90%88%e6%89%b9" aria-label="Batching-合批">Batching-合批</a><ul>
+                        
+                <li>
+                    <a href="#%e5%93%aa%e4%ba%9b%e5%86%85%e5%ae%b9%e9%9c%80%e8%a6%81batching" aria-label="哪些内容需要Batching">哪些内容需要Batching</a><ul>
+                        
+                <li>
+                    <a href="#%e8%b5%84%e6%ba%90%e7%9a%84batching" aria-label="资源的Batching">资源的Batching</a></li></ul>
+                </li>
+                <li>
+                    <a href="#batching%e4%bc%98%e5%8c%96%e9%a1%ba%e5%ba%8f" aria-label="Batching优化顺序">Batching优化顺序</a></li>
+                <li>
+                    <a href="#batching%e4%bd%bf%e7%94%a8%e9%99%90%e5%88%b6" aria-label="Batching使用限制">Batching使用限制</a><ul>
+                        
+                <li>
+                    <a href="#%e8%b5%84%e6%ba%90batching%e9%99%90%e5%88%b6" aria-label="资源Batching限制">资源Batching限制</a></li>
+                <li>
+                    <a href="#gpu-instancing%e9%99%90%e5%88%b6" aria-label="GPU Instancing限制">GPU Instancing限制</a></li>
+                <li>
+                    <a href="#srp-batching%e9%99%90%e5%88%b6" aria-label="SRP Batching限制">SRP Batching限制</a></li></ul>
+                </li>
+                <li>
+                    <a href="#batching-%e5%a4%b1%e8%b4%a5%e4%bf%a1%e6%81%af%e4%b8%8e%e5%8e%9f%e5%9b%a0" aria-label="Batching 失败信息与原因">Batching 失败信息与原因</a></li></ul>
+                </li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%85%b6%e4%bb%96%e5%86%85%e5%ae%b9" aria-label="其他内容">其他内容</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>一个B站UP主的教程，后半部分涉及到很多urp源码修改暂时还看不懂，只记录了前半部的内容</p>
+<p>视频地址：https://www.bilibili.com/video/BV1AL4y1b75c/?spm_id_from=333.999.0.0&amp;vd_source=4c7b49a270731b8ec068bfb156c5af6a</p>
+<h1 id="资源优化">资源优化<a hidden class="anchor" aria-hidden="true" href="#资源优化">#</a></h1>
+<h2 id="unity资源检测工具">Unity资源检测工具<a hidden class="anchor" aria-hidden="true" href="#unity资源检测工具">#</a></h2>
+<h3 id="asset-checker">Asset Checker<a hidden class="anchor" aria-hidden="true" href="#asset-checker">#</a></h3>
+<p><strong>用于本地资源检测，帮助开发者尽早发现资源文件中存在的问题</strong></p>
+<ul>
+<li>支持所有版本的Unity项目</li>
+<li>不依赖Unity Editor，无需安装绿色运行</li>
+<li>检测速度极快，可在UPR中查阅检测结果</li>
+<li>支持命令行模式，可与CI/CD工具轻松集成，实现自动化检测</li>
+<li>规则库持续更新</li>
+<li>支持AssetBundle冗余检测</li>
+<li>支持静态代码分析
+<a href="https://upr.unity.cn/instructions/assetchecker#UserManual">Asset Checker 官方教程地址（包含工具下载地址）</a></li>
+</ul>
+<h2 id="audio导入设置检查与优化">Audio导入设置检查与优化<a hidden class="anchor" aria-hidden="true" href="#audio导入设置检查与优化">#</a></h2>
+<p><img alt="image-20230305213552090" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303052135123.png"></p>
+<p>根据平台选择合理的音频设置，原始音频资源尽量采用未压缩WAV格式</p>
+<p>移动平台对音乐音效统一采用单通道设置（Force to Mono）,并将音乐采样频率设置为22050Hz</p>
+<p>一般勾选了强制单声道之后也要勾选Normalize选项，这样引擎内部会选择最合适的方式来强行转换单声道。</p>
+<p>移动平台大多数声音尽量采用Vorbis压缩设置，IOS平台或不打算循环的声音可以选择MP3格式，对于简短、常用的音效，可以采用解码速度快的ADPCM格式（PCM为未压缩格式）</p>
+<p>音频片段加载类型说明</p>
+<ul>
+<li>简短音效导入后小于200kb，采用Decompress on Load模式</li>
+<li>对于复杂音效，大小大于200kb，长度超过5秒的音效采用Compressed In Memory模式</li>
+<li>对于长度较长的音效或背景音乐则采用Streaming模式，虽然会有CPU额外开销，但节省内存并且加载不卡顿</li>
+</ul>
+<p>当实现静音功能时，不要简单的将音量设置为0，应销毁音频（AudioSource）组件，将音频从内存中卸载。</p>
+<h3 id="优化前后真机对比android">优化前后真机对比（Android）<a hidden class="anchor" aria-hidden="true" href="#优化前后真机对比android">#</a></h3>
+<p>Apk包体由原来的560.7M下降到544.6M</p>
+<p>Audio部分的内存由76.1M下降到6.9M</p>
+<p>CPU开销由2.5%左右上升到5%左右，这是由于部分音频资源才用了Streaming模式加载</p>
+<p><img alt="第壹节 Audio导入设置检查与优化" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303052134075.png"></p>
+<h2 id="model导入设置检查与优化">Model导入设置检查与优化<a hidden class="anchor" aria-hidden="true" href="#model导入设置检查与优化">#</a></h2>
+<h3 id="dcc中模型导出">DCC中模型导出<a hidden class="anchor" aria-hidden="true" href="#dcc中模型导出">#</a></h3>
+<p>Unity 支持多种标准和专有模型文件格式（DCC）。Unity 内部使用 .fbx 文件格式作为其导入链。最佳做法尽可能使用 .fbx 文件格式，并且不应在生产中使用专有文件格式。</p>
+<p>优化原始导入模型文件，删除不需要的数据</p>
+<ul>
+<li>统一单位</li>
+<li>导出的网格必须是多边形拓扑网格，不能是贝塞尔曲线、样条曲线、NURBS、NURMS、细分曲面等</li>
+<li>烘培Deformers,在导出之前，确保变形体被烘培到网格模型上，如骨骼形变烘培到蒙皮权重上</li>
+<li>不建议模型使用到的纹理随模型导出</li>
+<li>如果你需要导入blend shape normals，必须要指定光滑组smooth groups</li>
+<li>DCC导出面板设置, 不建议携带场景信息导出，如不建议导出摄像机、灯光、材质等信息，因为这些的信息与Unity内默认都不同。除非你自己为某DCC做过自定义导出插件。</li>
+</ul>
+<h3 id="unity模型导入流程">Unity模型导入流程<a hidden class="anchor" aria-hidden="true" href="#unity模型导入流程">#</a></h3>
+<p><img alt="2" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303081151420.png"></p>
+<h3 id="原始模型文件对性能的影响点">原始模型文件对性能的影响点<a hidden class="anchor" aria-hidden="true" href="#原始模型文件对性能的影响点">#</a></h3>
+<ul>
+<li>最小化面数，不要使用微三角形，分布尽量均匀</li>
+<li>合理的网络拓扑和平滑组</li>
+<li>尽量少的使用材质个数</li>
+<li>尽可能少的使用蒙皮网格</li>
+<li>尽可能少的骨骼数量</li>
+<li>FK与IK节点没分离，IK节点没删除</li>
+</ul>
+<h3 id="模型优化">模型优化<a hidden class="anchor" aria-hidden="true" href="#模型优化">#</a></h3>
+<ul>
+<li>尽可能的将网格合并到一起，（）</li>
+<li>尽可能使用共享材质</li>
+<li>不要使用网格碰撞体</li>
+<li>不必要不要开启网格读写</li>
+<li>使用合理的LOD级别</li>
+<li>Skin Weights受骨骼影响个过多</li>
+<li>合理压缩网格</li>
+<li>不需要rigs和BlendShapes尽量关闭</li>
+<li>如果可能，禁用法线或切线</li>
+<li>多套模型</li>
+</ul>
+<h3 id="资源检查报告">资源检查报告<a hidden class="anchor" aria-hidden="true" href="#资源检查报告">#</a></h3>
+<p>FBX部分问题解读</p>
+<ul>
+<li>其中两项建议与模型动画有关，而测试项目中所有模型资源都不涉及动画，可以将Rig标签下的Animation Type设置为None，并关闭Animation标签下的Import Animations选项，设置Materials标签中的Material Creation Mode为None.</li>
+<li>开启Project Settings——&gt;Player——&gt;Optimization下的Vertex Compression与Optimize Mesh Data选项</li>
+</ul>
+<h2 id="texture基础概念">Texture基础概念<a hidden class="anchor" aria-hidden="true" href="#texture基础概念">#</a></h2>
+<h3 id="纹理类型">纹理类型<a hidden class="anchor" aria-hidden="true" href="#纹理类型">#</a></h3>
+<ul>
+<li>**Default：**默认的纹理类型格式</li>
+<li>**Normal map：**法线贴图，可将颜色通道转换为适合实时法线贴图格式</li>
+<li>**Editor GUI and Legacy GUI：**在编辑器GUI控件上使用纹理请选择此类型</li>
+<li>**Sprite(2D and UI)：**在2D游戏中使用的精灵(Sprite)或UGUI使用的纹理请选择此类型</li>
+<li>**Cursor：**鼠标光标自定义纹理类型</li>
+<li>**Cookie：**用于光照Cookie剪影类型的纹理</li>
+<li>**Lightmap：**光照贴图类型的纹理，编码格式取决于不同的平台</li>
+<li>**Single Channel：**如果原始图片文件只有一个通道，请选择此类型</li>
+</ul>
+<h3 id="纹理大小">纹理大小<a hidden class="anchor" aria-hidden="true" href="#纹理大小">#</a></h3>
+<p>选择合适纹理大小应尽量遵循以下经验：</p>
+<ul>
+<li>不同平台、不同硬件配置选择不同的纹理大小，Unity下可以采用bundle变体设置多套资源、通过Mipmap限制不同平台加载不同level层级的贴图。</li>
+<li>根据纹理用途的不同选择不同的纹理加载方式，如流式纹理加载Texture Streaming、稀疏纹理Sparse Texture、虚拟纹理VirtualTexture等方式。</li>
+<li>不能让美术人员通过增加纹理大小的方式增加细节，可以选择细节贴图DetailMap或增加高反差保留的方式。</li>
+<li>在不降低视觉效果的情况下尽量减小贴图大小，最好的方式是纹理映射的每一个纹素的大小正好符合屏幕上显示像素的大小，如果纹理小了会造成欠采样，纹理显示模糊，如果纹理大了会造成过采样，纹理显示噪点。这一点做到完美平衡很难保障，可以充分利用Unity编辑器下SceneView-&gt;DrawMode-&gt;Mipmap来查看在游戏摄像机视角下哪些纹理过采样，哪些纹理欠采样，进而来调整纹理大小。</li>
+</ul>
+<h3 id="纹理颜色空间">纹理颜色空间<a hidden class="anchor" aria-hidden="true" href="#纹理颜色空间">#</a></h3>
+<p>默认大多数图像处理工具都会使用sRGB颜色空间处理和导出纹理。但如果你的纹理不是用作颜色信息的话，那就不要使用sRGB空间，如金属度贴图、粗糙度贴图、高度图或者法线贴图等。一旦这些纹理使用sRGB空间会造成视觉表现错误。</p>
+<h3 id="纹理压缩">纹理压缩<a hidden class="anchor" aria-hidden="true" href="#纹理压缩">#</a></h3>
+<p>纹理压缩是指图像压缩算法，保持贴图视觉质量的同时，尽量减小纹理数据的大小。默认情况下我们的纹理原始格式采用PNG或TGA这类通用文件格式，但与专用图像格式相比他们访问和采样速度都比较慢，无法通用GPU硬件加速，同时纹理数据量大，占用内存较高。所以在渲染中我们会采用一些硬件支持的纹理压缩格式，如ASTC 、ETC、ETC2、DXT等。</p>
+<p>如下图为未压缩、ETC2、ASTC6x6三种格式文件大小对比，我们可以看到在质量相差不大的情况下ASTC6x6压缩下大小可以减少到接近未压缩的十分之一。</p>
+<p><img alt="image-20230313202342010" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303132023093.png"></p>
+<h3 id="纹理图集">纹理图集<a hidden class="anchor" aria-hidden="true" href="#纹理图集">#</a></h3>
+<p>纹理图集是一系列小纹理图像的集合，</p>
+<ul>
+<li>优点：</li>
+</ul>
+<p>一是采用共同纹理图集的多个静态网格资源可以进行静态合批处理，减少DrawCall调用次数。</p>
+<p>二是纹理图集可以减少碎纹理过多，因为他们打包在一个图集里，通过压缩可以更有效的利用压缩，降低纹理的内存成本和冗余数据。</p>
+<ul>
+<li>缺点</li>
+</ul>
+<p>美术需要合理规划模型，并且要求模型有相同的材质着色器，或需要制作通道图去区分不同材质。制作和修改成本较高。</p>
+<h3 id="纹理过滤">纹理过滤<a hidden class="anchor" aria-hidden="true" href="#纹理过滤">#</a></h3>
+<ul>
+<li>**Nearest Point Filtering：**临近点采样过滤最简单、计算量最小的纹理过滤形式，但在近距离观察时，纹理会呈现块状。</li>
+<li>**Bilinear Filtering：**双线性采样过滤会对临近纹素采样并插值化处理，对纹理像素进行着色。双线性过滤会让像素看上去平滑渐变，但近距离观察时，纹理会变得模糊。</li>
+<li>**Trilinear Filtering：**三线性过滤除与双线性过滤相同部分外，还增加了Mipmap等级之间的采样差值混合，用来平滑过度消除Mipmap之间的明显变化。</li>
+<li>**Anisotropic Filtering：**各向异性过滤可以改善纹理在倾斜角度下的视觉效果，跟适合用于地表纹理。</li>
+</ul>
+<h3 id="纹理mipmap">纹理Mipmap<a hidden class="anchor" aria-hidden="true" href="#纹理mipmap">#</a></h3>
+<ul>
+<li>Mipmap纹理</li>
+</ul>
+<p>逐级减低分辨率来保存纹理副本。相当于生成了纹理LOD，渲染纹理时，将根据像素在屏幕中占据的纹理空间大小选择合适的Mipmap级别进行采样。</p>
+<ul>
+<li>优点：</li>
+</ul>
+<p>GPU不需要在远距离上对对象进行全分辨率纹理采样，因此可以提高纹理采样性能。</p>
+<p>同时也解决了远距离下的过采样导致的噪点问题，提高的纹理渲染质量。</p>
+<ul>
+<li>缺点：</li>
+</ul>
+<p>由于Mipmap纹理要生成低分辨率副本，会造成额外的内存开销。</p>
+<h2 id="texture导入设置检查与优化">Texture导入设置检查与优化<a hidden class="anchor" aria-hidden="true" href="#texture导入设置检查与优化">#</a></h2>
+<p><img alt="4" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303132030008.png"></p>
+<h3 id="texture-shape"><strong>Texture Shape</strong><a hidden class="anchor" aria-hidden="true" href="#texture-shape">#</a></h3>
+<ul>
+<li>2D 最常用的2D纹理，默认选项</li>
+<li>Cube 一般用于天空和与反射探针，默认支持Default、Normal、Single Channel几种类型纹理，可以通过Assets &gt; Create &gt; Legacy &gt; Cubemap生成，也可以通过C#代码 Camera.RenderToCubemap在脚本中生成</li>
+<li>2D Array 2D纹理数组，可以极大提高大量相同大小和格式的纹理访问效率，但需要特定平台支持，可以通过引擎SystemInfo.supports2DArrayTextures 接口运行时查看是否支持。</li>
+<li>3D 通过纹理位图方式存储或传递一些3D结构话数据，一般用于体积仿真，如雾效、噪声、体积数据、距离场、动画数据等信息，可以外部导入，也可运行时程序化创建。</li>
+</ul>
+<h3 id="alpha-source"><strong>Alpha Source</strong><a hidden class="anchor" aria-hidden="true" href="#alpha-source">#</a></h3>
+<p>默认选择Input Texture Alpha就好，如果确定不使用原图中的Alpha通道，可以选择None。另外From Gray Scale我们一般不会选用</p>
+<h3 id="alpha-is-transparency"><strong>Alpha Is Transparency</strong><a hidden class="anchor" aria-hidden="true" href="#alpha-is-transparency">#</a></h3>
+<p>指定Alpha通道是否开启半透明，如果位图像素不关心是否要半透明可以不开启此选项。这样Alpha信息只需要占1bit。节省内存</p>
+<h3 id="ignore-png-file-gamma"><strong>Ignore</strong> <strong>Png</strong> <strong>file gamma</strong><a hidden class="anchor" aria-hidden="true" href="#ignore-png-file-gamma">#</a></h3>
+<p>是否忽略png文件中的gamma属性，这个选项是否忽略取决于png文件中设置不同gamma属性导致的显示不正常，一般原图制作流程没有特殊设置，这个选项一般默认就好。</p>
+<h3 id="readwrite"><strong>Read/Write</strong><a hidden class="anchor" aria-hidden="true" href="#readwrite">#</a></h3>
+<p>开启此选项会导致内存量增加一倍，默认我们都是不开启，除非你的脚本逻辑中需要动态读写该纹理时需要打开此选项。</p>
+<p><strong>Streaming Mipmaps</strong>(Texture Streaming部分讲解)</p>
+<p><strong>Virtual Texture Only</strong>(虚拟部分讲解)</p>
+<h3 id="generate-mip-maps"><strong>Generate</strong> <strong>Mip</strong> <strong>Maps</strong><a hidden class="anchor" aria-hidden="true" href="#generate-mip-maps">#</a></h3>
+<p>什么时候不需要生成MipMaps？</p>
+<ol>
+<li>2D场景</li>
+<li>固定视角，摄像机无法缩放远近</li>
+</ol>
+<ul>
+<li><strong>Border</strong> <strong>Mip</strong> <strong>Maps</strong> 默认不开启，只有当纹理的是Light Cookies类型时，开启此选项来避免colors bleeding现象导致颜色渗透到较低级别的Mip Level纹理边缘上</li>
+<li>MipMap Filtering
+<ul>
+<li><strong>Box</strong> 最简单，随尺寸减小，Mipmap纹理变得平滑模糊</li>
+<li><strong>Kaiser</strong>，避免平滑模糊的锐化过滤算法。</li>
+</ul>
+</li>
+<li><strong>Mip Maps Preserve Coverage</strong>，只有需要纹理在开启mipmap后也需要做Alpha Coverage时开启。默认不开启。</li>
+<li><strong>Fadeout MipMaps,</strong> 纹理Mipmap随Mip层级淡化为灰色，一般不开启，只有在雾效较大时开启不影响视觉效果。</li>
+</ul>
+<h3 id="选择合适纹理过滤的最佳经验"><strong>选择合适纹理过滤的最佳经验：</strong><a hidden class="anchor" aria-hidden="true" href="#选择合适纹理过滤的最佳经验">#</a></h3>
+<ul>
+<li>使用双线性过滤平衡性能和视觉质量。</li>
+<li>有选择地使用三线性过滤，因为与双线性过滤相比，它需要更多的内存带宽。</li>
+<li>使用双线性和 2x 各向异性过滤，而不是三线性和 1x 各向异性过滤，因为这样做不仅视觉效果更好，而且性能也更高。</li>
+<li>保持较低的各向异性级别。仅对关键游戏资源使用高于 2 的级别。</li>
+</ul>
+<p><img alt="image-20230313203153527" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303132031557.png"></p>
+<p><strong>Untiy官网推荐的、默认的和支持的纹理格式，按平台划分https://docs.unity3d.com/cn/2021.3/Manual/class-TextureImporterOverride.html</strong></p>
+<h3 id="其他可能有问题的纹理类型">其他可能有问题的纹理类型<a hidden class="anchor" aria-hidden="true" href="#其他可能有问题的纹理类型">#</a></h3>
+<ul>
+<li>纹理图集大小设置不合理，图集利用率低</li>
+<li>大量只有颜色差异的图片</li>
+<li>UI背景贴图而不采用9宫格缩放的图</li>
+<li>纯色图没有使用Single Channel</li>
+<li>不合理的半透明UI，占据大量屏幕区域，造成Overdraw开销</li>
+<li>大量2D序列帧动画，而且图片大，还不打图集</li>
+<li>不合理的通道图利用方案</li>
+<li>大量渐变色贴图，没有采用1像素过渡图，也不采用Single Channel, 粒子特效中较为常见。</li>
+</ul>
+<h2 id="animation导入设置检查与优化">Animation导入设置检查与优化<a hidden class="anchor" aria-hidden="true" href="#animation导入设置检查与优化">#</a></h2>
+<h3 id="rig标签页">Rig标签页<a hidden class="anchor" aria-hidden="true" href="#rig标签页">#</a></h3>
+<p><img alt="5" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303132038739.png"></p>
+<h4 id="animation-type"><strong>Animation Type</strong><a hidden class="anchor" aria-hidden="true" href="#animation-type">#</a></h4>
+<ul>
+<li>None 无动画</li>
+<li>Legacy 旧版动画，不要用</li>
+<li>Generic 通用骨骼框架</li>
+<li>Humanoid 人形骨骼框架</li>
+</ul>
+<h5 id="选择原则"><strong>选择原则：</strong><a hidden class="anchor" aria-hidden="true" href="#选择原则">#</a></h5>
+<ul>
+<li>无动画选择None</li>
+<li>非人形动画选择Generic</li>
+<li>人形动画
+<ul>
+<li>人形动画需要Kinematices或Animation Retargeting功能，或者没有有自定义骨骼对象时选择Humanoid Rig</li>
+<li>其他都选择Generic Rig，在骨骼数差不多的情况下,Generic Rig会比Humanoid Rig省30%甚至更多的CPU的时间。</li>
+</ul>
+</li>
+</ul>
+<h4 id="skin-weights"><strong>Skin Weights</strong><a hidden class="anchor" aria-hidden="true" href="#skin-weights">#</a></h4>
+<p>默认4根骨头，但对于一些不重要的动画对象可以减少到1根，节省计算量</p>
+<h4 id="optimize-bones"><strong>Optimize Bones</strong><a hidden class="anchor" aria-hidden="true" href="#optimize-bones">#</a></h4>
+<p>建议开启，在导入时自动剔除没有蒙皮顶点的骨骼</p>
+<h4 id="optimize-game-objects"><strong>Optimize Game Objects</strong><a hidden class="anchor" aria-hidden="true" href="#optimize-game-objects">#</a></h4>
+<p>在Avatar和Animatior组件中删除导入游戏角色对象的变换层级结构，而使用Unity动画内部结构骨骼，消减骨骼transform带来的性能开销。可以提高角色动画性能, 但有些情况下会造成角色动画错误，这个选项可以尝试开启但要看表现效果而定。注意如果你的角色是可以换装的，在导入时不要开启此选项，但在换装后在运行时在代码中通过调用AnimatorUtility.OptimizeTransformHierarchy接口仍然可以达到此选项效果。</p>
+<h3 id="animation标签页">Animation标签页<a hidden class="anchor" aria-hidden="true" href="#animation标签页">#</a></h3>
+<p><img alt="55" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303132038517.png"></p>
+<h4 id="resmple-curves"><strong>Resmple Curves</strong><a hidden class="anchor" aria-hidden="true" href="#resmple-curves">#</a></h4>
+<p>将动画曲线重新采样为四元数数值，并为动画每帧生成一个新的四元数关键帧，仅当导入动画文件包含尤拉曲线时才会显示此选项</p>
+<h4 id="animcompression"><strong>Anim.Compression</strong><a hidden class="anchor" aria-hidden="true" href="#animcompression">#</a></h4>
+<ul>
+<li><strong>Off</strong> 不压缩,质量最高，内存消耗最大</li>
+<li><strong>Keyframe Reduction</strong> 减少冗余关键帧，减小动画文件大小和内存大小。</li>
+<li><strong>Keyframe Reduction and Compression</strong> 减小关键帧的同时对关键帧存储数据进行压缩，只影响文件大小。</li>
+<li><strong>Optimal</strong>，仅适用于Generic与Humanoide动画类型，Unity决定如何进行压缩。</li>
+</ul>
+<h4 id="animation-custom-properties"><strong>Animation Custom Properties</strong><a hidden class="anchor" aria-hidden="true" href="#animation-custom-properties">#</a></h4>
+<p>导入用户自定义属性，一般对应<strong>DCC</strong>工具中的<strong>extraUserProperties</strong>字段中定义的数据</p>
+<h3 id="动画曲线数据信息">动画曲线数据信息<a hidden class="anchor" aria-hidden="true" href="#动画曲线数据信息">#</a></h3>
+<p><img alt="555" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303132045156.png">=</p>
+<ul>
+<li><strong>Curves Pos:</strong> 位置曲线</li>
+<li><strong>Quaternion:</strong> 四元数曲线 <strong>Resample Curves</strong>开启会有</li>
+<li><strong>Euler:</strong> 尤拉曲线</li>
+<li><strong>Scale:</strong> 缩放曲线</li>
+<li><strong>Muscles:</strong> 肌肉曲线，<strong>Humanoid</strong>类型下会有</li>
+<li><strong>Generic:</strong> 一般属性动画曲线，如颜色，材质等</li>
+<li>**PPtr：**精灵动画曲线，一般2D系统下会有</li>
+<li>**Curves Total: **曲线总数</li>
+<li><strong>Constant:</strong> 优化为常数的曲线</li>
+<li><strong>Dense:</strong> 使用了密集数据（线性插值后的离散值）存储</li>
+<li><strong>Stream:</strong> 使用了流式数据（插值的时间和切线数据）存储</li>
+</ul>
+<h3 id="动画文件导入设置优化后信息查看原则">动画文件导入设置优化后信息查看原则<a hidden class="anchor" aria-hidden="true" href="#动画文件导入设置优化后信息查看原则">#</a></h3>
+<ol>
+<li>一看效果差异（与原始制作动画差异是否明显）</li>
+<li>二看曲线数量（总曲线数量与各种曲线数显，常量曲线比重大更好）</li>
+<li>三看动画文件大小（以移动平台为例，动画文件在小几百k或更少为合理，查过1M以上的动画文件考虑是否进行了合理优化）</li>
+</ol>
+<h2 id="工程目录与assets目录设置">工程目录与Assets目录设置<a hidden class="anchor" aria-hidden="true" href="#工程目录与assets目录设置">#</a></h2>
+<h3 id="unity工程目录结构及用途"><strong>Unity</strong>工程目录结构及用途<a hidden class="anchor" aria-hidden="true" href="#unity工程目录结构及用途">#</a></h3>
+<ul>
+<li><strong>Asset文件夹</strong>：用来存储和重用的项目资产</li>
+<li><strong>Library文件夹</strong>：用来存储项目内部资产数据信息的目录**</li>
+<li><strong>Packages文件夹</strong>：用来存储项目的包文件信息</li>
+<li><strong>Project Settings文件夹</strong>：用来存储项目设置的信息</li>
+<li><strong>UserSettings文件夹</strong>：用来存储用户设置信息</li>
+<li><strong>Temp文件夹</strong>：用来存储使用Unity编辑器打开项目时的临时数据，一旦关闭Unity编辑器也会被删除</li>
+<li><strong>Logs文件夹</strong>：用来存储项目的日志信息（不包含编辑器日志信息）</li>
+</ul>
+<h3 id="unity-assets目录中的特殊文件夹及用途">Unity Assets目录中的特殊文件夹及用途<a hidden class="anchor" aria-hidden="true" href="#unity-assets目录中的特殊文件夹及用途">#</a></h3>
+<ul>
+<li>Editor文件夹（可以多个）</li>
+<li>Editor Default Resources文件夹（根目录唯一）</li>
+<li>Gizmos文件夹（根目录唯一）</li>
+<li>Plugins文件夹（2019后已无，但仍可使用，仍能保障其中代码编译的优先顺序）</li>
+<li>Resources文件夹（可以多个，强烈建议正式项目中一定不要有此文件夹）</li>
+<li>Standard Assets文件夹（根目录唯一，其中代码编译优先）</li>
+<li>StreamingAssets文件夹（根目录唯一）</li>
+<li>忽略导入的文件夹
+<ol>
+<li><em>隐藏的文件夹</em></li>
+<li><em>以</em>*&quot;.&quot;*<em>开头的文件和文件夹</em></li>
+<li><em>以</em>*&quot;~&quot;*<em>结尾的文件和文件夹</em></li>
+<li><em>扩展名为<strong>cvs</strong>的文件和文件夹</em></li>
+<li><em>扩展名为</em>*.tmp**的文件夹*</li>
+</ol>
+</li>
+</ul>
+<h3 id="assets目录结构设计"><strong>Assets</strong>目录结构设计<a hidden class="anchor" aria-hidden="true" href="#assets目录结构设计">#</a></h3>
+<p><strong>一级目录设计原则：</strong></p>
+<ul>
+<li>目录尽可能少</li>
+<li>区分编辑模式与运行模式</li>
+<li>区分工程大版本</li>
+<li>访问场景文件、全局配置文件便捷</li>
+<li>不在一级目录做资源类别区分，只有Video类视频建议直接放到StreamAssets下</li>
+</ul>
+<p><strong>二级目录设计原则：</strong></p>
+<ul>
+<li>只区分资源类型</li>
+<li>资源类型大类划分要齐全</li>
+<li>不做子类型区分</li>
+<li>不做功能区分</li>
+<li>不做生命周期区分</li>
+</ul>
+<p><strong>三级目录设计原则：</strong></p>
+<ul>
+<li>Audio/Texture/Models三级目录做子类型区分</li>
+<li>其他类型资源可按功能模块/生命周期区分</li>
+</ul>
+<p><strong>四级目录设计原则：</strong></p>
+<ul>
+<li>只有Audio/Texture/Models做四级目录，可按工呢个模块/生命周期划分</li>
+</ul>
+<h2 id="资源导入工作流">资源导入工作流<a hidden class="anchor" aria-hidden="true" href="#资源导入工作流">#</a></h2>
+<h3 id="资源导入工作流的三种方案"><strong>资源导入工作流的三种方案</strong><a hidden class="anchor" aria-hidden="true" href="#资源导入工作流的三种方案">#</a></h3>
+<h4 id="1-手动编写工具"><strong>1.</strong> <strong>手动编写工具</strong><a hidden class="anchor" aria-hidden="true" href="#1-手动编写工具">#</a></h4>
+<p>**优点：**根据项目特点自定义安排导入工作流，并且可以和后续资源制作与大包工作流结合</p>
+<p>**缺点：**存在开发和维护成本，会让编辑器菜单界面变得复杂，对新人理解工程不友好</p>
+<p>**适合类型：**大型商业游戏团队</p>
+<p><strong>AssetPostprocessor</strong>：</p>
+<p>编写编辑器代码继承AssetPostprocesser对象自定义实现一些列OnPreprocessXXX接口修改资源导入设置属性</p>
+<p>伪代码：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="kd">public</span> <span class="k">class</span> <span class="nc">XXXAssetPostprocessor</span> <span class="p">:</span> <span class="n">AssetPostprocessor</span> 
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="kd">public</span> <span class="k">void</span> <span class="n">OnPreprocessXXXAsset</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="n">XXXAssetImporter</span> <span class="n">xxxImporter</span> <span class="p">=</span> <span class="p">(</span><span class="n">XXXAssetImporter</span><span class="p">)</span><span class="n">assetImporter</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">				<span class="n">xxxImporter</span><span class="p">.</span><span class="err">属性</span> <span class="p">=</span> <span class="n">xxx</span>
+</span></span><span class="line"><span class="cl">				<span class="p">...</span>
+</span></span><span class="line"><span class="cl">				<span class="n">xxxImporter</span><span class="p">.</span><span class="n">SaveAndReimport</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>参考资料： <a href="https://docs.unity3d.com/cn/2021.2/Manual/BestPracticeUnderstandingPerformanceInUnity4.html">https://docs.unity3d.com/</a><a href="https://docs.unity3d.com/cn/2021.2/Manual/BestPracticeUnderstandingPerformanceInUnity4.html">cn</a><a href="https://docs.unity3d.com/cn/2021.2/Manual/BestPracticeUnderstandingPerformanceInUnity4.html">/2021.2/Manual/BestPracticeUnderstandingPerformanceInUnity4.html</a></p>
+<p><strong>AssetsModifiedProcessor</strong>（新试验接口）：</p>
+<p>资源被添加、删除、修改、移动时回调该对象的OnAssetsModified接口</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">void</span> <span class="n">OnAssetsModified</span><span class="p">(</span><span class="kt">string</span><span class="p">[]</span> <span class="n">changedAssets</span><span class="p">,</span> <span class="kt">string</span><span class="p">[]</span> <span class="n">addedAssets</span><span class="p">,</span> <span class="kt">string</span><span class="p">[]</span> <span class="n">deletedAssets</span><span class="p">,</span> <span class="n">AssetMoveInfo</span><span class="p">[]</span> <span class="n">movedAssets</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h4 id="2-利用presets功能"><strong>2.</strong> <strong>利用Presets功能</strong><a hidden class="anchor" aria-hidden="true" href="#2-利用presets功能">#</a></h4>
+<p>**优点：**使用简单方便，只需要Assets目录结构合理规范即可</p>
+<p>**缺点：**无法和后续工作流整合，只适合做资源导入设置。</p>
+<p>**适合类型：**小型团队或中小规模项目</p>
+<p>参考资料：https://docs.unity3d.com/cn/2021.2/Manual/DefaultPresetsByFolder.html</p>
+<h4 id="3-利用assetgraph工具"><strong>3.</strong> <strong>利用AssetGraph工具</strong><a hidden class="anchor" aria-hidden="true" href="#3-利用assetgraph工具">#</a></h4>
+<p>**优点：**功能全，覆盖Unity资源工作流全流程，节点化编辑，直观</p>
+<p>**缺点：**有一定上手成本，一些自定义生成节点也需要开发，不是Unity标准包，Unity新功能支持较慢。</p>
+<p>**适合类型：**任何规模项目和中大型团队</p>
+<p>AssetGraph仓库地址：https://github.com/Unity-Technologies/AssetGraph</p>
+<h2 id="编辑器资源优化">编辑器资源优化<a hidden class="anchor" aria-hidden="true" href="#编辑器资源优化">#</a></h2>
+<h3 id="场景">场景<a hidden class="anchor" aria-hidden="true" href="#场景">#</a></h3>
+<p><strong>场景结构设计原则</strong></p>
+<ol>
+<li>合理设计场景一级节点的同时，避免场景节点深度太深，一些代码生成的游戏对象如果不需要随父节点进行Transform的，一律放到根节点下。</li>
+<li>尽量使用Prefab节点构建场景，而不是直接创建的GameObject节点</li>
+<li>避免DontDestroyOnLoad节点下有太多生命周期过长或引用资源过多的复杂节点对象。Additve模式添加的场景要尤为注意。</li>
+<li>最好为一些需要经常访问的节点添加tag，静态节点一定要添加Static标记。</li>
+</ol>
+<blockquote>
+<p>注意：复杂场景中，对于设置好Tag的节点，使用FindGameObjectWithTag方法取查找该节点更高效</p>
+</blockquote>
+<h3 id="预制体">预制体<a hidden class="anchor" aria-hidden="true" href="#预制体">#</a></h3>
+<p><strong>预制体Prefab</strong></p>
+<p>Unity中的预制体是用来存储游戏对象、子对象及其所需组件的可重用资源，一般来说预制体资源可充当资源模版，在此模版基础上可以在场景中创建新的预制体实例。</p>
+<p><strong>使用预制体的好处</strong></p>
+<ul>
+<li>由于预制体系统可以自动保持所有实例副本同步，因此可以比单纯地简单复制粘贴游戏对象做到更好的对象管理。</li>
+<li>此外通过预制体嵌套(Nested Prefabs)可以将一个预制体嵌套到另一个预制体中，从而创建多个易于编辑的复杂游戏对象层级视图。</li>
+<li>可以通过覆盖各个预制体实例的设置来创建预制体变体(Prefabs Variant)，从而可以将一系列覆盖组合在一起形成有意义预制体的变化。</li>
+</ul>
+<p><strong>嵌套预制体与单预制体相比的优点与缺点</strong></p>
+<ul>
+<li>优点：
+<ul>
+<li>嵌套预制体方便预制体管理，方便资源重复利用，易于统计场景复杂度</li>
+<li>美术制作时可以比较合理的分配UV,和贴图利用率</li>
+<li>方便关卡设计人员发挥，充分合理利用资源</li>
+<li>嵌套预制体比较方便利用工具做LOD，LOD效果也比较好</li>
+<li>嵌套预制体修改方便，只需修改子预制体就可以做到所有嵌套预制体同步</li>
+<li>比较方便做场景遮挡剔除，可以做到精细的遮挡剔除优化效果</li>
+</ul>
+</li>
+<li>缺点：
+<ul>
+<li>手动做Bundle依赖时要按Scene方式处理，依赖关系较为复杂</li>
+<li>可能会增加材质数量与Drawcall数量</li>
+<li>不太适合做大规模远景对象。</li>
+<li>美术与关卡设计人员要充分考虑组合复杂度与特例场景显示，避免重复性和单一性，需要更多的沟通成本</li>
+</ul>
+</li>
+</ul>
+<p><strong>使用Prefab变体的一些限制</strong></p>
+<ul>
+<li>不能改变本体Prefab游戏对象 （GameObject）层级</li>
+<li>不能删除本体Prefab中的游戏对象，但可以通过Deactive游戏对象来达到与删除游戏对象同样的效果</li>
+<li>对于Prefab变体要保持其Override属性的变化，不能通过Apply to base把这些变化应用到本体Prefab上，这样会破坏基础Prefab的结构和功能。</li>
+</ul>
+<h2 id="ugui">UGUI<a hidden class="anchor" aria-hidden="true" href="#ugui">#</a></h2>
+<h4 id="unity-ui性能的四类问题">Unity UI性能的四类问题<a hidden class="anchor" aria-hidden="true" href="#unity-ui性能的四类问题">#</a></h4>
+<ol>
+<li>Canvas Re-batch 时间过长</li>
+<li>Canvas Over-dirty, Re-batch次数过多</li>
+<li>生成网格顶点时间过长</li>
+<li>Fill-rate overutilization</li>
+</ol>
+<h4 id="canvas画布">Canvas画布<a hidden class="anchor" aria-hidden="true" href="#canvas画布">#</a></h4>
+<p>Canvas负责管理UGUI元素，负责UI渲染网格的生成与更新，并向GPU发送DrawCall指令。</p>
+<h4 id="canvas-re-batch过程">Canvas Re-batch过程<a hidden class="anchor" aria-hidden="true" href="#canvas-re-batch过程">#</a></h4>
+<ol>
+<li>根据UI元素深度关系进行排序</li>
+<li>检查UI元素的覆盖关系</li>
+<li>检查UI元素材质并进行合批</li>
+</ol>
+<h4 id="ugui渲染细节">UGUI渲染细节<a hidden class="anchor" aria-hidden="true" href="#ugui渲染细节">#</a></h4>
+<ul>
+<li>UGUI中渲染是在Transparent半透明渲染队列中完成的，半透明队列的绘制顺序是从后往前画，由于UI元素做Alpha Blend,我们在做UI时很难保障每一个像素不被重画，UI的Overdraw太高，这会造成片元着色器利用率过高，造成GPU负担。</li>
+<li>UI SpriteAtlas图集利用率不高的情况下，大量完全透明的像素被采样也会导致像素被重绘，造成片元着色器利用率过高；同时纹理采样器浪费了大量采样在无效的像素上，导致需要采样的图集像素不能尽快的被采样，造成纹理采样器的填充率过低，同样也会带来性能问题。</li>
+</ul>
+<h4 id="re-build过程">Re-Build过程<a hidden class="anchor" aria-hidden="true" href="#re-build过程">#</a></h4>
+<ul>
+<li>在WillRenderCanvases事件调用PerformUpdate::CanvasUpdateRegistry接口
+<ul>
+<li>通过ICanvasElement.Rebuild方法重新构建Dirty的Layout组件</li>
+<li>通过ClippingRegistry.Cullf方法，任何已注册的裁剪组件Clipping Compnents(Such as Masks)的对象进行裁剪剔除操作</li>
+<li>任何Dirty的 Graphics Compnents都会被要求重新生成图形元素</li>
+</ul>
+</li>
+<li>Layout Rebuild
+<ul>
+<li>UI元素位置、大小、颜色发生变化</li>
+<li>优先计算靠近Root节点，并根据层级深度排序</li>
+</ul>
+</li>
+<li>Graphic Rebuild
+<ul>
+<li>顶点数据被标记成Dirty</li>
+<li>材质或贴图数据被标记成Dirty</li>
+</ul>
+</li>
+</ul>
+<h4 id="使用canvas的基本准则">使用Canvas的基本准则：<a hidden class="anchor" aria-hidden="true" href="#使用canvas的基本准则">#</a></h4>
+<ul>
+<li>将所有可能打断合批的层移到最下边的图层，尽量避免UI元素出现重叠区域</li>
+<li>可以拆分使用多个同级或嵌套的Canvas来减少Canvas的Rebatch复杂度</li>
+<li>拆分动态和静态对象放到不同Canvas下。</li>
+<li>不使用Layout组件</li>
+<li>Canvas的RenderMode尽量Overlay模式，减少Camera调用的开销</li>
+</ul>
+<h4 id="ugui射线raycaster优化">UGUI射线（Raycaster）优化：<a hidden class="anchor" aria-hidden="true" href="#ugui射线raycaster优化">#</a></h4>
+<ul>
+<li>必要的需要交互UI组件才开启“Raycast Target”</li>
+<li>开启“Raycast Targets”的UI组件越少，层级越浅，性能越好</li>
+<li>对于复杂的控件，尽量在根节点开启“Raycast Target”</li>
+<li>对于嵌套的Canvas，OverrideSorting属性会打断射线，可以降低层级遍历的成本</li>
+</ul>
+<h4 id="滚动视图scroll-view优化">滚动视图Scroll View优化<a hidden class="anchor" aria-hidden="true" href="#滚动视图scroll-view优化">#</a></h4>
+<ul>
+<li>使用RectMask2d组件裁剪</li>
+<li>使用基于位置的对象池作为实例化缓存</li>
+</ul>
+<h4 id="ui字体">UI字体<a hidden class="anchor" aria-hidden="true" href="#ui字体">#</a></h4>
+<ul>
+<li>避免字体框重叠，造成合批打断</li>
+<li>字体网格重建
+<ul>
+<li>UIText组件发生变化时</li>
+<li>父级对象发生变化时</li>
+<li>UIText组件或其父对象enable/disable时</li>
+</ul>
+</li>
+<li>TrueTypeFontImporter
+<ul>
+<li>支持TTF和OTF字体文件格式导入</li>
+</ul>
+</li>
+</ul>
+<p><img alt="10-0" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303132156992.png"></p>
+<ul>
+<li>动态字体与字体图集
+<ul>
+<li>运行时，根据UIText组件内容，动态生成字体图集，只会保存当前Actived状态的 UIText控件中的字符</li>
+<li>不同的字体库维护不同的Texture图集</li>
+<li>字体Size、大小写、粗体、斜体等各种风格都会保存在不同的字体图集中（有无必要，影响图集利用效率，一些利用不多的特殊字体可以采用图片代替或使用Custom Font，Font Assets Creater创建静态字体资源）</li>
+<li>当前Font Texture不包含UIText需要显示的字体时，当前Font Texture需要重建</li>
+<li>如果当前图集太小，系统也会尝试重建，并加入需要使用的字形，文字图集只增不减</li>
+<li>利用Font.RequestCharacterInTexture可以有效降低启动时间</li>
+</ul>
+</li>
+<li>UI控件优化注意事项
+<ul>
+<li>不需要交互的UI元素一定要关闭Raycast Target选项</li>
+<li>如果是较大的背景图的UI元素建议也要使用Sprite的九宫格拉伸处理，充分减小UI Sprite大小，提高UI Atlas图集利用率</li>
+<li>对于不可见的UI元素，一定不要使用材质的透明度控制显隐，因为那样UI网格依然在绘制，也不要采用active/deactive UI控件进行显隐，因为那样会带来gc和重建开销</li>
+<li>使用全屏的UI界面时，要注意隐藏其背后的所有内容，给GPU休息机会。</li>
+<li>在使用非全屏但模态对话框时，建议使用<strong>OnDemandRendering</strong>接口，对渲染进行降频。</li>
+<li>优化裁剪UI Shader，根据实际使用需求移除多余特性关键字。</li>
+</ul>
+</li>
+</ul>
+<h2 id="物理">物理<a hidden class="anchor" aria-hidden="true" href="#物理">#</a></h2>
+<h3 id="unity中的物理解决方案">Unity中的物理解决方案<a hidden class="anchor" aria-hidden="true" href="#unity中的物理解决方案">#</a></h3>
+<ul>
+<li>Box2D</li>
+<li>Nvidia PhysX</li>
+<li>Unity Physics</li>
+<li>Havok Physics for Unity</li>
+</ul>
+<h3 id="unity中的物理组件collider部分的优化">Unity中的物理组件Collider部分的优化<a hidden class="anchor" aria-hidden="true" href="#unity中的物理组件collider部分的优化">#</a></h3>
+<ul>
+<li>Trigger与Collider
+<ul>
+<li>Trigger对象的碰撞会被物理引擎所忽略，通过OnTriggerEnter/Stay/Exit函数回调</li>
+<li>Collider对象由物理引擎触发碰撞，通过OnCollisionEnter/Stay/Exit函数回调</li>
+<li>Trigger对象不需要RigidBody组件，Collider对象必须至少有一个Collider对象有RigidBody组件</li>
+<li>Trigger对象更高效</li>
+</ul>
+</li>
+</ul>
+<h3 id="unity中的物理组件collider部分的优化-1">Unity中的物理组件Collider部分的优化<a hidden class="anchor" aria-hidden="true" href="#unity中的物理组件collider部分的优化-1">#</a></h3>
+<ul>
+<li>尽量少使用MeshCollider，可以用简单Collider代替，即使用多个简单Collider组合代替也要比复杂的MeshCollider来的高效</li>
+<li>MeshCollider是基于三角形面的碰撞</li>
+<li>MeshCollider生成的碰撞体网格占用内存也较高</li>
+<li>MeshCollider即使要用也要尽量保障其是静态物体</li>
+<li>可以通过PlayerSetting选项中勾选Prebake Collision Meshes选项来在构建应用时预先Bake出碰撞网格。</li>
+</ul>
+<h3 id="unity中的物理组件rigidbody部分的优化">Unity中的物理组件RigidBody部分的优化<a hidden class="anchor" aria-hidden="true" href="#unity中的物理组件rigidbody部分的优化">#</a></h3>
+<ul>
+<li>Kinematic与RigidBody
+<ul>
+<li>Kinematic对象不受物理引擎中力的影响，但可以对其他RigidBody施加物理影响。</li>
+<li>RigidBody完全由物理引擎模拟来控制，场景中RigidBody数量越多，物理计算负载越高</li>
+<li>勾选了Kinematic选项的RigidBody对象会被认为是Kinematic的，不会增加场景中的RigidBody个数</li>
+<li>场景中的RigidBody对象越少越好</li>
+</ul>
+</li>
+</ul>
+<h3 id="unity中的raycast与overlap部分的优化">Unity中的RayCast与Overlap部分的优化<a hidden class="anchor" aria-hidden="true" href="#unity中的raycast与overlap部分的优化">#</a></h3>
+<ul>
+<li>Unity物理中RayCast与Overlap都有NoAlloc版本的函数，在代码中调用时尽量用NoAlloc版本，这样可以避免不必要的GC开销</li>
+<li>尽量调用RayCast与Overlap时要指定对象图层进行对象过滤，并且RayCast要还可以指定距离来减少一些太远的对象查询</li>
+<li>此外如果是大量的RayCast操作还可以通过RaycastCommand的方式批量处理，充分利用JobSystem来分摊到多核多线程计算。</li>
+</ul>
+<h2 id="动画">动画<a hidden class="anchor" aria-hidden="true" href="#动画">#</a></h2>
+<h3 id="animation的一些细节">Animation的一些细节<a hidden class="anchor" aria-hidden="true" href="#animation的一些细节">#</a></h3>
+<ul>
+<li>播放单个AnimationClip速度，Legacy Animation系统更快，因为老系统是直接采样曲线并直接写入对象Transform</li>
+<li>针对动画的缩放曲线比位移、旋转曲线开销更大</li>
+<li>常数曲线不会每帧写入场景，更高效</li>
+</ul>
+<h3 id="animator的一些细节">Animator的一些细节<a hidden class="anchor" aria-hidden="true" href="#animator的一些细节">#</a></h3>
+<ul>
+<li>不要使用字符串来查询Animator</li>
+<li>使用曲线标记来处理动画事件</li>
+<li>使用Target Marching函数来协助处理动画</li>
+<li>将Animator的CullingMode设置成Based On Renderers来优化动画，并禁用SkinMesh Renderer的Update When Offscreen属性来让角色不可见时动画不更新</li>
+</ul>
+<h3 id="internal-animation-update">Internal Animation Update<a hidden class="anchor" aria-hidden="true" href="#internal-animation-update">#</a></h3>
+<p><img alt="13-0" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303141312998.png">]</p>
+<h3 id="animator-vs-animation">Animator VS Animation<a hidden class="anchor" aria-hidden="true" href="#animator-vs-animation">#</a></h3>
+<ul>
+<li>Animation可以将任何对象属性制作成Animation Clip, Animator是将Animaiton Clip组织到状态机流程图中使用</li>
+<li>Animation与Animator播放动画时的效率是有个临界点的，这个临界点是根据动画曲线条数来的，当动画曲线条数小于这个临界点时Animation快，当动画曲线条数大于这个临界点时Animator快</li>
+<li>当Cpu核数较少时，Animation播放动画有优势，当Cpu核数较多时，Animator表现会更好</li>
+<li>Animator Controller Graph中的所有动画节点的Animation Clip都会载入到内存中，当有海量动画状态机节点时，内存开销较大</li>
+</ul>
+<h3 id="playable-api-vs-animator">Playable API VS Animator<a hidden class="anchor" aria-hidden="true" href="#playable-api-vs-animator">#</a></h3>
+<h4 id="playable-api优点"><strong>Playable API优点</strong><a hidden class="anchor" aria-hidden="true" href="#playable-api优点">#</a></h4>
+<ul>
+<li>支持动态动画混合，可为场景中的对象提供自己的动画，并可以动态添加到PlayableGraph当中使用</li>
+<li>允许创建播放单个动画，而并不会产生创建和管理AnimatorController资源所涉及的开销，可更加灵活的控制PlayableGraph的数据流，可以插入自定义的AimationJob。</li>
+<li>可以控制动画文件加载策略，按需加载、异步加载等</li>
+<li>允许用户动态创建混合图，并直接逐帧控制混合权重（甚至可以混合AniationClip与AnimatorController动画）</li>
+<li>可以运行时动态创建，根据条件添加可播放节点。而不需要提前提供一套PlayableGraph运行时启动和禁用节点，可以做到自由度更高的override机制</li>
+<li>可加载自定义配置数据，更加方便的和其他游戏系统整合</li>
+</ul>
+<h4 id="playable-api缺点"><strong>Playable API缺点</strong><a hidden class="anchor" aria-hidden="true" href="#playable-api缺点">#</a></h4>
+<ul>
+<li>没有直接使用Animator直观</li>
+<li>混合模式没有现成的，需要自己实现</li>
+<li>需要开发更多的配套工具</li>
+<li>有一定学习成本</li>
+</ul>
+<h3 id="解决方案选择">解决方案选择<a hidden class="anchor" aria-hidden="true" href="#解决方案选择">#</a></h3>
+<ul>
+<li>一些简单、少量曲线动画可以使用Animation或动画区间库如Dotween\iTween等完成，如UI动画，Transform动画等。</li>
+<li>角色骨骼蒙皮动画如果骨骼较少，Animation Clip资源不多，对动画混合表现要求不高的项目可以采用Legacy Animation。注意控制总体曲线数量</li>
+<li>一些角色动画要求与逻辑有较高的交互、并且动画资源不多的项目可以直接用Animator Graph完成</li>
+<li>一些动作游戏，对动画混合要求较高、有一些高级动画效果要求、动画资源量庞大的项目，建议采用Animator+Playable API扩展Timeline的方式完成。</li>
+</ul>
+<h1 id="性能优化之道">性能优化之道<a hidden class="anchor" aria-hidden="true" href="#性能优化之道">#</a></h1>
+<h2 id="性能优化问题的本质">性能优化问题的本质<a hidden class="anchor" aria-hidden="true" href="#性能优化问题的本质">#</a></h2>
+<ul>
+<li>慢与快的问题</li>
+<li>前提
+<ul>
+<li>稳定性：不能因优化造成稳定性变差</li>
+<li>兼容性：不能因优化导致兼容性变差</li>
+<li>性价比：优化要有度，考虑成本与复杂度</li>
+</ul>
+</li>
+</ul>
+<h2 id="性能优化的流程">性能优化的流程<a hidden class="anchor" aria-hidden="true" href="#性能优化的流程">#</a></h2>
+<ol>
+<li>发现问题（什么平台、什么操作系统、什么情况下出现问题，一般问题还是特例问题等）</li>
+<li>定位问题（什么地方造成的性能问题，我们要用什么工具、什么方法确定瓶颈）</li>
+<li>研究问题（确定用什么方案处理这个问题，要考虑性能优化的前提）</li>
+<li>解决问题（按问题研究的结论去实际处理，并验证处理结果与预期的一致性）</li>
+</ol>
+<h2 id="影响性能的四大类问题">影响性能的四大类问题<a hidden class="anchor" aria-hidden="true" href="#影响性能的四大类问题">#</a></h2>
+<p><img alt="image-20230314135721609" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303141357740.png"></p>
+<p><img alt="image-20230314135853987" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303141400550.png"></p>
+<p><img alt="image-20230314135947167" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303141400230.png"></p>
+<h2 id="隐藏的几类小问题">隐藏的几类小问题<a hidden class="anchor" aria-hidden="true" href="#隐藏的几类小问题">#</a></h2>
+<ul>
+<li>功耗比</li>
+<li>填充率</li>
+<li>发热量</li>
+</ul>
+<h2 id="性能问题可能的情况">性能问题可能的情况<a hidden class="anchor" aria-hidden="true" href="#性能问题可能的情况">#</a></h2>
+<p>瓶颈可能性按由高到低的顺序排列</p>
+<ul>
+<li>CPU利用率</li>
+<li>带宽利用率</li>
+<li>CPU/GPU强制同步</li>
+<li>片元着色器指令</li>
+<li>几何图形到CPU到GPU的传输</li>
+<li>纹理CPU到GPU的传输</li>
+<li>顶点着色器指令</li>
+<li>几何图形复杂性</li>
+</ul>
+<h2 id="经常用的优化思路">经常用的优化思路<a hidden class="anchor" aria-hidden="true" href="#经常用的优化思路">#</a></h2>
+<ul>
+<li>升维与降维</li>
+<li>维度转换，如空间与时间，量纲转换</li>
+</ul>
+<h1 id="性能优化实践">性能优化实践<a hidden class="anchor" aria-hidden="true" href="#性能优化实践">#</a></h1>
+<h2 id="移动平台优化顺序">移动平台优化顺序<a hidden class="anchor" aria-hidden="true" href="#移动平台优化顺序">#</a></h2>
+<p>先优化ios，再优化android
+先共性性能优化，再兼容性方面的性能优化</p>
+<h2 id="常用性能检测">常用性能检测<a hidden class="anchor" aria-hidden="true" href="#常用性能检测">#</a></h2>
+<h3 id="性能检测工具">性能检测工具<a hidden class="anchor" aria-hidden="true" href="#性能检测工具">#</a></h3>
+<h4 id="unity-profiler">Unity Profiler<a hidden class="anchor" aria-hidden="true" href="#unity-profiler">#</a></h4>
+<p><strong>Unity下常见的等待函数</strong></p>
+<ul>
+<li>WaitForTargetFPS：等待达到目标帧率，一般这种情况CPU与GPU都没什么负载问题</li>
+<li>Gfx.WaitForGfxCommandsFrom MainThread/WaitForcommand：渲染线程已经准备接受新的渲染命令，一般瓶颈在CPU</li>
+<li>Gfx.WaitForPresentonGfxThread/WaitForPresent： 主线程等待渲染线程绘制完成，一般瓶颈在GPU</li>
+<li>WaitForJobGroupID：等待工作线程完成，一般瓶颈在CPU</li>
+</ul>
+<h4 id="framedeubgger">FrameDeubgger<a hidden class="anchor" aria-hidden="true" href="#framedeubgger">#</a></h4>
+<h4 id="upr"><a href="https://upr.unity.cn/">UPR</a><a hidden class="anchor" aria-hidden="true" href="#upr">#</a></h4>
+<h4 id="xoce中metal-capture">Xoce中Metal Capture<a hidden class="anchor" aria-hidden="true" href="#xoce中metal-capture">#</a></h4>
+<h5 id="enabling-frame-capture">Enabling Frame Capture<a hidden class="anchor" aria-hidden="true" href="#enabling-frame-capture">#</a></h5>
+<p>Configure your project to work with the Metal frame debugger.</p>
+<h6 id="navigate-to-the-metal-scheme-settings"><a href="https://developer.apple.com/documentation/metal/debugging_tools/enabling_frame_capture#2954760">Navigate to the Metal Scheme Settings</a><a hidden class="anchor" aria-hidden="true" href="#navigate-to-the-metal-scheme-settings">#</a></h6>
+<ol>
+<li>In the toolbar, choose Edit Scheme from the scheme menu. (Alternatively, choose Product &gt; Scheme &gt; Edit Scheme.)</li>
+<li>In the scheme action panel, select Run.</li>
+<li>In the action setting tab, select Options.</li>
+</ol>
+<p><img alt="An Xcode screenshot that shows the scheme menu." loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303141435454.png"></p>
+<p><img alt="An Xcode screenshot that shows the scheme editor, scheme actions, scheme options, and Metal tools." loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303141435695.png"></p>
+<h6 id="choose-a-gpu-frame-capture-option"><a href="https://developer.apple.com/documentation/metal/debugging_tools/enabling_frame_capture#2943446">Choose a GPU Frame Capture Option</a><a hidden class="anchor" aria-hidden="true" href="#choose-a-gpu-frame-capture-option">#</a></h6>
+<p>Choose the option that best suits your debugging needs:</p>
+<ul>
+<li>Automatically Enabled: Captures Metal or OpenGL ES API usage in your app. If your target doesn’t link to the Metal or OpenGL ES framework, the Capture GPU Frame icon isn’t shown in the debug bar. If your app uses both the Metal and OpenGL ES API, you can click and hold the Capture GPU Frame icon to choose which API usage to capture.</li>
+<li>Metal: Captures only Metal API usage in your app. If your app doesn’t use Metal API, Xcode disables the Capture GPU Frame icon in the debug bar.</li>
+<li>Disabled: Doesn’t capture Metal usage in your app.</li>
+</ul>
+<p>You can also choose whether Xcode profiles the trace data once capture is complete.</p>
+<h4 id="游戏性能调试工具汇总">游戏性能调试工具汇总<a hidden class="anchor" aria-hidden="true" href="#游戏性能调试工具汇总">#</a></h4>
+<h5 id="pc通用性能分析工具某些需要特殊硬件支持">PC通用性能分析工具（某些需要特殊硬件支持）<a hidden class="anchor" aria-hidden="true" href="#pc通用性能分析工具某些需要特殊硬件支持">#</a></h5>
+<p>AMD μProf：   <a href="https://developer.amd.com/amd-uprof/">https://developer.amd.com/amd-uprof/</a></p>
+<p>NVIDIA NSight：https://developer.nvidia.com/tools-overview</p>
+<p>Intel VTune：https://www.intel.com/content/www/us/en/developer/tools/oneapi/vtune-profiler.html</p>
+<p>Intel GPA suite：https://www.intel.com/content/www/us/en/developer/tools/graphics-performance-analyzers/overview.html</p>
+<p>Superluminal：https://superluminal.eu/</p>
+<h5 id="平台性能分析工具需要特殊操作系统浏览器或硬件支持">平台性能分析工具（需要特殊操作系统、浏览器或硬件支持）<a hidden class="anchor" aria-hidden="true" href="#平台性能分析工具需要特殊操作系统浏览器或硬件支持">#</a></h5>
+<p>IOS:
+Xcode Instruments:</p>
+<p><a href="https://developer.apple.com/library/archive/documentation/AnalysisTools/Conceptual/instruments_help-collection/Chapter/Chapter.html">https://developer.apple.com/library/archive/documentation/AnalysisTools/Conceptual/instruments_help-collection/Chapter/Chapter.html</a></p>
+<p>Android
+Android Studio:</p>
+<p><a href="https://developer.android.com/studio/profile">https://developer.android.com/studio/profile</a></p>
+<p>Arm Mobile Studio:</p>
+<p><a href="https://developer.arm.com/Tools%20and%20Software/Arm%20Mobile%20Studio">https://developer.arm.com/Tools%20and%20Software/Arm%20Mobile%20Studio</a></p>
+<p>Snapdragon Profiler:</p>
+<p><a href="https://developer.qualcomm.com/software/snapdragon-profiler">https://developer.qualcomm.com/software/snapdragon-profiler</a></p>
+<p>Windows/XBox
+PIX:</p>
+<p><a href="https://devblogs.microsoft.com/pix/introduction/">https://devblogs.microsoft.com/pix/introduction/</a></p>
+<p>PlayStation
+CPU profiler tools:</p>
+<p><a href="https://partners.playstation.net/">https://partners.playstation.net/</a></p>
+<p>WebGL
+Chrome DevTools Performance:</p>
+<p><a href="https://developer.chrome.com/docs/devtools/evaluate-performance/">https://developer.chrome.com/docs/devtools/evaluate-performance/</a></p>
+<p>Firefox Profiler:</p>
+<p><a href="https://profiler.firefox.com/">https://profiler.firefox.com/</a></p>
+<p>GPU性能调试工具（某些需要对应硬件支持）
+Arm Graphics Analyzer：</p>
+<p><a href="https://developer.arm.com/Tools%20and%20Software/Graphics%20Analyzer">https://developer.arm.com/Tools%20and%20Software/Graphics%20Analyzer</a></p>
+<p>Tegra Graphics Debugger：</p>
+<p><a href="https://developer.nvidia.com/tegra-graphics-debugger">https://developer.nvidia.com/tegra-graphics-debugger</a></p>
+<p>Intel Graphics Performance Analyzers：</p>
+<p><a href="https://www.intel.com/content/www/us/en/developer/tools/graphics-performance-analyzers/overview.html">https://www.intel.com/content/www/us/en/developer/tools/graphics-performance-analyzers/overview.html</a></p>
+<p>NVIDIA Nsight Frame Debugger:</p>
+<p><a href="https://docs.nvidia.com/gameworks/content/developertools/desktop/frame_debugger_ogl.htm">https://docs.nvidia.com/gameworks/content/developertools/desktop/frame_debugger_ogl.htm</a></p>
+<p>AMD Radeon Developer Tool Suite:</p>
+<p><a href="https://gpuopen.com/tools/">https://gpuopen.com/tools/</a></p>
+<p>Xcode Frame Capture Debugging Tools:</p>
+<p><a href="https://developer.apple.com/documentation/metal/debugging_tools">https://developer.apple.com/documentation/metal/debugging_tools</a></p>
+<p>Visual Studio Graphics Diagnostics:</p>
+<p><a href="https://docs.microsoft.com/en-gb/visualstudio/debugger/graphics/visual-studio-graphics-diagnostics?view=vs-2019&amp;redirectedfrom=MSDN&amp;viewFallbackFrom=vs-2015">https://docs.microsoft.com/en-gb/visualstudio/debugger/graphics/visual-studio-graphics-diagnostics?view=vs-2019&amp;redirectedfrom=MSDN&amp;viewFallbackFrom=vs-2015</a></p>
+<p>RenderDoc:</p>
+<p><a href="https://renderdoc.org/builds">https://renderdoc.org/builds</a></p>
+<h2 id="渲染优化">渲染优化<a hidden class="anchor" aria-hidden="true" href="#渲染优化">#</a></h2>
+<h3 id="ssao优化">SSAO优化<a hidden class="anchor" aria-hidden="true" href="#ssao优化">#</a></h3>
+<h4 id="什么是ssao">什么是SSAO<a hidden class="anchor" aria-hidden="true" href="#什么是ssao">#</a></h4>
+<p>SSAO(Screen Space Ambient Occlusion 屏幕空间环境光遮蔽) : <strong>可以实时实现环境光遮蔽效果，让画面更&rsquo;真实&rsquo;的一种渲染技术</strong>。 通过获取像素的 深度缓冲 、 法线缓冲 以及 像素坐标 来计算实现，来近似的表现物体在间接光下产生的阴影。SSAO(Screen Space Ambient Occlusion 屏幕空间环境光遮蔽) : <strong>可以实时实现环境光遮蔽效果，让画面更&rsquo;真实&rsquo;的一种渲染技术</strong>。 通过获取像素的 深度缓冲 、 法线缓冲 以及 像素坐标 来计算实现，来近似的表现物体在间接光下产生的阴影。</p>
+<h4 id="unity中的ssao设置">Unity中的SSAO设置<a hidden class="anchor" aria-hidden="true" href="#unity中的ssao设置">#</a></h4>
+<p>打开<strong>RenderData</strong>, 再<strong>Add Renderer Feature</strong>, 选择<strong>Screen Space Ambient Occlusion</strong></p>
+<p><img alt="image-20230314144543131" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303141445224.png"></p>
+<h4 id="ssao进一步优化">SSAO进一步优化<a hidden class="anchor" aria-hidden="true" href="#ssao进一步优化">#</a></h4>
+<ul>
+<li>使用HBAO(horizon-based ambient occlusion)或GTAO(Ground Truth Ambient Occlusion)方案替代SSAO</li>
+<li>针对SSAO的Shader指令做进一步优化</li>
+<li>可以采用烘焙AO到光照贴图的方案替换SSAO方案</li>
+</ul>
+<h3 id="aa反走样优化">AA反走样优化<a hidden class="anchor" aria-hidden="true" href="#aa反走样优化">#</a></h3>
+<h4 id="什么是aa">什么是AA<a hidden class="anchor" aria-hidden="true" href="#什么是aa">#</a></h4>
+<p><strong>anti-aliasing</strong>简称<strong>AA</strong>，也译为<strong>抗锯齿</strong>或<strong>反走样</strong>、消除混叠、抗图像折叠失真等。它是一种消除显示器输出的画面中图物边缘出现凹凸锯齿的技术，那些凹凸的锯齿通常因为高解析度的讯号以低解析度表示或无法准确运算出3D图形坐标定位时所导致的图形混叠（aliasing）而产生的，反锯齿技术能有效地解决这些问题。</p>
+<h4 id="反走样方案的发展">反走样方案的发展<a hidden class="anchor" aria-hidden="true" href="#反走样方案的发展">#</a></h4>
+<ul>
+<li>
+<p>第一代：SSAA（超级采样抗锯齿Super-Sampling Anti-Aliasing ）</p>
+</li>
+<li>
+<p>第二代：MSAA（多重采样抗锯齿 Multi Sampling Anti-Aliasing）</p>
+<p>​              FXAA（快速近似抗锯齿Fast Approximate Anti-Aliasing)</p>
+<p>​              SMAA（增强子像素形变抗锯齿Enhanced Subpixel Morphological Anti-Aliasing）</p>
+</li>
+<li>
+<p>第三代：TAA（时间序列抗锯齿Temporal Anti-Aliasing)</p>
+</li>
+<li>
+<p>第四代：DLSS（基于深度学习的超级采样Deep Learning Super Sampling</p>
+</li>
+</ul>
+<p>注：这里只列出了Unity反走样的一些发展流程，其他反走样方案这里不包括。</p>
+<p><img alt="image-20230314145703249" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303141457343.png"></p>
+<h4 id="uniy中的aa设置">Uniy中的AA设置<a hidden class="anchor" aria-hidden="true" href="#uniy中的aa设置">#</a></h4>
+<p>效率：FXAA&gt;SMAA&gt;TAA&gt;MSAA</p>
+<p>质量：MSAA&gt;SMAA&gt;TAA&gt;FXAA</p>
+<p><img alt="image-20230314150003976" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303141500080.png"></p>
+<h3 id="后处理优化">后处理优化<a hidden class="anchor" aria-hidden="true" href="#后处理优化">#</a></h3>
+<h4 id="什么是后处理">什么是后处理<a hidden class="anchor" aria-hidden="true" href="#什么是后处理">#</a></h4>
+<p>Post Process是基于屏幕的后期处理，原理是将摄像机显示的画面在缓冲区中使用滤镜和效果处理，然后再显示出来。可以用来模拟物理摄像机和电影特效。</p>
+<h4 id="unity中的后处理设置">Unity中的后处理设置<a hidden class="anchor" aria-hidden="true" href="#unity中的后处理设置">#</a></h4>
+<p><strong>Post Process Layer</strong></p>
+<p>通常我们在Camera上挂一个Post Process Layer脚本用来控制后期效果。也可以挂在空物体上，通过<strong>Trigger</strong>设置Camera来对相机起作用。<strong>Layer</strong>用来管理Post Process Volume。对Post Process Volume设置Layer，属于Post Process Layer中设置的Layer才会生效。</p>
+<p><strong>URP内置了Post-process，不需要Layer，直接使用Volume System控制后期效果。</strong></p>
+<h4 id="unity-urp下支持的后处理效果分类">Unity URP下支持的后处理效果分类<a hidden class="anchor" aria-hidden="true" href="#unity-urp下支持的后处理效果分类">#</a></h4>
+<ul>
+<li>色彩校正与增强
+Channel Mixer、Color Adiustment、color Curves.
+Lift, Gamma,and Gain. Shadows/Midtones/Highlights、
+Tonemapping、 White Balance 、 Split Toning</li>
+<li>画面效果增强
+Bloom、hromatic Aberration. Depth of Field、 Film Grain.
+Motion Blur</li>
+<li>镜头效果
+Lens Disortion、 Panini Projection. Vignette、 Lens Flare</li>
+</ul>
+<p><img alt="image-20230314153336633" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303141533743.png"></p>
+<p><img alt="image-20230314153558542" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303141535649.png"></p>
+<p><img alt="image-20230314153650833" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303141536946.png"></p>
+<h2 id="渲染提前优化">渲染提前优化<a hidden class="anchor" aria-hidden="true" href="#渲染提前优化">#</a></h2>
+<h3 id="culling-剔除">Culling-剔除<a hidden class="anchor" aria-hidden="true" href="#culling-剔除">#</a></h3>
+<h4 id="哪些是需要剔除的内容">哪些是需要剔除的内容<a hidden class="anchor" aria-hidden="true" href="#哪些是需要剔除的内容">#</a></h4>
+<p>广义上讲：</p>
+<ul>
+<li>看不见的像素、网格和对象</li>
+<li>重复的、用不到的资源</li>
+<li>不需要、不执行的代码</li>
+</ul>
+<h4 id="unity中的剔除">Unity中的剔除<a hidden class="anchor" aria-hidden="true" href="#unity中的剔除">#</a></h4>
+<ul>
+<li>像素剔除 ：摄像机平截头体剔除、Back-face Culling、Early- Z、Pre-Z Pass</li>
+<li>网格剔除：Layer Mask、可见距离剔除、Occlusion •灯光剔除：Tile-Based Deferred Rendering、Forward+</li>
+<li>场景剔除：Additive Scene</li>
+</ul>
+<p><img alt="image-20230314155939300" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303141559416.png"></p>
+<h4 id="用户护展剔除">用户护展剔除<a hidden class="anchor" aria-hidden="true" href="#用户护展剔除">#</a></h4>
+<ul>
+<li>场景数据结构：Octree、BSP Tree、Portal. voxelization. SDF等</li>
+<li>GPU Culing: Hi-Z Pass. Temporal Reprojection Culing、 cluster、 Tile-based Visible Buffer等</li>
+</ul>
+<h3 id="simplization-简化">Simplization-简化<a hidden class="anchor" aria-hidden="true" href="#simplization-简化">#</a></h3>
+<h4 id="哪些是需要简化的内容">哪些是需要简化的内容<a hidden class="anchor" aria-hidden="true" href="#哪些是需要简化的内容">#</a></h4>
+<p>广义上讲：</p>
+<ul>
+<li>运行效率较重的资源</li>
+<li>低效、不合适功能</li>
+</ul>
+<h4 id="unity下的简化">Unity下的简化<a hidden class="anchor" aria-hidden="true" href="#unity下的简化">#</a></h4>
+<ul>
+<li>Quality Settings</li>
+<li>通过烘焙光照简化实时光照</li>
+<li>通过Bounding</li>
+<li>Box或替代体碰撞代替Mesh碰撞</li>
+<li>通过Local Volume代替Global Volume RayCast代替Spherecast、 CapsuleCast等</li>
+<li>纹理文字代替系统文字</li>
+<li>Mesh LoD</li>
+<li>Shader LoD</li>
+<li>HLOD</li>
+<li>通过Camer Override代替URP管线中的一些通用设置</li>
+<li>各种OnDemand更新或分级设置接口</li>
+<li>……</li>
+</ul>
+<h4 id="用户扩展简化">用户扩展简化<a hidden class="anchor" aria-hidden="true" href="#用户扩展简化">#</a></h4>
+<ul>
+<li>场景简化数据结构</li>
+<li>第三方LOD方案</li>
+<li>Mesh Impostor</li>
+<li>Animation LoD</li>
+<li>骨骼LOD</li>
+<li>2D寻路代替Navigation Mesh</li>
+<li>扩屐类似OnDemand接口</li>
+</ul>
+<h3 id="batching-合批">Batching-合批<a hidden class="anchor" aria-hidden="true" href="#batching-合批">#</a></h3>
+<h4 id="哪些内容需要batching">哪些内容需要Batching<a hidden class="anchor" aria-hidden="true" href="#哪些内容需要batching">#</a></h4>
+<p>广义上讲：</p>
+<ul>
+<li>资源Batching (Mesh、Texture、Shader参数、材质属性）</li>
+<li>Draw call Batching (Static Batching、Dynamic Batching)</li>
+<li>GPU Instancing(直接渲染、间接渲染、程序化间接渲染）</li>
+<li>Set Pass call Batching. ( SRP Batching)</li>
+</ul>
+<h5 id="资源的batching">资源的Batching<a hidden class="anchor" aria-hidden="true" href="#资源的batching">#</a></h5>
+<ul>
+<li>
+<p>Mesh:</p>
+<p>Mesh.CombineMesh，合并静态网格对象</p>
+<p>Submeshes-&gt;Single Mesh,合并材质与贴图，不同材质通过通道图标记</p>
+</li>
+<li>
+<p>Texture:</p>
+<p>AtlasTexture,通过纹理坐标映射多张贴图</p>
+<p>TextureArray纹理数组</p>
+</li>
+<li>
+<p>Shader变量与材质属性</p>
+<p>Material Property Block (Build In管线）</p>
+<p>Const buffer (SRP管线）</p>
+</li>
+</ul>
+<p><img alt="image-20230314163934101" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303141639222.png"></p>
+<h4 id="batching优化顺序">Batching优化顺序<a hidden class="anchor" aria-hidden="true" href="#batching优化顺序">#</a></h4>
+<p><strong>资源Batching &gt;SRP Batching = Static Batching &gt; GPU Instancing &gt; Dynamic Batching</strong></p>
+<h4 id="batching使用限制">Batching使用限制<a hidden class="anchor" aria-hidden="true" href="#batching使用限制">#</a></h4>
+<h5 id="资源batching限制">资源Batching限制<a hidden class="anchor" aria-hidden="true" href="#资源batching限制">#</a></h5>
+<ul>
+<li>
+<p>Static Batching限制</p>
+<p>额外内存开销</p>
+<p>64000个顶点限制</p>
+<p>影响Culling剔除</p>
+</li>
+<li>
+<p>Dynamic Batching限制</p>
+<p>合批不超过900个顶点属性 ，（注意不是900个顶点）</p>
+<p>除了渲染阴影对象外，相同材质，不同材质实例也不能合并</p>
+<p>具有光照贴图的游戏对象如果有附加渲染器参数时 ，如果需要动态合批这些对象，他们必须指向相同的光照贴图位置。</p>
+<p>有多Shader Pass的游戏对象无法做动态合批</p>
+<p>受多个光照影响的游戏对象，满足动态合批条件合批后，只会受一个光源的影响</p>
+<p>延迟涫染下不支持动态合批</p>
+<p>CPU开销可能会增大，需要测试开启使用</p>
+</li>
+</ul>
+<h5 id="gpu-instancing限制">GPU Instancing限制<a hidden class="anchor" aria-hidden="true" href="#gpu-instancing限制">#</a></h5>
+<ul>
+<li>图形API版本要求</li>
+<li>与SRPBatcher不兼容</li>
+<li>不同绘制API的参数与绘制个数不同</li>
+<li>渲染顶点数较少的网格时，效率可能会较差。（测试使用）</li>
+</ul>
+<h5 id="srp-batching限制">SRP Batching限制<a hidden class="anchor" aria-hidden="true" href="#srp-batching限制">#</a></h5>
+<ul>
+<li>图形API版本要求</li>
+<li>必须是SRP渲染管线</li>
+<li>粒子对象不能合批</li>
+<li>使用MaterialProperty Blocks的游戏对象不能合批</li>
+<li>Shader必须是compatible的</li>
+</ul>
+<h4 id="batching-失败信息与原因">Batching 失败信息与原因<a hidden class="anchor" aria-hidden="true" href="#batching-失败信息与原因">#</a></h4>
+<ol>
+<li>“An object is affected by multiple forward lights.” 此物体受到多个前向灯光的影</li>
+<li>“Objects have different materials.” 此物体有不同的材质</li>
+<li>“An object is using a multi-pass shader.” 此物体使用了多pass着色器</li>
+<li>“An object has odd negative scaling.” 此物体Trasform的Scale使用了负数</li>
+<li>“Either objects have different \”Receive Shadows\“ settings, or some objects are within the shadow distance, while some other objects are not.” 此物体接收阴影的设置不同，或者物体有不同的的阴影距离设置</li>
+<li>“Objects are affected by different forward lights.” 此物体受到不同的前向灯光影响</li>
+<li>“Objects are on different lighting layers.” 物体在不同的Lighting Layer上</li>
+<li>“Objects have different \”Cast Shadows\“ settings.”  此物体有不同的投影体设置</li>
+<li>“Objects either have different shadow caster shaders, or have different shader properties / keywords that affect the output of the shadow caster pass.” 此物体有不同的投影着色器设置或者有不同的着色器属性或者关键字影响Shadow Caster Pass的输出</li>
+<li>“The shader explicitly disables batching with the \”DisableBatching\“ tag.” 着色器中显式设置了DisableBatching的标记</li>
+<li>“Objects have different MaterialPropertyBlock set.”  此物体有不同的MaterialPropertyBlock集合</li>
+<li>“Non-instanced properties set for instanced shader.”  Instanced的着色器有非instanced属性集</li>
+<li>“Objects are lightmapped.”  物体使用了不同的LightMap或者虽然使用相同的LightMap但使用的UV不同</li>
+<li>“Objects are affected by different light probes.”  此物体受到不同的光照探针影响</li>
+<li>“Objects are shadowed by baked occlusions and have different occlusion factors.”  此物体烘焙了遮挡，并且设置了不同的遮挡因子</li>
+<li>“Objects are affected by different reflection probes.”  此物体受到不同的反射探针影响</li>
+<li>“Rendering different meshes or submeshes with GPU instancing.” 使用GPU实例化渲染不同的网格或子网格</li>
+<li>“Objects have different batching-static settings.” 此物体有不同的静态合批设置</li>
+<li>“Objects belong to different static batches.” 此物体归属不同的Static Batches</li>
+<li>&ldquo;Dynamic Batching is turned off in the Player Settings or is disabled temporarily in the current context to avoid z-fighting.” 在Player Settings中关闭了动态合批，或者在当前的环境中为了避免深度冲突而临时关闭了合批</li>
+<li>“There are too many indices (more than 32k) in a dynamic batch.” 动态合批中有太多的索引（大于32k）</li>
+<li>“A mesh renderer has additional vertex streams. Dynamic batching doesn‘t support such mesh renderers.” Mesh Renderer具有其他顶点流。动态批处理不支持此类网格渲染器。</li>
+<li>“A submesh we are trying to dynamic-batch has more than 300 vertices.” 动态合批超过300个顶点</li>
+<li>“A submesh we are trying to dynamic-batch has more than 900 vertex attributes.” 动态合批超过900个顶点属性</li>
+<li>“This is the first draw call of a new shadow cascade.” 新阴影级联的第一次绘制调用</li>
+<li>“The material doesn‘t have GPU instancing enabled.”  材质未启用GPU Instancing功能</li>
+<li>“Objects are rendered using different rendering functions. This can happen if the type of renderer is different (eg Mesh/Skinned Mesh) or when using different settings within the same renderer, such as Sprite Masking.”  使用不同的渲染。如果渲染器的类型不同（例如网格/蒙皮网格），或者在同一渲染器中使用不同的设置（例如精灵遮罩），则可能会发生这种情况。</li>
+<li>“Objects have different batching keys. This is usually caused by using different vertex streams on Particle Systems, or by mixing Lines and Trails, or by mixing lit and unlit geometry.” 此对象具有不同的Batching Keys。 这通常是由于在粒子系统上使用不同的顶点流，或混合线和轨迹，或混合Lit和Unlit的几何体造成的。&rdquo;</li>
+<li>“Mesh uses 32 bit index buffer.” Mesh使用了32位的索引缓冲</li>
+<li>“Submesh has non-zero base vertex.”  子网格对象有非0的基础顶点， submesh.BaseVertexLocation != 0</li>
+<li>“The previous instanced draw call has reached its maximum instance count.” 先前的InstanceDrawCall已经达到了Instance的最大数量</li>
+<li>“Motion Vector rendering doesn‘t support batching.” Motion Vector的渲染不支持Batching</li>
+<li>“When using late latching, children of an XR late latched GameObject do not use batching.” 使用late latching时，XR late latched GameObject的子级不能合批</li>
+<li>“Objects have different bounds and bounds instancing is disabled.” 对象具有不同的包裹体，那么包裹体实例化被禁用</li>
+<li>“SRP: Node have different shaders.” 节点具有不同的着色器</li>
+<li>“SRP: Node use multi-pass shader” 节点使用了多Pass着色器</li>
+<li>“SRP: Node use different shader keywords” 节点使用了不同的着色器关键字</li>
+<li>“SRP: End of the batch flush” Batch Flush结束</li>
+<li>“SRP: Node is not compatible with SRP batcher” 节点与SRP Batcher不兼容</li>
+<li>“SRP: Node material requires device state change” 节点材质需要改变渲染设备状态</li>
+<li>“SRP: First call from ScriptableRenderLoopJob” ScriptableRenderLoopJob第一次调用</li>
+<li>“SRP: This material has custom buffer override” 材质有自定义重写的Buffer</li>
+</ol>
+<h1 id="其他内容">其他内容<a hidden class="anchor" aria-hidden="true" href="#其他内容">#</a></h1>
+<p><img alt="image-20230319175837322" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303191758424.png"></p>
+<p><img alt="image-20230319175846631" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303191758715.png"></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/unity/">Unity</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/unity/unity-dots/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Unity-Dots</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/unity/unity-%E7%A7%BB%E5%8A%A8%E7%AB%AF%E6%89%93%E5%8C%85%E8%AE%B0%E5%BD%95%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Unity-移动端打包记录（持续更新）</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-性能优化 on x"
+            href="https://x.com/intent/tweet/?text=Unity-%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E6%2580%25A7%25E8%2583%25BD%25E4%25BC%2598%25E5%258C%2596%2f&amp;hashtags=Unity">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-性能优化 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E6%2580%25A7%25E8%2583%25BD%25E4%25BC%2598%25E5%258C%2596%2f&amp;title=Unity-%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96&amp;summary=Unity-%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E6%2580%25A7%25E8%2583%25BD%25E4%25BC%2598%25E5%258C%2596%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-性能优化 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E6%2580%25A7%25E8%2583%25BD%25E4%25BC%2598%25E5%258C%2596%2f&title=Unity-%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-性能优化 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E6%2580%25A7%25E8%2583%25BD%25E4%25BC%2598%25E5%258C%2596%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-性能优化 on whatsapp"
+            href="https://api.whatsapp.com/send?text=Unity-%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E6%2580%25A7%25E8%2583%25BD%25E4%25BC%2598%25E5%258C%2596%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-性能优化 on telegram"
+            href="https://telegram.me/share/url?text=Unity-%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E6%2580%25A7%25E8%2583%25BD%25E4%25BC%2598%25E5%258C%2596%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-性能优化 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=Unity-%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96&u=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E6%2580%25A7%25E8%2583%25BD%25E4%25BC%2598%25E5%258C%2596%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">LiuYingbo Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

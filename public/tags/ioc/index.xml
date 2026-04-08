@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>IOC on LiuYingbo Blog</title>
+    <link>http://localhost:1313/tags/ioc/</link>
+    <description>Recent content in IOC on LiuYingbo Blog</description>
+    <generator>Hugo -- 0.155.2</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 15 Jan 2022 16:09:32 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/ioc/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>IOC</title>
+      <link>http://localhost:1313/posts/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/ioc/</link>
+      <pubDate>Sat, 15 Jan 2022 16:09:32 +0000</pubDate>
+      <guid>http://localhost:1313/posts/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/ioc/</guid>
+      <description>&lt;h1 id=&#34;简介&#34;&gt;简介&lt;/h1&gt;
+&lt;h2 id=&#34;ioc简介&#34;&gt;IOC简介&lt;/h2&gt;
+&lt;p&gt;IOC全称为Invertuon Of Control，也就是控制反转。
+控制反转是一种设计思想。而不是具体的技术。
+IOC这种设计思想有很多方式实现，最常见的实现方式就是DI。&lt;/p&gt;
+&lt;h2 id=&#34;di简介&#34;&gt;DI简介&lt;/h2&gt;
+&lt;p&gt;DI的全称是Dependency Injection，也就是依赖注入，是IOC思想的一种实现。&lt;/p&gt;
+&lt;h3 id=&#34;依赖&#34;&gt;依赖&lt;/h3&gt;
+&lt;p&gt;什么是依赖？看下面这段代码：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;public class A
+{
+  public B b = new B();
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;上述代码中就是A依赖B。
+我再这里理解为，A对象里面持有B对象，如果B对象不存在，那么A就无法成立，所以是A对象依赖B。&lt;/p&gt;
+&lt;h3 id=&#34;注入&#34;&gt;注入&lt;/h3&gt;
+&lt;p&gt;什么是注入呢？看下面这段代码：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;public class A
+{
+  public B b = null;
+}
+
+public class B {}
+
+void Main()
+{
+  var a = new A();
+  var b = new B();
+
+  a.b = b;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;从上面可以看出总共有两个对象，分别是a和b。可以看出现在的A对象是依赖B对象的。
+**a.b=b;**这句代码就是将b对象注入到a对象的b成员中。
+有时候可以把注入就理解成设置值。
+依赖注入也就是吧某个对象依赖的对象进行赋值。&lt;/p&gt;
+&lt;h1 id=&#34;di&#34;&gt;DI&lt;/h1&gt;
+&lt;h2 id=&#34;qf中的ioc&#34;&gt;QF中的IOC&lt;/h2&gt;
+&lt;p&gt;QF是一种框架，是作者最近正在学习的一种框架，这个框架不要求会，我们就拿QF中的DI来进行详细的了解一下DI。
+我们在使用DI方案的时候一般都离不开DI容器这个概念。育德时候DI容易也叫做IOC容器。就是：DIContainer 和 IOCContainer。
+下面我们来看看QF中是如何使用IOC的。&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace QF.Master.Example
+{    
+
+    public class ServiceA
+    {
+        public void Say()
+        {
+            Debug.Log(&amp;#34;I am ServiceA:&amp;#34; + this.GetHashCode());
+        }
+    }
+
+    public class IOCExample : MonoBehaviour 
+    {
+        // 声明为需要注入的对象
+        [Inject] 
+        public ServiceA A {get;set;}
+
+        void Start () 
+        {
+            // 创建实例容器
+            var container = new QFrameworkContainer();
+
+            // 注册类型
+            container.Register&amp;lt;ServiceA&amp;gt;();
+
+            // 注入对象（会自动查找 Inject Atrributet的对象)
+            container.Inject(this);
+
+            // 注入之后，就可以直接使用 A 对象了
+            A.Say();        
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;上面是完整的案例，我们只要仔细看下面的代码：&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

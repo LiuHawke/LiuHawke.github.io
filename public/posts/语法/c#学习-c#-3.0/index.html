@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>C#学习-C# 3.0 | LiuYingbo Blog</title>
+<meta name="keywords" content="C#, 学习">
+<meta name="description" content="C# 3.0 版本
+C# 3.0 新增的语法特性，如下:
+
+自动实现的属性
+匿名类型
+查询表达式（LINQ）
+表达式
+表达式树
+扩展方法
+隐式类型本地变量
+分部方法
+对象和集合初始值设定项
+
+自动实现属性
+这个特性非常简单，代码如下:
+public class PropertyExample
+{
+    // C# 3.0之前
+    private string mNickName;
+
+    public string NickName
+    {
+        get { return mNickName; }
+        set { mNickName = value; }
+    }
+
+    // C# 3.0
+    public string Name { get; set; }
+}
+非常简单，看代码就懂了。
+匿名类型
+代码也很简单，如下:
+var person = new {Title = &#34;Name&#34;};
+Debug.Log(person.Title);
+lambda 表达式
+lambda 表达式非常简单，就是匿名方法的一种表现，如下:
+using System;
+
+public class LambdaExpressionExample
+{
+    void Func()
+    {
+    }
+
+    void Main()
+    {
+        // C# 1.0
+        Action action1 = new Action(Func);
+
+        // C# 2.0 
+        Action actionB = delegate {  };
+  
+        // C# 3.0
+        Action acionC = () =&gt; { };
+    }
+}
+表达式树
+表达式树实际上是 Expression 这个 API 的使用，先看下代码，如下:">
+<meta name="author" content="LiuYingbo">
+<link rel="canonical" href="http://localhost:1313/posts/%E8%AF%AD%E6%B3%95/c%23%E5%AD%A6%E4%B9%A0-c%23-3.0/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.a29c24210eb31d9ce56f669c66a35c9c51b17376b7764e336a49af7dec914cf0.css" integrity="sha256-opwkIQ6zHZzlb2acZqNcnFGxc3a3dk4zakmvfeyRTPA=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/%E8%AF%AD%E6%B3%95/c%23%E5%AD%A6%E4%B9%A0-c%23-3.0/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="LiuYingbo Blog (Alt + H)">LiuYingbo Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/categories/" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives/" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">Home</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      C#学习-C# 3.0
+    </h1>
+    <div class="post-meta"><span title='2021-12-05 21:01:21 +0000 UTC'>December 5, 2021</span>&nbsp;·&nbsp;<span>6 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span>
+
+</div>
+  </header> 
+<figure class="entry-cover">
+        <img loading="eager" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191917907.png" alt="">
+        
+</figure><div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#c-30-%e7%89%88%e6%9c%ac" aria-label="C# 3.0 版本">C# 3.0 版本</a></li>
+                <li>
+                    <a href="#%e8%87%aa%e5%8a%a8%e5%ae%9e%e7%8e%b0%e5%b1%9e%e6%80%a7" aria-label="自动实现属性">自动实现属性</a></li>
+                <li>
+                    <a href="#%e5%8c%bf%e5%90%8d%e7%b1%bb%e5%9e%8b" aria-label="匿名类型">匿名类型</a></li>
+                <li>
+                    <a href="#lambda-%e8%a1%a8%e8%be%be%e5%bc%8f" aria-label="lambda 表达式">lambda 表达式</a></li>
+                <li>
+                    <a href="#%e8%a1%a8%e8%be%be%e5%bc%8f%e6%a0%91" aria-label="表达式树">表达式树</a></li>
+                <li>
+                    <a href="#%e6%89%a9%e5%b1%95%e6%96%b9%e6%b3%95" aria-label="扩展方法">扩展方法</a></li>
+                <li>
+                    <a href="#%e9%9a%90%e5%bc%8f%e7%b1%bb%e5%9e%8b%e6%9c%ac%e5%9c%b0%e5%8f%98%e9%87%8f" aria-label="隐式类型本地变量">隐式类型本地变量</a></li>
+                <li>
+                    <a href="#%e5%88%86%e9%83%a8%e6%96%b9%e6%b3%95" aria-label="分部方法">分部方法</a></li>
+                <li>
+                    <a href="#%e5%af%b9%e8%b1%a1%e5%92%8c%e9%9b%86%e5%90%88%e5%88%9d%e5%a7%8b%e5%80%bc%e8%ae%be%e5%ae%9a%e9%a1%b9" aria-label="对象和集合初始值设定项">对象和集合初始值设定项</a></li>
+                <li>
+                    <a href="#%e6%89%a9%e5%b1%95%e6%96%b9%e6%b3%95-1" aria-label="扩展方法">扩展方法</a><ul>
+                        
+                <li>
+                    <a href="#%e4%bc%a0%e7%bb%9f%e7%94%a8%e6%b3%95%e6%89%a9%e5%b1%95%e5%af%b9%e8%b1%a1%e7%9a%84%e6%96%b9%e6%b3%95" aria-label="传统用法：扩展对象的方法">传统用法：扩展对象的方法</a></li>
+                <li>
+                    <a href="#%e5%9f%ba%e7%a1%80%e7%9a%84%e9%93%be%e5%bc%8f-api" aria-label="基础的链式 API">基础的链式 API</a></li>
+                <li>
+                    <a href="#fluent-api" aria-label="Fluent API">Fluent API</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%9f%a5%e8%af%a2%e8%a1%a8%e8%be%be%e5%bc%8flinq" aria-label="查询表达式（LINQ)">查询表达式（LINQ)</a><ul>
+                        
+                <li>
+                    <a href="#linq-%e6%89%a9%e5%b1%95" aria-label="LINQ 扩展">LINQ 扩展</a></li>
+                <li>
+                    <a href="#%e5%ba%95%e5%b1%82%e5%ae%9e%e7%8e%b0" aria-label="底层实现">底层实现</a></li>
+                <li>
+                    <a href="#%e6%80%bb%e7%bb%93" aria-label="总结">总结</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%80%bb%e7%bb%93-1" aria-label="总结">总结</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="c-30-版本">C# 3.0 版本<a hidden class="anchor" aria-hidden="true" href="#c-30-版本">#</a></h2>
+<p>C# 3.0 新增的语法特性，如下:</p>
+<ul>
+<li>自动实现的属性</li>
+<li>匿名类型</li>
+<li>查询表达式（LINQ）</li>
+<li>表达式</li>
+<li>表达式树</li>
+<li>扩展方法</li>
+<li>隐式类型本地变量</li>
+<li>分部方法</li>
+<li>对象和集合初始值设定项</li>
+</ul>
+<h2 id="自动实现属性">自动实现属性<a hidden class="anchor" aria-hidden="true" href="#自动实现属性">#</a></h2>
+<p>这个特性非常简单，代码如下:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="kd">public</span> <span class="k">class</span> <span class="nc">PropertyExample</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// C# 3.0之前</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kt">string</span> <span class="n">mNickName</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">string</span> <span class="n">NickName</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="n">mNickName</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">set</span> <span class="p">{</span> <span class="n">mNickName</span> <span class="p">=</span> <span class="k">value</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// C# 3.0</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">string</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>非常简单，看代码就懂了。</p>
+<h2 id="匿名类型">匿名类型<a hidden class="anchor" aria-hidden="true" href="#匿名类型">#</a></h2>
+<p>代码也很简单，如下:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">person</span> <span class="p">=</span> <span class="k">new</span> <span class="p">{</span><span class="n">Title</span> <span class="p">=</span> <span class="s">&#34;Name&#34;</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="n">person</span><span class="p">.</span><span class="n">Title</span><span class="p">);</span>
+</span></span></code></pre></div><h2 id="lambda-表达式">lambda 表达式<a hidden class="anchor" aria-hidden="true" href="#lambda-表达式">#</a></h2>
+<p>lambda 表达式非常简单，就是匿名方法的一种表现，如下:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="k">class</span> <span class="nc">LambdaExpressionExample</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">void</span> <span class="n">Func</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">void</span> <span class="n">Main</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// C# 1.0</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Action</span> <span class="n">action1</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Action</span><span class="p">(</span><span class="n">Func</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// C# 2.0 </span>
+</span></span><span class="line"><span class="cl">        <span class="n">Action</span> <span class="n">actionB</span> <span class="p">=</span> <span class="k">delegate</span> <span class="p">{</span>  <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">        <span class="c1">// C# 3.0</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Action</span> <span class="n">acionC</span> <span class="p">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h2 id="表达式树">表达式树<a hidden class="anchor" aria-hidden="true" href="#表达式树">#</a></h2>
+<p>表达式树实际上是 Expression 这个 API 的使用，先看下代码，如下:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System.Linq.Expressions</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">Master</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">class</span> <span class="nc">ExpressionTreeExample</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">void</span> <span class="n">Start</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// 创建表达式树  </span>
+</span></span><span class="line"><span class="cl">			<span class="n">Expression</span><span class="p">&lt;</span><span class="n">Func</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="kt">bool</span><span class="p">&gt;&gt;</span> <span class="n">expr</span> <span class="p">=</span> <span class="n">num</span> <span class="p">=&gt;</span> <span class="n">num</span> <span class="p">&lt;</span> <span class="m">5</span><span class="p">;</span>  
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">			<span class="c1">// 将表达式树编译为一个委托  </span>
+</span></span><span class="line"><span class="cl">			<span class="n">Func</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="kt">bool</span><span class="p">&gt;</span> <span class="n">result</span> <span class="p">=</span> <span class="n">expr</span><span class="p">.</span><span class="n">Compile</span><span class="p">();</span>  
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">			<span class="c1">// 执行表达式树的委托</span>
+</span></span><span class="line"><span class="cl">			<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="n">result</span><span class="p">(</span><span class="m">4</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 输出结果</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// True</span>
+</span></span></code></pre></div><p>通过表达式树可以构造一个委托出来，当执行委托的时候，就执行表达式树所表达的代码。</p>
+<p>以上这段代码是通过 labmda 表达式来构建的表达式树，而最原始的表达式树的创建过程是通过 Expression 提供的 API，一个一个构建的，代码如下:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System.Linq.Expressions</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">Master</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">class</span> <span class="nc">ExpressionTreeExample</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">void</span> <span class="n">Start</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// 创建一个 num 参数</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="n">num</span> <span class="p">=</span> <span class="n">Expression</span><span class="p">.</span><span class="n">Parameter</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="kt">int</span><span class="p">),</span> <span class="s">&#34;num&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// 创建一个 常数 5</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="n">five</span> <span class="p">=</span> <span class="n">Expression</span><span class="p">.</span><span class="n">Constant</span><span class="p">(</span><span class="m">5</span><span class="p">,</span> <span class="k">typeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// 创建一个表达式 num &lt; 5</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="n">numLessThan5</span> <span class="p">=</span> <span class="n">Expression</span><span class="p">.</span><span class="n">LessThan</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">five</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// 创建一个 labmda 表达式 (num)=&gt;num &lt; 5</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="n">labmda</span> <span class="p">=</span> <span class="n">Expression</span><span class="p">.</span><span class="n">Lambda</span><span class="p">&lt;</span><span class="n">Func</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="kt">bool</span><span class="p">&gt;&gt;(</span><span class="n">numLessThan5</span><span class="p">,</span> <span class="k">new</span> <span class="n">ParameterExpression</span><span class="p">[]</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="n">num</span>
+</span></span><span class="line"><span class="cl">			<span class="p">});</span>
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl">			<span class="c1">// 将表达式树编译为一个委托  </span>
+</span></span><span class="line"><span class="cl">			<span class="n">Func</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="kt">bool</span><span class="p">&gt;</span> <span class="n">result</span> <span class="p">=</span> <span class="n">labmda</span><span class="p">.</span><span class="n">Compile</span><span class="p">();</span>  
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">			<span class="c1">// 执行表达式树的委托</span>
+</span></span><span class="line"><span class="cl">			<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="n">result</span><span class="p">(</span><span class="m">4</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 输出结果</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// True</span>
+</span></span></code></pre></div><p>以上的构建过程同 lambda 形式的构建过程。</p>
+<p>表达式树非常适合做方法参数的验证等工作。</p>
+<h2 id="扩展方法">扩展方法<a hidden class="anchor" aria-hidden="true" href="#扩展方法">#</a></h2>
+<p>扩展方法也非常简单，代码如下:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">Master</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">class</span> <span class="nc">StaticExtensionsExample</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">void</span> <span class="n">Start</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">this</span><span class="p">.</span><span class="n">Show</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="cs">/// &lt;summary&gt;</span>
+</span></span><span class="line"><span class="cl">	<span class="cs">/// 定义</span>
+</span></span><span class="line"><span class="cl">	<span class="cs">/// 需要是静态类</span>
+</span></span><span class="line"><span class="cl">	<span class="cs">/// &lt;/summary&gt;</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="kd">static</span> <span class="k">class</span> <span class="nc">MonoExtensions</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="cs">/// &lt;summary&gt;</span>
+</span></span><span class="line"><span class="cl">		<span class="cs">/// </span>
+</span></span><span class="line"><span class="cl">		<span class="cs">/// &lt;/summary&gt;</span>
+</span></span><span class="line"><span class="cl">		<span class="cs">/// &lt;param name=&#34;self&#34;&gt;需要有 this 关键字&lt;/param&gt;</span>
+</span></span><span class="line"><span class="cl">		<span class="kd">public</span> <span class="kd">static</span> <span class="k">void</span> <span class="n">Show</span><span class="p">(</span><span class="k">this</span> <span class="n">MonoBehaviour</span> <span class="n">self</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="n">self</span><span class="p">.</span><span class="n">gameObject</span><span class="p">.</span><span class="n">SetActive</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h2 id="隐式类型本地变量">隐式类型本地变量<a hidden class="anchor" aria-hidden="true" href="#隐式类型本地变量">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">Master</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">class</span> <span class="nc">StaticExtensionsExample</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">void</span> <span class="n">Start</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// 隐式 （使用 var)</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="n">age</span> <span class="p">=</span> <span class="m">10</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// 显式</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">int</span> <span class="n">age2</span> <span class="p">=</span> <span class="m">10</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h2 id="分部方法">分部方法<a hidden class="anchor" aria-hidden="true" href="#分部方法">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">Master</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">class</span> <span class="nc">StaticExtensionsExample</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">void</span> <span class="n">Start</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="n">obj</span> <span class="p">=</span> <span class="k">new</span> <span class="n">TestPartialMethod</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="n">obj</span><span class="p">.</span><span class="n">Click</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="kd">partial</span> <span class="k">class</span> <span class="nc">TestPartialMethod</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="kd">public</span> <span class="k">void</span> <span class="n">Click</span><span class="p">(){</span> <span class="n">OnClick</span><span class="p">();}</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">		<span class="cs">/// &lt;summary&gt;</span>
+</span></span><span class="line"><span class="cl">		<span class="cs">/// 不能有访问权限,实际上是 private 权限</span>
+</span></span><span class="line"><span class="cl">		<span class="cs">/// &lt;/summary&gt;</span>
+</span></span><span class="line"><span class="cl">		<span class="kd">partial</span> <span class="k">void</span> <span class="n">OnClick</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="kd">partial</span> <span class="k">class</span> <span class="nc">TestPartialMethod</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="kd">partial</span> <span class="k">void</span> <span class="n">OnClick</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="s">&#34;OnClick&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 输出结果</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// OnClick</span>
+</span></span></code></pre></div><h2 id="对象和集合初始值设定项">对象和集合初始值设定项<a hidden class="anchor" aria-hidden="true" href="#对象和集合初始值设定项">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System.Collections.Generic</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">Master</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">class</span> <span class="nc">InitialExample</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">void</span> <span class="n">Start</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="n">obj</span> <span class="p">=</span> <span class="k">new</span> <span class="n">SomeClass</span><span class="p">()</span> <span class="p">{</span><span class="n">Age</span> <span class="p">=</span> <span class="m">10</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="n">students</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;()</span> <span class="p">{</span><span class="s">&#34;凉鞋&#34;</span><span class="p">,</span> <span class="s">&#34;匠人&#34;</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="n">dictionary</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Dictionary</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;()</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="p">{</span><span class="s">&#34;A&#34;</span><span class="p">,</span> <span class="s">&#34;Apple&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">				<span class="p">{</span><span class="s">&#34;B&#34;</span><span class="p">,</span> <span class="s">&#34;Banana&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">			<span class="p">};</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">class</span> <span class="nc">SomeClass</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="kd">public</span> <span class="kt">int</span> <span class="n">Age</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h2 id="扩展方法-1">扩展方法<a hidden class="anchor" aria-hidden="true" href="#扩展方法-1">#</a></h2>
+<p>因为扩展方法是 C# 的特色概念，也就是说 C# 有，但是别的语言没有（最近用于 Flutter 的 Dart 支持了扩展方法）。</p>
+<p>这样就导致了很多在 C# 容易做的事情，在别的语言中就变得非常困难。</p>
+<p>扩展方法可以让我们对现有的对象增加方法，而不用去修改对象类的代码、编译等。</p>
+<p>扩展方法本质上是一个静态方法。</p>
+<p>在 C# 中，最常见的扩展方法就是 LINQ 。</p>
+<p>对于 Unity 开发者来说，第一次接触扩展方法，应该是在使用 DOTween 的时候。</p>
+<p>DOTween 的示例代码如下:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="n">transform</span><span class="p">.</span><span class="n">DOMove</span><span class="p">(</span><span class="k">new</span> <span class="n">Vector3</span><span class="p">(</span><span class="m">2</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">2</span><span class="p">),</span> <span class="m">2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="n">SetEase</span><span class="p">(</span><span class="n">Ease</span><span class="p">.</span><span class="n">OutQuint</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="n">SetLoops</span><span class="p">(</span><span class="m">4</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="n">OnComplete</span><span class="p">(</span><span class="n">myFunction</span><span class="p">);</span>
+</span></span></code></pre></div><p>当然不用扩展方法，也是可以做到以上这样的链式编程的，但是有了扩展方法，会更容易实现链式的 API 的，可以让每个类各司其职。</p>
+<h3 id="传统用法扩展对象的方法">传统用法：扩展对象的方法<a hidden class="anchor" aria-hidden="true" href="#传统用法扩展对象的方法">#</a></h3>
+<p>通过再封装的方式重命名 Unity 的 API，比如:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">static</span> <span class="k">class</span> <span class="nc">BehaviourExtensions</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">public</span> <span class="kd">static</span> <span class="n">GameObject</span> <span class="n">Show</span><span class="p">(</span><span class="k">this</span> <span class="n">GameObject</span> <span class="n">selfObj</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">selfObj</span><span class="p">.</span><span class="n">SetActive</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">selfObj</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="kd">public</span> <span class="kd">static</span> <span class="n">T</span> <span class="n">Show</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="k">this</span> <span class="n">T</span> <span class="n">selfComponent</span><span class="p">)</span> <span class="k">where</span> <span class="n">T</span> <span class="p">:</span> <span class="n">Component</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">selfComponent</span><span class="p">.</span><span class="n">gameObject</span><span class="p">.</span><span class="n">Show</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">selfComponent</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 使用方式:</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// this.Show(); // this 是 MonoBehaivour</span>
+</span></span></code></pre></div><h3 id="基础的链式-api">基础的链式 API<a hidden class="anchor" aria-hidden="true" href="#基础的链式-api">#</a></h3>
+<p>代码如下:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">QFramework.Master</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">class</span> <span class="nc">ExtensionsExample</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="c1">// 不用扩展方法的方式定义</span>
+</span></span><span class="line"><span class="cl">		<span class="kd">public</span> <span class="n">ExtensionsExample</span> <span class="n">SayHello</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="s">&#34;Hello&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="kd">public</span> <span class="n">ExtensionsExample</span> <span class="n">SayGoodBye</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="s">&#34;Goodbye&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="k">void</span> <span class="n">Start</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">this</span><span class="p">.</span><span class="n">SayHello</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">				<span class="p">.</span><span class="n">DoSomething</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">				<span class="p">.</span><span class="n">SayGoodBye</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="cs">/// &lt;summary&gt;</span>
+</span></span><span class="line"><span class="cl">	<span class="cs">/// 扩展方法的方式定义</span>
+</span></span><span class="line"><span class="cl">	<span class="cs">/// &lt;/summary&gt;</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="kd">static</span> <span class="k">class</span> <span class="nc">MonoExtensions</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="cs">/// &lt;summary&gt;</span>
+</span></span><span class="line"><span class="cl">		<span class="cs">/// 使用泛型约束</span>
+</span></span><span class="line"><span class="cl">		<span class="cs">/// &lt;/summary&gt;</span>
+</span></span><span class="line"><span class="cl">		<span class="cs">/// &lt;param name=&#34;self&#34;&gt;&lt;/param&gt;</span>
+</span></span><span class="line"><span class="cl">		<span class="cs">/// &lt;typeparam name=&#34;T&#34;&gt;&lt;/typeparam&gt;</span>
+</span></span><span class="line"><span class="cl">		<span class="cs">/// &lt;returns&gt;&lt;/returns&gt;</span>
+</span></span><span class="line"><span class="cl">		<span class="kd">public</span> <span class="kd">static</span> <span class="n">T</span> <span class="n">DoSomething</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="k">this</span> <span class="n">T</span> <span class="n">self</span><span class="p">)</span> <span class="k">where</span> <span class="n">T</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="n">self</span><span class="p">.</span><span class="n">name</span> <span class="p">=</span> <span class="s">&#34;DoSomething&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="n">self</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>链式的 API 的核心就是返回自己（return this），可以把写死，也可以用泛型约束做成稍微通用一点的链式 API。</p>
+<h3 id="fluent-api">Fluent API<a hidden class="anchor" aria-hidden="true" href="#fluent-api">#</a></h3>
+<p>Fluent API，流式的 API，或者说有阶段的 API。</p>
+<p>其实以上的两种扩展方法使用方式都属于 Fluent API 范畴，只不过这些 API 还不够 Fluent。</p>
+<p>Fluent API 是两个老外提出的。</p>
+<p>有阶段的链式 API，举个例子。代码如下:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">QFramework.Master</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">interface</span> <span class="nc">IStageStart</span> <span class="p">:</span> <span class="n">IStageA</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">interface</span> <span class="nc">IStageA</span> <span class="p">:</span> <span class="n">IStageB</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">interface</span> <span class="nc">IStageB</span> <span class="p">:</span> <span class="n">IStageBase</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">interface</span> <span class="nc">IStageBase</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">void</span> <span class="n">ExecuteStage</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="kd">static</span> <span class="k">class</span> <span class="nc">StageExtensions</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="kd">public</span> <span class="kd">static</span> <span class="n">IStageA</span> <span class="n">EnterStageA</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="k">this</span> <span class="n">T</span> <span class="n">self</span><span class="p">)</span> <span class="k">where</span> <span class="n">T</span> <span class="p">:</span> <span class="n">IStageStart</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="n">self</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="kd">public</span> <span class="kd">static</span> <span class="n">IStageB</span> <span class="n">EnterStageB</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="k">this</span> <span class="n">T</span> <span class="n">self</span><span class="p">)</span> <span class="k">where</span> <span class="n">T</span> <span class="p">:</span> <span class="n">IStageA</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="n">self</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">class</span> <span class="nc">ExtensionsExample</span> <span class="p">:</span> <span class="n">MonoBehaviour</span><span class="p">,</span> <span class="n">IStageStart</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">void</span> <span class="n">Start</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">this</span><span class="p">.</span><span class="n">EnterStageA</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">				<span class="p">.</span><span class="n">EnterStageB</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">				<span class="p">.</span><span class="n">ExecuteStage</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl">			<span class="k">this</span><span class="p">.</span><span class="n">EnterStageB</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">				<span class="p">.</span><span class="n">ExecuteStage</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl">			<span class="k">this</span><span class="p">.</span><span class="n">ExecuteStage</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// 这个会报编译错误 因为顺序不对</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// this.ExecuteStage()</span>
+</span></span><span class="line"><span class="cl">				<span class="c1">// .EnterStageB(); </span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="kd">public</span> <span class="k">void</span> <span class="n">ExecuteStage</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>核心就是通过泛型约束和接口的继承，来强制让 API 按照一定顺序的调用。</p>
+<h2 id="查询表达式linq">查询表达式（LINQ)<a hidden class="anchor" aria-hidden="true" href="#查询表达式linq">#</a></h2>
+<p>查询表达式是用上了之后会离不开的一个特性，它主要做的一个事情就是对数据集合的查询。</p>
+<p>我们看下示例代码：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System.Collections.Generic</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System.Linq</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">QFramework.Master</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">class</span> <span class="nc">LINQExample</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="kd">public</span> <span class="k">class</span> <span class="nc">Student</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="kd">public</span> <span class="kt">string</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="kd">public</span> <span class="kt">int</span> <span class="n">Age</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="k">void</span> <span class="n">Start</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="n">students</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Student</span><span class="p">&gt;()</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="k">new</span> <span class="n">Student</span><span class="p">()</span> <span class="p">{</span><span class="n">Name</span> <span class="p">=</span> <span class="s">&#34;凉鞋&#34;</span><span class="p">,</span> <span class="n">Age</span> <span class="p">=</span> <span class="m">18</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">				<span class="k">new</span> <span class="n">Student</span><span class="p">()</span> <span class="p">{</span><span class="n">Name</span> <span class="p">=</span> <span class="s">&#34;hor&#34;</span><span class="p">,</span> <span class="n">Age</span> <span class="p">=</span> <span class="m">16</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">				<span class="k">new</span> <span class="n">Student</span><span class="p">()</span> <span class="p">{</span><span class="n">Name</span> <span class="p">=</span> <span class="s">&#34;天赐&#34;</span><span class="p">,</span> <span class="n">Age</span> <span class="p">=</span> <span class="m">17</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">				<span class="k">new</span> <span class="n">Student</span><span class="p">()</span> <span class="p">{</span><span class="n">Name</span> <span class="p">=</span> <span class="s">&#34;阿三&#34;</span><span class="p">,</span> <span class="n">Age</span> <span class="p">=</span> <span class="m">18</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">			<span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// 1.基本的遍历</span>
+</span></span><span class="line"><span class="cl">			<span class="n">students</span><span class="p">.</span><span class="n">ForEach</span><span class="p">(</span><span class="n">s</span> <span class="p">=&gt;</span> <span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">Name</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// 2.基本的条件过滤（Age &gt; 5)</span>
+</span></span><span class="line"><span class="cl">			<span class="n">students</span><span class="p">.</span><span class="n">Where</span><span class="p">(</span><span class="n">s</span> <span class="p">=&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">Age</span> <span class="p">&gt;</span> <span class="m">5</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">				<span class="p">.</span><span class="n">ToList</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">				<span class="p">.</span><span class="n">ForEach</span><span class="p">(</span><span class="n">s</span> <span class="p">=&gt;</span> <span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">Name</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// 与以上代码等价</span>
+</span></span><span class="line"><span class="cl">			<span class="p">(</span><span class="k">from</span> <span class="n">s</span> <span class="k">in</span> <span class="n">students</span>
+</span></span><span class="line"><span class="cl">					<span class="k">where</span> <span class="n">s</span><span class="p">.</span><span class="n">Age</span> <span class="p">&gt;</span> <span class="m">5</span>
+</span></span><span class="line"><span class="cl">					<span class="k">select</span> <span class="n">s</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">				<span class="p">.</span><span class="n">ToList</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">				<span class="p">.</span><span class="n">ForEach</span><span class="p">(</span><span class="n">s</span> <span class="p">=&gt;</span> <span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">Name</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// 3.基本的变换（student 转换成 name）</span>
+</span></span><span class="line"><span class="cl">			<span class="n">students</span><span class="p">.</span><span class="n">Select</span><span class="p">(</span><span class="n">s</span> <span class="p">=&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">Name</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">				<span class="p">.</span><span class="n">ToList</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">				<span class="p">.</span><span class="n">ForEach</span><span class="p">(</span><span class="n">name</span> <span class="p">=&gt;</span> <span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="n">name</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// 与以上代码等价</span>
+</span></span><span class="line"><span class="cl">			<span class="p">(</span><span class="k">from</span> <span class="n">s</span> <span class="k">in</span> <span class="n">students</span>
+</span></span><span class="line"><span class="cl">					<span class="k">select</span> <span class="n">s</span><span class="p">.</span><span class="n">Name</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">				<span class="p">.</span><span class="n">ToList</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">				<span class="p">.</span><span class="n">ForEach</span><span class="p">(</span><span class="n">name</span> <span class="p">=&gt;</span> <span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="n">name</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// 4.基本的分组（使用学生的名字分组）</span>
+</span></span><span class="line"><span class="cl">			<span class="n">students</span><span class="p">.</span><span class="n">GroupBy</span><span class="p">(</span><span class="n">s</span> <span class="p">=&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">Name</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">				<span class="p">.</span><span class="n">ToList</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">				<span class="p">.</span><span class="n">ForEach</span><span class="p">(</span><span class="k">group</span> <span class="p">=&gt;</span> <span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="k">group</span><span class="p">.</span><span class="n">Count</span><span class="p">()));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// 与以上代码等价</span>
+</span></span><span class="line"><span class="cl">			<span class="p">(</span><span class="k">from</span> <span class="n">s</span> <span class="k">in</span> <span class="n">students</span>
+</span></span><span class="line"><span class="cl">					<span class="k">group</span> <span class="n">s</span> <span class="k">by</span> <span class="n">s</span><span class="p">.</span><span class="n">Name</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">				<span class="p">.</span><span class="n">ToList</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">				<span class="p">.</span><span class="n">ForEach</span><span class="p">(</span><span class="k">group</span> <span class="p">=&gt;</span> <span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="k">group</span><span class="p">.</span><span class="n">Count</span><span class="p">()));</span>
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl">			<span class="c1">// 等等</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>LINQ 这个东西，很重要也很有用，它的理念是函数式编程，底层实现类似于上一篇文章的阶段性链式 API，不过比接口继承 + 泛型约束的方式更复杂一些。</p>
+<p>理解 LINQ 是学习 UniRx 的基础，也是使用 .Net Core 的 Entity Framework Core 的基础。</p>
+<p>LINQ 有各个语言的版本，如果做前端，那么 linq.js 是数据查询的必备的一个库。</p>
+<h3 id="linq-扩展">LINQ 扩展<a hidden class="anchor" aria-hidden="true" href="#linq-扩展">#</a></h3>
+<ul>
+<li>LINQ = IEnumerable + Operator + foreach/ForEach/Single/First/ToList/ToDictionary/ToHashSet等等</li>
+</ul>
+<p>IEnumerable 实际上就是集合，C# 中的 Array、Dictionary、List、Stack、Queue 都是集合，都是可以用 LINQ 的。</p>
+<p>Operator 是操作符：比如 Where、Select、GroupBy、Distinct 都是操作符。</p>
+<p>而以上公式的第三个部分就是具体的操作了，一般情况下，经过 LINQ 操作符操作后得到的是一个集合，这个集合可以直接用 foreach 进行遍历，也可以转换成 List 或则 Dictionary 等数据结构。</p>
+<p>如果想要从头到尾只用一行代码，那么就可以直接 ToList ，然后调用 List 的 ForEach，笔者在上一小节的示例代码就是这么做的。</p>
+<p>主要记住这个核心，那么剩下的就只需要去一个个掌握 操作符（Operator）就可以了。</p>
+<p>具体的每个操作符是什么意思可以看下微软的官方文档，如下:</p>
+<ul>
+<li><a href="https://docs.microsoft.com/zh-cn/dotnet/csharp/linq/">LINQ 教程</a></li>
+<li><a href="https://docs.microsoft.com/zh-cn/dotnet/api/system.linq.enumerable.aggregate?view=netframework-3.5">Enumerable 方法(操作符大全)</a></li>
+</ul>
+<p>进入操作符大全之后具体看这里即可:
+<img alt="image.png" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191929871.png">
+一个个点进去，就能看到每个 API 的简介和示例了。</p>
+<h3 id="底层实现">底层实现<a hidden class="anchor" aria-hidden="true" href="#底层实现">#</a></h3>
+<p>LINQ 的底层实现主要用了以下特性:</p>
+<ul>
+<li>扩展方法</li>
+<li>泛型约束</li>
+<li>表达式树（源码中，没有看到表达式树相关的 API，但是微软的表达式树文档上说 表达式树是 LINQ 的基础）</li>
+</ul>
+<p>而 LINQ 的两个核心接口是，IEnumerable 和 IEnumerator。</p>
+<p>所有的集合都实现了 IEnumerable，比如 List、Dictinoary、Stack 等等。</p>
+<p>所有的操作符都实现了 IEnumerator，比如 Where、Select、GroupBy 等等。</p>
+<p>大部分操作符同时实现了 IEnumerable 和 IEnumurator，这样才可以对集合再进行一次操作。</p>
+<h3 id="总结">总结<a hidden class="anchor" aria-hidden="true" href="#总结">#</a></h3>
+<ul>
+<li>核心接口时 IEnumable 和 IEnumerator</li>
+<li>使用的核心特性为 泛型约束 和 扩展方法</li>
+<li><img alt="image.png" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211191929281.png"></li>
+</ul>
+<h2 id="总结-1">总结<a hidden class="anchor" aria-hidden="true" href="#总结-1">#</a></h2>
+<p>C# 1.0 主要是让 C# 变成了一个合格的面向对象语言，在此之上还提供了委托 Attribute 特性，这两个特性一个是使 C# 朝着函数式编程的方向上发展，另一个则使 C# 可以对程序添加声明性信息，这时候已经有了 Attribute 和 反射 这一黄金搭档。</p>
+<p>完全掌握 C# 1.0，算是对 C# 这门语言达到了入门程度了，这时候用 C# 写一些逻辑是没问题的，只不过实现业务会有点不方便，但是都可以写的，基本上 C# 1.0 所支持的特性是我们平时编程所使用到的大部分特性。</p>
+<p>C# 2.0，主要提供了泛型和迭代器还有匿名方法，提供了泛型之后就需要支持协变和逆变，匿名方法的支持可以让 C# 的回调更加简洁(delegte {})。</p>
+<p>完全掌握 C# 2.0 ，算是对 C# 这门语言达到了基础程度了，在写业务上不会遇到太大的语法特性问题。而 C# 2.0 中的的匿名方法和泛型的 API（比如 List<T>）在业务的开发上会用的比较多，而需要设计泛型 API 的地方一般都是比较偏底层的部分。</p>
+<p>C# 3.0，主要提供了 LINQ 和 扩展方法，这两个算是革命性的特性，有了 LINQ 处理数据的代码就变得更加简洁精炼了，而有了扩展方法使得对系统的扩展能力大幅增强。</p>
+<p>完全掌握 C# 3.0 ，已经算是进阶的使用者了，LINQ 虽然在 Unity 上使用会有点效率问题，但是整体上它的“函数式编程的思想“会根深蒂固地影响我们写的每一行代码，LINQ 大幅简化了我们对数据操作的代码，而扩展方法可以让我们可以写出更合理的代码。</p>
+<p>大概就是这样的一个过程。</p>
+<p>而之后 C# 4.0 到 C# 8.0（截止到 2020 年 1 月），只有一个比较重要的特性，就是 Task 以及 async 和 await 的关键字支持。</p>
+<p>构建 C# 的知识体系，简单的版本如下:</p>
+<p>C# 1.0:</p>
+<ul>
+<li>类（class）</li>
+<li>结构（struct）</li>
+<li>接口（interface）</li>
+<li>事件（event）</li>
+<li>属性（property）</li>
+<li>委托（delegates）</li>
+<li>表达式</li>
+<li>语句</li>
+<li>特性（有时候也叫属性）（Attribute）</li>
+</ul>
+<p>C# 2.0:</p>
+<ul>
+<li>泛型</li>
+<li>分部类型（partial）</li>
+<li>匿名方法</li>
+<li>可以为 null 的值类型</li>
+<li>迭代器</li>
+<li>协变和逆变</li>
+<li>getter/setter 单独可访问性</li>
+<li>方法组转换（委托）</li>
+<li>静态类</li>
+<li>委托推断</li>
+</ul>
+<p>C# 3.0 :</p>
+<ul>
+<li>自动实现的属性</li>
+<li>匿名类型</li>
+<li>查询表达式（LINQ）</li>
+<li>Lambda 表达式</li>
+<li>表达式树</li>
+<li>扩展方法</li>
+<li>隐式类型本地变量</li>
+<li>分部方法</li>
+<li>对象和集合初始值设定项</li>
+</ul>
+<p>以上没有反射这个特性，因为反射不是特性而是 .Net 的 API，当然要支持反射，语言层面上也是要做一些支持的。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/c%23/">C#</a></li>
+      <li><a href="http://localhost:1313/tags/%E5%AD%A6%E4%B9%A0/">学习</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/%E8%AF%AD%E6%B3%95/c%23-%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>C#反射机制</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/%E8%AF%AD%E6%B3%95/c%23%E5%AD%A6%E4%B9%A0-c%23-2.0/">
+    <span class="title">Next »</span>
+    <br>
+    <span>C#学习-C# 2.0</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share C#学习-C# 3.0 on x"
+            href="https://x.com/intent/tweet/?text=C%23%e5%ad%a6%e4%b9%a0-C%23%203.0&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AF%25AD%25E6%25B3%2595%2fc%2523%25E5%25AD%25A6%25E4%25B9%25A0-c%2523-3.0%2f&amp;hashtags=C%23%2c%e5%ad%a6%e4%b9%a0">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share C#学习-C# 3.0 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AF%25AD%25E6%25B3%2595%2fc%2523%25E5%25AD%25A6%25E4%25B9%25A0-c%2523-3.0%2f&amp;title=C%23%e5%ad%a6%e4%b9%a0-C%23%203.0&amp;summary=C%23%e5%ad%a6%e4%b9%a0-C%23%203.0&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AF%25AD%25E6%25B3%2595%2fc%2523%25E5%25AD%25A6%25E4%25B9%25A0-c%2523-3.0%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share C#学习-C# 3.0 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AF%25AD%25E6%25B3%2595%2fc%2523%25E5%25AD%25A6%25E4%25B9%25A0-c%2523-3.0%2f&title=C%23%e5%ad%a6%e4%b9%a0-C%23%203.0">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share C#学习-C# 3.0 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AF%25AD%25E6%25B3%2595%2fc%2523%25E5%25AD%25A6%25E4%25B9%25A0-c%2523-3.0%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share C#学习-C# 3.0 on whatsapp"
+            href="https://api.whatsapp.com/send?text=C%23%e5%ad%a6%e4%b9%a0-C%23%203.0%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AF%25AD%25E6%25B3%2595%2fc%2523%25E5%25AD%25A6%25E4%25B9%25A0-c%2523-3.0%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share C#学习-C# 3.0 on telegram"
+            href="https://telegram.me/share/url?text=C%23%e5%ad%a6%e4%b9%a0-C%23%203.0&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AF%25AD%25E6%25B3%2595%2fc%2523%25E5%25AD%25A6%25E4%25B9%25A0-c%2523-3.0%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share C#学习-C# 3.0 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=C%23%e5%ad%a6%e4%b9%a0-C%23%203.0&u=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E8%25AF%25AD%25E6%25B3%2595%2fc%2523%25E5%25AD%25A6%25E4%25B9%25A0-c%2523-3.0%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">LiuYingbo Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

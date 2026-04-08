@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Unity-Asset资源 | LiuYingbo Blog</title>
+<meta name="keywords" content="Unity">
+<meta name="description" content="Unity资源文件夹介绍
+
+编辑时
+在Asset文件下存在Resources和SteamingAsset文件夹；
+Resources
+只读不可修改，打包时直接写死，没有办法通过热更新替换资源；
+可以存放任何格式的资源；
+通过Resources.Load加载；
+一般只存登录UI，congfig配置等不会修改的文件；
+//加载
+GameObject go = Resources.Load&lt;GameObject&gt;(path);
+Sprite sp = Resouces.Load(path,typeof(sprite)) as sprite;
+TextAsset txt = Resources.Load(path) as TextAsset;
+SteamingAssets
+存放打包后Unity打包后的资源，也就是我说的AssetBundle（ab包）；
+可读可写，打包后移动端不能使用File类读取（用过www读取streamingAssetspath数据拷贝到persistentDataPath）；
+安装后
+Application.dataPath
+包含游戏数据文件夹的路径，app程序包安装路径（不常用）；
+1.UnityEditor——默认Assets——可读可写 using StreamReader/StreamWriter/异步
+2.Andriod——data/app/xxx.apk——不可读不可写
+3.IOS——Application/&hellip;..app/Data——可读不可写（读没意义）
+Application.streamingAssetsPath
+数据流换成目录，外部数据文件（二进制，AssetsBundle.csv、数据裸露不加密）；
+1.除了Andriod都可读可写，使用WWW或者System.IO都可以；
+2.Andriod只读，只能用WWW读写——第三方压缩/解压库实现读写（待研究）；
+3.安装包资源目录，不可修改；
+Application.presistentDataPath
+持久化存储目录，应用更新、覆盖安装都不会清除；
+1.全平台可读可写——stream和file都可以读写；
+2.热更新资源存放目录；
+Application.temporaryCachePath
+临时换成目录，可读可写（只有ios常用）；
+AssetBundle
+资源压缩文件（ab包），非路径，一种压缩文件的格式；
+AssetBundle
+Asset Bundle：
+AssetBundle 是一个存档文件，包含可在运行时加载的特定于平台的资源（模型、纹理、预制件、音频剪辑甚至整个场景）。AssetBundle 可以表达彼此之间的依赖关系；例如 AssetBundle A 中的材质可以引用 AssetBundle B 中的纹理。为了通过网络进行有效传递，可以根据用例要求选用内置算法来压缩 AssetBundle（LZMA 和 LZ4）。
+AssetBundle 可用于可下载内容（DLC），减小初始安装大小，加载针对最终用户平台优化的资源，以及减轻运行时内存压力。
+AssetBundle 中有什么:
+“AssetBundle”可以指两种不同但相关的东西。
+首先是磁盘上的实际文件。对于这种情况，我们称之为 AssetBundle 存档，在本文档中简称“存档”。存档可以被视为一个容器，就像文件夹一样，可以在其中包含其他文件。这些附加文件包含两种类型：
+序列化文件和资源文件。序列化文件包含分解为各个对象并写入此单个文件的资源。资源文件只是为某些资源（纹理和音频）单独存储的二进制数据块，允许我们有效地在另一个线程上从磁盘加载它们。
+其次是通过代码进行交互以便从特定存档加载资源的实际 AssetBundle 对象。此对象包含一个映射，即从已添加到此存档的资源的所有文件路径到按需加载的资源所包含的对象之间的映射。
+为 AssetBundle 分配资源
+要为 AssetBundle 分配指定资源，请按照下列步骤操作：">
+<meta name="author" content="LiuYingbo">
+<link rel="canonical" href="http://localhost:1313/posts/unity/unity-%E8%B5%84%E6%BA%90%E6%96%87%E4%BB%B6/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.a29c24210eb31d9ce56f669c66a35c9c51b17376b7764e336a49af7dec914cf0.css" integrity="sha256-opwkIQ6zHZzlb2acZqNcnFGxc3a3dk4zakmvfeyRTPA=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/unity/unity-%E8%B5%84%E6%BA%90%E6%96%87%E4%BB%B6/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="LiuYingbo Blog (Alt + H)">LiuYingbo Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/categories/" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives/" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">Home</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Unity-Asset资源
+    </h1>
+    <div class="post-meta"><span title='2022-02-20 15:37:00 +0800 CST'>February 20, 2022</span>&nbsp;·&nbsp;<span>6 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span>
+
+</div>
+  </header> 
+<figure class="entry-cover">
+        <img loading="eager" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211192022487.jpg" alt="">
+        
+</figure><div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#unity%e8%b5%84%e6%ba%90%e6%96%87%e4%bb%b6%e5%a4%b9%e4%bb%8b%e7%bb%8d" aria-label="Unity资源文件夹介绍">Unity资源文件夹介绍</a><ul>
+                        
+                <li>
+                    <a href="#%e7%bc%96%e8%be%91%e6%97%b6" aria-label="编辑时">编辑时</a><ul>
+                        
+                <li>
+                    <a href="#resources" aria-label="Resources">Resources</a></li>
+                <li>
+                    <a href="#steamingassets" aria-label="SteamingAssets">SteamingAssets</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%ae%89%e8%a3%85%e5%90%8e" aria-label="安装后">安装后</a><ul>
+                        
+                <li>
+                    <a href="#applicationdatapath" aria-label="Application.dataPath">Application.dataPath</a></li>
+                <li>
+                    <a href="#applicationstreamingassetspath" aria-label="Application.streamingAssetsPath">Application.streamingAssetsPath</a></li>
+                <li>
+                    <a href="#applicationpresistentdatapath" aria-label="Application.presistentDataPath">Application.presistentDataPath</a></li>
+                <li>
+                    <a href="#applicationtemporarycachepath" aria-label="Application.temporaryCachePath">Application.temporaryCachePath</a></li></ul>
+                </li>
+                <li>
+                    <a href="#assetbundle" aria-label="AssetBundle">AssetBundle</a></li></ul>
+                </li>
+                <li>
+                    <a href="#assetbundle-1" aria-label="AssetBundle">AssetBundle</a><ul>
+                        
+                <li>
+                    <a href="#asset-bundle" aria-label="Asset Bundle：">Asset Bundle：</a></li>
+                <li>
+                    <a href="#assetbundle-%e4%b8%ad%e6%9c%89%e4%bb%80%e4%b9%88" aria-label="AssetBundle 中有什么:">AssetBundle 中有什么:</a></li>
+                <li>
+                    <a href="#%e4%b8%ba-assetbundle-%e5%88%86%e9%85%8d%e8%b5%84%e6%ba%90" aria-label="为 AssetBundle 分配资源">为 AssetBundle 分配资源</a></li>
+                <li>
+                    <a href="#%e6%9e%84%e5%bb%ba-assetbundle" aria-label="构建 AssetBundle">构建 AssetBundle</a></li>
+                <li>
+                    <a href="#%e5%b0%86-assetbundle-%e4%b8%8a%e4%bc%a0%e5%88%b0%e5%9c%ba%e5%a4%96%e5%ad%98%e5%82%a8" aria-label="将 AssetBundle 上传到场外存储">将 AssetBundle 上传到场外存储</a></li>
+                <li>
+                    <a href="#%e5%8a%a0%e8%bd%bd-assetbundle-%e5%92%8c%e8%b5%84%e6%ba%90" aria-label="加载 AssetBundle 和资源">加载 AssetBundle 和资源</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%b8%ba-assetbundle-%e5%87%86%e5%a4%87%e8%b5%84%e6%ba%90" aria-label="为 AssetBundle 准备资源">为 AssetBundle 准备资源</a><ul>
+                        
+                <li>
+                    <a href="#%e9%80%bb%e8%be%91%e5%ae%9e%e4%bd%93%e5%88%86%e7%bb%84" aria-label="逻辑实体分组">逻辑实体分组</a><ul>
+                        
+                <li>
+                    <a href="#%e7%a4%ba%e4%be%8b" aria-label="示例">示例</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e7%b1%bb%e5%9e%8b%e5%88%86%e7%bb%84" aria-label="类型分组">类型分组</a></li>
+                <li>
+                    <a href="#%e5%b9%b6%e5%8f%91%e5%86%85%e5%ae%b9%e5%88%86%e7%bb%84" aria-label="并发内容分组">并发内容分组</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%9e%84%e5%bb%ba-assetbundle-1" aria-label="构建 AssetBundle">构建 AssetBundle</a><ul>
+                        <ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#buildassetbundleoptions" aria-label="BuildAssetBundleOptions">BuildAssetBundleOptions</a></li>
+                <li>
+                    <a href="#buildtarget" aria-label="BuildTarget">BuildTarget</a></li>
+                <li>
+                    <a href="#assetbundle-%e6%96%87%e4%bb%b6" aria-label="AssetBundle 文件">AssetBundle 文件</a></li>
+                <li>
+                    <a href="#%e6%b8%85%e5%8d%95%e6%96%87%e4%bb%b6" aria-label="清单文件">清单文件</a></li></ul>
+                    </ul>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#assetbundle-%e4%be%9d%e8%b5%96%e9%a1%b9" aria-label="AssetBundle 依赖项">AssetBundle 依赖项</a></li>
+                <li>
+                    <a href="#%e4%bd%bf%e7%94%a8-assetbundle" aria-label="使用 AssetBundle">使用 AssetBundle</a><ul>
+                        
+                <li>
+                    <a href="#assetbundleloadfrommemoryasync" aria-label="AssetBundle.LoadFromMemoryAsync">AssetBundle.LoadFromMemoryAsync</a></li>
+                <li>
+                    <a href="#assetbundleloadfromfile" aria-label="AssetBundle.LoadFromFile">AssetBundle.LoadFromFile</a></li>
+                <li>
+                    <a href="#wwwloadfromcacheordownload" aria-label="WWW.LoadFromCacheOrDownload">WWW.LoadFromCacheOrDownload</a></li>
+                <li>
+                    <a href="#unitywebrequest" aria-label="UnityWebRequest">UnityWebRequest</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#%e4%bb%8e-assetbundle-%e5%8a%a0%e8%bd%bd%e8%b5%84%e6%ba%90" aria-label="从 AssetBundle 加载资源">从 AssetBundle 加载资源</a></li>
+                <li>
+                    <a href="#%e5%8a%a0%e8%bd%bd-assetbundle-%e6%b8%85%e5%8d%95" aria-label="加载 AssetBundle 清单">加载 AssetBundle 清单</a></li></ul>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#%e7%ae%a1%e7%90%86%e5%b7%b2%e5%8a%a0%e8%bd%bd%e7%9a%84-assetbundle" aria-label="管理已加载的 AssetBundle">管理已加载的 AssetBundle</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%8a%a0%e8%bd%bd%e4%be%9d%e8%b5%96%e8%b5%84%e6%ba%90" aria-label="加载依赖资源">加载依赖资源</a><ul>
+                        
+                <li>
+                    <a href="#%e9%80%9a%e8%bf%87-api-%e8%8e%b7%e5%8f%96-assetbundle-%e4%be%9d%e8%b5%96%e4%bf%a1%e6%81%af" aria-label="通过 API 获取 AssetBundle 依赖信息">通过 API 获取 AssetBundle 依赖信息</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h1 id="unity资源文件夹介绍">Unity资源文件夹介绍<a hidden class="anchor" aria-hidden="true" href="#unity资源文件夹介绍">#</a></h1>
+<p><img alt="image-20211008233301906" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242137186.png"></p>
+<h2 id="编辑时">编辑时<a hidden class="anchor" aria-hidden="true" href="#编辑时">#</a></h2>
+<p>在Asset文件下存在Resources和SteamingAsset文件夹；</p>
+<h3 id="resources">Resources<a hidden class="anchor" aria-hidden="true" href="#resources">#</a></h3>
+<p>只读不可修改，打包时直接写死，没有办法通过热更新替换资源；</p>
+<p>可以存放任何格式的资源；</p>
+<p>通过Resources.Load加载；</p>
+<p>一般只存登录UI，congfig配置等不会修改的文件；</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="c1">//加载</span>
+</span></span><span class="line"><span class="cl"><span class="n">GameObject</span> <span class="n">go</span> <span class="p">=</span> <span class="n">Resources</span><span class="p">.</span><span class="n">Load</span><span class="p">&lt;</span><span class="n">GameObject</span><span class="p">&gt;(</span><span class="n">path</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">Sprite</span> <span class="n">sp</span> <span class="p">=</span> <span class="n">Resouces</span><span class="p">.</span><span class="n">Load</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="k">typeof</span><span class="p">(</span><span class="n">sprite</span><span class="p">))</span> <span class="k">as</span> <span class="n">sprite</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">TextAsset</span> <span class="n">txt</span> <span class="p">=</span> <span class="n">Resources</span><span class="p">.</span><span class="n">Load</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">TextAsset</span><span class="p">;</span>
+</span></span></code></pre></div><h3 id="steamingassets">SteamingAssets<a hidden class="anchor" aria-hidden="true" href="#steamingassets">#</a></h3>
+<p>存放打包后Unity打包后的资源，也就是我说的AssetBundle（ab包）；</p>
+<p>可读可写，打包后移动端不能使用File类读取（用过www读取streamingAssetspath数据拷贝到persistentDataPath）；</p>
+<h2 id="安装后">安装后<a hidden class="anchor" aria-hidden="true" href="#安装后">#</a></h2>
+<h3 id="applicationdatapath">Application.dataPath<a hidden class="anchor" aria-hidden="true" href="#applicationdatapath">#</a></h3>
+<p>包含游戏数据文件夹的路径，app程序包安装路径（不常用）；</p>
+<p>1.UnityEditor——<strong>默认Assets</strong>——可读可写 using StreamReader/StreamWriter/异步</p>
+<p>2.Andriod——data/app/xxx.apk——不可读不可写</p>
+<p>3.IOS——Application/&hellip;..app/Data——可读不可写（读没意义）</p>
+<h3 id="applicationstreamingassetspath">Application.streamingAssetsPath<a hidden class="anchor" aria-hidden="true" href="#applicationstreamingassetspath">#</a></h3>
+<p>数据流换成目录，外部数据文件（二进制，AssetsBundle.csv、数据裸露不加密）；</p>
+<p>1.除了Andriod都可读可写，使用WWW或者System.IO都可以；</p>
+<p>2.Andriod只读，只能用WWW读写——第三方压缩/解压库实现读写（待研究）；</p>
+<p><strong>3.安装包资源目录，不可修改；</strong></p>
+<h3 id="applicationpresistentdatapath">Application.presistentDataPath<a hidden class="anchor" aria-hidden="true" href="#applicationpresistentdatapath">#</a></h3>
+<p>持久化存储目录，应用更新、覆盖安装都不会清除；</p>
+<p>1.全平台可读可写——stream和file都可以读写；</p>
+<p><strong>2.热更新资源存放目录；</strong></p>
+<h3 id="applicationtemporarycachepath">Application.temporaryCachePath<a hidden class="anchor" aria-hidden="true" href="#applicationtemporarycachepath">#</a></h3>
+<p>临时换成目录，可读可写（只有ios常用）；</p>
+<h2 id="assetbundle">AssetBundle<a hidden class="anchor" aria-hidden="true" href="#assetbundle">#</a></h2>
+<p>资源压缩文件（ab包），非路径，一种压缩文件的格式；</p>
+<h1 id="assetbundle-1">AssetBundle<a hidden class="anchor" aria-hidden="true" href="#assetbundle-1">#</a></h1>
+<h2 id="asset-bundle"><strong>Asset Bundle：</strong><a hidden class="anchor" aria-hidden="true" href="#asset-bundle">#</a></h2>
+<p><strong>AssetBundle</strong> 是一个存档文件，包含可在运行时加载的特定于平台的资源（模型、纹理、预制件、音频剪辑甚至整个场景）。AssetBundle 可以表达彼此之间的依赖关系；例如 AssetBundle A 中的材质可以引用 AssetBundle B 中的纹理。为了通过网络进行有效传递，可以根据用例要求选用内置算法来压缩 AssetBundle（LZMA 和 LZ4）。</p>
+<p>AssetBundle 可用于可下载内容（DLC），减小初始安装大小，加载针对最终用户平台优化的资源，以及减轻运行时内存压力。</p>
+<h2 id="assetbundle-中有什么"><strong>AssetBundle 中有什么:</strong><a hidden class="anchor" aria-hidden="true" href="#assetbundle-中有什么">#</a></h2>
+<p>“AssetBundle”可以指两种不同但相关的东西。</p>
+<p>首先是磁盘上的实际文件。对于这种情况，我们称之为 AssetBundle 存档，在本文档中简称“存档”。存档可以被视为一个容器，就像文件夹一样，可以在其中包含其他文件。这些附加文件包含两种类型：</p>
+<p>序列化文件和资源文件。序列化文件包含分解为各个对象并写入此单个文件的资源。资源文件只是为某些资源（纹理和音频）单独存储的二进制数据块，允许我们有效地在另一个线程上从磁盘加载它们。</p>
+<p>其次是通过代码进行交互以便从特定存档加载资源的实际 AssetBundle 对象。此对象包含一个映射，即从已添加到此存档的资源的所有文件路径到按需加载的资源所包含的对象之间的映射。</p>
+<h2 id="为-assetbundle-分配资源">为 AssetBundle 分配资源<a hidden class="anchor" aria-hidden="true" href="#为-assetbundle-分配资源">#</a></h2>
+<p>要为 AssetBundle 分配指定资源，请按照下列步骤操作：</p>
+<p>1.从 Project 视图中选择要为捆绑包分配的资源</p>
+<p>2.在 Inspector 中检查对象</p>
+<p>3.在 Inspector 底部，应该会看到一个用于分配 AssetBundle 和变体的部分：</p>
+<p>4.左侧下拉选单分配 AssetBundle，而右侧下拉选单分配变量</p>
+<p>5.单击左侧下拉选单，其中显示“None”，表示当前注册的 AssetBundle 名称</p>
+<p>6.单击“New…”以创建新的 AssetBundle</p>
+<p>7.输入所需的 AssetBundle 名称。请注意，AssetBundle 名称支持某种类型的文件夹结构，具体取决于您输入的内容。要添加子文件夹，请用“/”分隔文件夹名称。例如：AssetBundle 名称“environment/forest”将在 environment 子文件夹下创建名为 forest 的捆绑包</p>
+<p>8.一旦选择或创建了 AssetBundle 名称，便可以重复此过程在右侧下拉选单中分配或创建变体名称（如果需要）。构建 AssetBundle 不需要变体名称</p>
+<h2 id="构建-assetbundle">构建 AssetBundle<a hidden class="anchor" aria-hidden="true" href="#构建-assetbundle">#</a></h2>
+<p>在 Assets 文件夹中创建一个名为 Editor 的文件夹，并将包含以下内容的脚本放在该文件夹中：</p>
+<pre tabindex="0"><code>using System.IO;
+using UnityEditor;
+
+public class CreateAssetBundles
+{
+    [MenuItem(&#34;Assets/Build AssetBundles&#34;)]
+    static void BuildAllAssetBundles()
+    {
+        string assetBundleDirectory = &#34;Assets/AssetBundles&#34;;
+        if (!Directory.Exists(assetBundleDirectory))
+        {
+            Directory.CreateDirectory(assetBundleDirectory);
+        }
+        BuildPipeline.BuildAssetBundles(assetBundleDirectory, BuildAssetBundleOptions.None, BuildTarget.StandaloneOSX);
+    }
+}
+</code></pre><p>此脚本将在 Assets 菜单底部创建一个名为“Build AssetBundles”的菜单项，该菜单项将执行与该标签关联的函数中的代码。单击 Build AssetBundles 时，将随构建对话框一起显示一个进度条。此过程将会获取带有 AssetBundle 名称标签的所有资源，并将它们放在 assetBundleDirectory 定义的路径中的文件夹中。</p>
+<h2 id="将-assetbundle-上传到场外存储">将 AssetBundle 上传到场外存储<a hidden class="anchor" aria-hidden="true" href="#将-assetbundle-上传到场外存储">#</a></h2>
+<p>此步骤对每个用户都是不同的，因此 Unity 不能告诉您应该具体如何操作。如果计划将 AssetBundle 上传到第三方托管站点，请在此步中执行该操作。如果正在严格执行本地开发并打算将所有 AssetBundle 都放在磁盘上，请跳转到下一步。</p>
+<h2 id="加载-assetbundle-和资源">加载 AssetBundle 和资源<a hidden class="anchor" aria-hidden="true" href="#加载-assetbundle-和资源">#</a></h2>
+<p>打算从本地存储加载的用户可能会对 AssetBundles.LoadFromFile API 感兴趣。该 API 如下所示：</p>
+<pre tabindex="0"><code>public class LoadFromFileExample extends MonoBehaviour {
+    function Start() {
+        var myLoadedAssetBundle = AssetBundle.LoadFromFile(Path.Combine(Application.streamingAssetsPath, &#34;myassetBundle&#34;));
+        if (myLoadedAssetBundle == null) {
+            Debug.Log(&#34;Failed to load AssetBundle!&#34;);
+            return;
+        }
+        var prefab = myLoadedAssetBundle.LoadAsset.&lt;GameObject&gt;(&#34;MyObject&#34;);
+        Instantiate(prefab);
+    }
+}
+</code></pre><h1 id="为-assetbundle-准备资源">为 AssetBundle 准备资源<a hidden class="anchor" aria-hidden="true" href="#为-assetbundle-准备资源">#</a></h1>
+<p>使用 AssetBundle 时，可以任意将任何资源分配给所需的任何捆绑包。但是，在设置捆绑包时需要考虑某些策略。以下分组策略旨在用于您认为适合的具体项目。可以根据需要随意混合和搭配这些策略。</p>
+<h2 id="逻辑实体分组">逻辑实体分组<a hidden class="anchor" aria-hidden="true" href="#逻辑实体分组">#</a></h2>
+<p>逻辑实体分组是指根据资源所代表的项目功能部分将资源分配给 AssetBundle。这包括各种不同部分，比如用户界面、角色、环境以及在应用程序整个生命周期中可能经常出现的任何其他内容。</p>
+<h3 id="示例">示例<a hidden class="anchor" aria-hidden="true" href="#示例">#</a></h3>
+<ul>
+<li>捆绑用户界面屏幕的所有纹理和布局数据</li>
+<li>捆绑一个/一组角色的所有模型和动画</li>
+<li>捆绑在多个关卡之间共享的景物的纹理和模型</li>
+</ul>
+<p>逻辑实体分组非常适合于可下载内容 (DLC)，因为通过这种方式将所有内容隔离后，可以对单个实体进行更改，而无需下载其他未更改的资源。</p>
+<p>为了能够正确实施此策略，最大诀窍在于，负责为各自捆绑包分配资源的开发人员必须熟悉项目使用每个资源的准确时机和场合。</p>
+<h2 id="类型分组">类型分组<a hidden class="anchor" aria-hidden="true" href="#类型分组">#</a></h2>
+<p>根据此策略，可以将相似类型的资源（例如音频轨道或语言本地化文件）分配到单个 AssetBundle。</p>
+<p>要构建供多个平台使用的 AssetBundle，类型分组是最佳策略之一。例如，如果音频压缩设置在 Windows 和 Mac 平台上完全相同，则可以自行将所有音频数据打包到 AssetBundle 并重复使用这些捆绑包，而着色器往往使用更多特定于平台的选项进行编译，因此为 Mac 构建的着色器捆绑包可能无法在 Windows 上重复使用。此外，这种方法非常适合让 AssetBundle 与更多 Unity 播放器版本兼容，因为纹理压缩格式和设置的更改频率低于代码脚本或预制件。</p>
+<h2 id="并发内容分组">并发内容分组<a hidden class="anchor" aria-hidden="true" href="#并发内容分组">#</a></h2>
+<p>并发内容分组是指将需要同时加载和使用的资源捆绑在一起。可以将这些类型的捆绑包用于基于关卡的游戏（其中每个关卡包含完全独特的角色、纹理、音乐等）。有时可能希望确保其中一个 AssetBundle 中的资源与该捆绑包中的其余资源同时使用。依赖于并发内容分组捆绑包中的单个资源会导致加载时间显著增加。您将被迫下载该单个资源的整个捆绑包。</p>
+<p>并发内容分组捆绑包最常见的用例是针对基于场景的捆绑包。在此分配策略中，每个场景捆绑包应包含大部分或全部场景依赖项。</p>
+<p>请注意，项目绝对可以也应该根据您的需求混用这些策略。对任何给定情形使用最优资源分配策略可以大大提高项目的效率。</p>
+<p>例如，一个项目可能决定将不同平台的用户界面 (UI) 元素分组到各自的 Platform-UI 特定捆绑包中，但按关卡/场景对其交互式内容进行分组。</p>
+<p>无论遵循何种策略，下面这些额外提示都有助于掌控全局：</p>
+<ul>
+<li>将频繁更新的对象与很少更改的对象拆分到不同的 AssetBundle 中</li>
+<li>将可能同时加载的对象分到一组。例如模型及其纹理和动画</li>
+<li>如果发现多个 AssetBundle 中的多个对象依赖于另一个完全不同的 AssetBundle 中的单个资源，请将依赖项移动到单独的 AssetBundle。如果多个 AssetBundle 引用其他 AssetBundle 中的同一组资源，一种有价值的做法可能是将这些依赖项拉入一个共享 AssetBundle 来减少重复。</li>
+<li>如果不可能同时加载两组对象（例如标清资源和高清资源），请确保它们位于各自的 AssetBundle 中。</li>
+<li>如果一个 AssetBundle 中只有不到 50% 的资源经常同时加载，请考虑拆分该捆绑包</li>
+<li>考虑将多个小型的（少于 5 到 10 个资源）但经常同时加载内容的 AssetBundle 组合在一起</li>
+<li>如果一组对象只是同一对象的不同版本，请考虑使用 AssetBundle 变体</li>
+</ul>
+<h1 id="构建-assetbundle-1">构建 AssetBundle<a hidden class="anchor" aria-hidden="true" href="#构建-assetbundle-1">#</a></h1>
+<p>在有关 <a href="AssetBundles-Workflow.html">AssetBundle 工作流程</a>的文档中，我们有一个代码示例将三个参数传递给 <code>BuildPipeline.BuildAssetBundles</code> 函数。让我们深入了解一下这方面。</p>
+<p><em>Assets/AssetBundles</em>：这是 AssetBundle 要输出到的目录。可以将其更改为所需的任何输出目录，只需确保在尝试构建之前文件夹实际存在。</p>
+<h4 id="buildassetbundleoptions">BuildAssetBundleOptions<a hidden class="anchor" aria-hidden="true" href="#buildassetbundleoptions">#</a></h4>
+<p>可以指定几个具有各种效果的不同 <code>BuildAssetBundleOptions</code>。请参阅关于 <a href="../ScriptReference/BuildAssetBundleOptions.html">BuildAssetBundleOptions</a> 的脚本 API 参考查看所有这些选项的表格。</p>
+<p>虽然可以根据需求变化和需求出现而自由组合 <code>BuildAssetBundleOptions</code>，但有三个特定的 <code>BuildAssetBundleOptions</code> 可以处理 AssetBundle 压缩：</p>
+<ul>
+<li><code>BuildAssetBundleOptions.None</code>:</li>
+<li>此捆绑选项使用 LZMA 格式压缩，它是序列化数据文件的单个压缩 LZMA 流。LZMA 压缩要求在使用之前解压缩整个包。这会导致文件大小尽可能小，但由于解压缩，加载时间会稍长。值得注意的是，在使用此 BuildAssetBundleOptions 时，为了使用包中的任何资产，必须首先解压缩整个包。
+解压缩包后，它将使用 LZ4 压缩在磁盘上重新压缩，这不需要在使用包中的资产之前解压缩整个包。当捆绑包包含资产时最好使用此方法，以便使用捆绑包中的一个资产意味着所有资产都将被加载。打包角色或场景的所有资产是可能使用此功能的捆绑包的一些示例。
+由于文件较小，建议仅在从异地主机初始下载 AssetBundle 时使用 LZMA 压缩。<a href="../ScriptReference/Networking.UnityWebRequestAssetBundle.html">通过UnityWebRequestAssetBundle</a>加载的 LZMA 压缩资产包会自动重新压缩为 LZ4 压缩并缓存在本地文件系统上。如果您通过其他方式下载并存储该捆绑包，您可以使用<a href="../ScriptReference/AssetBundle.RecompressAssetBundleAsync.html">AssetBundle.RecompressAssetBundleAsync</a> API。</li>
+<li><code>BuildAssetBundleOptions.UncompressedAssetBundle</code>：此捆绑包选项采用使数据完全未压缩的方式构建捆绑包。未压缩的缺点是文件下载大小增大。但是，下载后的加载时间会快得多。</li>
+<li><code>BuildAssetBundleOptions.ChunkBasedCompression</code>：此捆绑包选项使用称为 LZ4 的压缩方法，因此压缩文件大小比 LZMA 更大，但不像 LZMA 那样需要解压缩整个包才能使用捆绑包。LZ4 使用基于块的算法，允许按段或“块”加载 AssetBundle。解压缩单个块即可使用包含的资源，即使 AssetBundle 的其他块未解压缩也不影响。</li>
+</ul>
+<p>使用 <code>ChunkBasedCompression</code> 时的加载时间与未压缩捆绑包大致相当，额外的优势是减小了占用的磁盘大小。</p>
+<h4 id="buildtarget">BuildTarget<a hidden class="anchor" aria-hidden="true" href="#buildtarget">#</a></h4>
+<p><code>BuildTarget.Standalone</code>：这里我们告诉构建管线，我们要将这些 AssetBundle 用于哪些目标平台。可以在关于 <a href="../ScriptReference/BuildTarget.html">BuildTarget</a> 的脚本 API 参考中找到可用显式构建目标的列表。但是，如果不想在构建目标中进行硬编码，请充分利用 <code>EditorUserBuildSettings.activeBuildTarget</code>，它将自动找到当前设置的目标构建平台，并根据该目标构建 AssetBundle。</p>
+<p>一旦正确设置构建脚本，最后便可以开始构建资源包了。如果是按照上面的脚本示例进行的操作，请单击 <strong>Assets</strong> &gt; <strong>Build AssetBundles</strong> 以开始该过程。</p>
+<p>现在已经成功构建了 AssetBundle，您可能会注意到 AssetBundles 目录包含的文件数量超出了最初的预期。确切地说，是多出了 2*(n+1) 个文件。让我们花点时间详细了解一下 <code>BuildPipeline.BuildAssetBundles</code> 产生的结果。</p>
+<p>对于在编辑器中指定的每个 AssetBundle，可以看到一个具有 AssetBundle 名称+“.manifest”的文件。</p>
+<p>随后会有一个额外捆绑包和清单的名称不同于先前创建的任何 AssetBundle。相反，此包以其所在的目录（构建 AssetBundle 的目录）命名。这就是清单捆绑包。我们以后会对此进行详细讨论并介绍使用方法。</p>
+<h4 id="assetbundle-文件">AssetBundle 文件<a hidden class="anchor" aria-hidden="true" href="#assetbundle-文件">#</a></h4>
+<p>这是缺少 .manifest 扩展名的文件，其中包含在运行时为了加载资源而需要加载的内容。</p>
+<p>AssetBundle 文件是一个存档，在内部包含多个文件。此存档的结构根据它是 AssetBundle 还是场景 AssetBundle 可能会略有不同。以下是普通 AssetBundle 的结构：</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242142639.png"></p>
+<p>场景 AssetBundle 与普通 AssetBundle 的不同之处在于，它针对场景及其内容的串流加载进行了优化。</p>
+<h4 id="清单文件">清单文件<a hidden class="anchor" aria-hidden="true" href="#清单文件">#</a></h4>
+<p>对于生成的每个捆绑包（包括附加的清单捆绑包），都会生成关联的清单文件。清单文件可以使用任何文本编辑器打开，并包含诸如循环冗余校验 (CRC) 数据和捆绑包的依赖性数据之类的信息。对于普通 AssetBundle，它们的清单文件将如下所示：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="n">ManifestFileVersion</span><span class="p">:</span> <span class="m">0</span>
+</span></span><span class="line"><span class="cl"><span class="n">CRC</span><span class="p">:</span> <span class="m">2422268106</span>
+</span></span><span class="line"><span class="cl"><span class="n">Hashes</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">  <span class="n">AssetFileHash</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">serializedVersion</span><span class="p">:</span> <span class="m">2</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Hash</span><span class="p">:</span> <span class="m">8</span><span class="n">b6db55a2344f068cf8a9be0a662ba15</span>
+</span></span><span class="line"><span class="cl">  <span class="n">TypeTreeHash</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">serializedVersion</span><span class="p">:</span> <span class="m">2</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Hash</span><span class="p">:</span> <span class="m">37</span><span class="n">ad974993dbaa77485dd2a0c38f347a</span>
+</span></span><span class="line"><span class="cl"><span class="n">HashAppended</span><span class="p">:</span> <span class="m">0</span>
+</span></span><span class="line"><span class="cl"><span class="n">ClassTypes</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl"><span class="p">-</span> <span class="n">Class</span><span class="p">:</span> <span class="m">91</span>
+</span></span><span class="line"><span class="cl">  <span class="n">Script</span><span class="p">:</span> <span class="p">{</span><span class="n">instanceID</span><span class="p">:</span> <span class="m">0</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="n">Assets</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">  <span class="n">Asset_0</span><span class="p">:</span> <span class="n">Assets</span><span class="p">/</span><span class="n">Mecanim</span><span class="p">/</span><span class="n">StateMachine</span><span class="p">.</span><span class="n">controller</span>
+</span></span><span class="line"><span class="cl"><span class="n">Dependencies</span><span class="p">:</span> <span class="p">{}</span>
+</span></span></code></pre></div><p>其中显示了包含的资源、依赖项和其他信息。</p>
+<p>生成的清单捆绑包将有一个清单，但看起来更可能如下所示：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="n">ManifestFileVersion</span><span class="p">:</span> <span class="m">0</span>
+</span></span><span class="line"><span class="cl"><span class="n">AssetBundleManifest</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">  <span class="n">AssetBundleInfos</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Info_0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">      <span class="n">Name</span><span class="p">:</span> <span class="n">scene1assetbundle</span>
+</span></span><span class="line"><span class="cl">      <span class="n">Dependencies</span><span class="p">:</span> <span class="p">{}</span>
+</span></span></code></pre></div><p>这将显示 AssetBundle 之间的关系以及它们的依赖项。就目前而言，只需要了解这个捆绑包中包含 AssetBundleManifest 对象，这对于确定在运行时加载哪些捆绑包依赖项非常有用。</p>
+<h1 id="assetbundle-依赖项">AssetBundle 依赖项<a hidden class="anchor" aria-hidden="true" href="#assetbundle-依赖项">#</a></h1>
+<p>如果一个或多个 <code>UnityEngine.Objects</code> 包含对位于另一个捆绑包中的 <code>UnityEngine.Object</code> 的引用，则 AssetBundle 可以变为依赖于其他 AssetBundle。如果 <code>UnityEngine.Object</code> 包含对任何 AssetBundle 中未包含的 <code>UnityEngine.Object</code> 的引用，则不会发生依赖关系。在这种情况下，在构建 AssetBundle 时，捆绑包所依赖的对象的副本将复制到捆绑包中。如果多个捆绑包中的多个对象包含对未分配给捆绑包的同一对象的引用，则每个对该对象具有依赖关系的捆绑包将创建其自己的对象副本并将其打包到构建的 AssetBundle 中。</p>
+<p>如果 AssetBundle 中包含依赖项，则在加载尝试实例化的对象之前，务必加载包含这些依赖项的捆绑包。Unity 不会尝试自动加载依赖项。</p>
+<p>参考以下示例，<strong>Bundle 1</strong> 中的材质引用了 <strong>Bundle 2</strong> 中的纹理：</p>
+<p>在此示例中，在从 <strong>Bundle 1</strong> 加载材质之前，需要将 <strong>Bundle 2</strong> 加载到内存中。加载 <strong>Bundle 1</strong> 和 <strong>Bundle 2</strong> 的顺序无关紧要，重要的是在从 <strong>Bundle 1</strong> 加载材质之前应加载 <strong>Bundle 2</strong>。在下一部分，我们将讨论如何使用我们在上一部分介绍的 <code>AssetBundleManifest</code> 对象在运行时确定并加载依赖项。</p>
+<h1 id="使用-assetbundle">使用 AssetBundle<a hidden class="anchor" aria-hidden="true" href="#使用-assetbundle">#</a></h1>
+<p>可以使用四种不同的 API 来加载 AssetBundle。它们的行为根据加载捆绑包的平台和构建 AssetBundle 时使用的压缩方法（未压缩、LZMA 和 LZ4）而有所不同。</p>
+<p>我们必须使用的四个 API 是：</p>
+<ul>
+<li><a href="https://docs.unity3d.com/ScriptReference/AssetBundle.LoadFromMemoryAsync.html?_ga=1.226802969.563709772.1479226228">AssetBundle.LoadFromMemoryAsync</a></li>
+<li><a href="https://docs.unity3d.com/ScriptReference/AssetBundle.LoadFromFile.html?_ga=1.259297550.563709772.1479226228">AssetBundle.LoadFromFile</a></li>
+<li><a href="https://docs.unity3d.com/ScriptReference/WWW.LoadFromCacheOrDownload.html?_ga=1.226802969.563709772.1479226228">WWW.LoadfromCacheOrDownload</a></li>
+<li><a href="https://docs.unity3d.com/ScriptReference/Networking.UnityWebRequest.html?_ga=1.259297550.563709772.1479226228">UnityWebRequest</a> 的 <a href="https://docs.unity3d.com/ScriptReference/Networking.DownloadHandlerAssetBundle.html?_ga=1.264500235.563709772.1479226228">DownloadHandlerAssetBundle </a>（Unity 5.3 或更高版本）</li>
+</ul>
+<h2 id="assetbundleloadfrommemoryasync">AssetBundle.LoadFromMemoryAsync<a hidden class="anchor" aria-hidden="true" href="#assetbundleloadfrommemoryasync">#</a></h2>
+<p><a href="../ScriptReference/AssetBundle.LoadFromMemoryAsync.html">AssetBundle.LoadFromMemoryAsync</a></p>
+<p>此函数采用包含 AssetBundle 数据的字节数组。也可以根据需要传递 CRC 值。如果捆绑包采用的是 LZMA 压缩方式，将在加载时解压缩 AssetBundle。LZ4 压缩包则会以压缩状态加载。</p>
+<p>以下是如何使用此方法的一个示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System.Collections</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System.IO</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="k">class</span> <span class="nc">Example</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl"> 		<span class="n">IEnumerator</span> <span class="n">Start</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">string</span> <span class="n">path</span> <span class="p">=</span> <span class="n">Application</span><span class="p">.</span><span class="n">streamingAssetsPath</span> <span class="p">+</span> <span class="s">&#34;/AssetBundles/OSX/wall&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    		<span class="n">AssetBundleCreateRequest</span> <span class="n">createRequest</span> <span class="p">=</span> <span class="n">AssetBundle</span><span class="p">.</span><span class="n">LoadFromMemoryAsync</span><span class="p">(</span><span class="n">File</span><span class="p">.</span><span class="n">ReadAllBytes</span><span class="p">(</span><span class="n">path</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="s">&#34;Failed to load AssetBundle!&#34;</span> <span class="p">+</span> <span class="n">createRequest</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">yield</span> <span class="k">return</span> <span class="n">createRequest</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">AssetBundle</span> <span class="n">bundle</span> <span class="p">=</span> <span class="n">createRequest</span><span class="p">.</span><span class="n">assetBundle</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">var</span> <span class="n">prefab</span> <span class="p">=</span> <span class="n">bundle</span><span class="p">.</span><span class="n">LoadAsset</span><span class="p">&lt;</span><span class="n">GameObject</span><span class="p">&gt;(</span><span class="s">&#34;Cube&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Instantiate</span><span class="p">(</span><span class="n">prefab</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">     <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>但是，这不是实现 LoadFromMemoryAsync 的唯一策略。File.ReadAllBytes(path) 可以替换为获得字节数组的任何所需过程。</p>
+<h2 id="assetbundleloadfromfile">AssetBundle.LoadFromFile<a hidden class="anchor" aria-hidden="true" href="#assetbundleloadfromfile">#</a></h2>
+<p><a href="../ScriptReference/AssetBundle.LoadFromFile.html">AssetBundle.LoadFromFile</a></p>
+<p>从本地存储中加载未压缩的捆绑包时，此 API 非常高效。如果捆绑包未压缩或采用了数据块 (LZ4) 压缩方式，LoadFromFile 将直接从磁盘加载捆绑包。使用此方法加载完全压缩的 (LZMA) 捆绑包将首先解压缩捆绑包，然后再将其加载到内存中。</p>
+<p>如何使用 <code>LoadFromFile</code> 的一个示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="kd">public</span> <span class="k">class</span> <span class="nc">LoadFromFileExample</span> <span class="n">extends</span> <span class="n">MonoBehaviour</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">function</span> <span class="n">Start</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">var</span> <span class="n">myLoadedAssetBundle</span> <span class="p">=</span> <span class="n">AssetBundle</span><span class="p">.</span><span class="n">LoadFromFile</span><span class="p">(</span><span class="n">Path</span><span class="p">.</span><span class="n">Combine</span><span class="p">(</span><span class="n">Application</span><span class="p">.</span><span class="n">streamingAssetsPath</span><span class="p">,</span> <span class="s">&#34;myassetBundle&#34;</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">myLoadedAssetBundle</span> <span class="p">==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="s">&#34;Failed to load AssetBundle!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">var</span> <span class="n">prefab</span> <span class="p">=</span> <span class="n">myLoadedAssetBundle</span><span class="p">.</span><span class="n">LoadAsset</span><span class="p">.&lt;</span><span class="n">GameObject</span><span class="p">&gt;(</span><span class="s">&#34;MyObject&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Instantiate</span><span class="p">(</span><span class="n">prefab</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>注意：在使用 Unity 5.3 或更早版本的 Android 设备上，尝试从流媒体资源 (Streaming Assets) 路径加载 AssetBundle 时，此 API 将失败。这是因为该路径的内容将驻留在压缩的 .jar 文件中。Unity 5.4 和更高版本则可以将此 API 调用与流媒体资源一起使用。</p>
+<h2 id="wwwloadfromcacheordownload">WWW.LoadFromCacheOrDownload<a hidden class="anchor" aria-hidden="true" href="#wwwloadfromcacheordownload">#</a></h2>
+<p><a href="../ScriptReference/WWW.LoadFromCacheOrDownload.html">WWW.LoadFromCacheOrDownload</a></p>
+<p><strong>即将弃用（使用 UnityWebRequest）</strong></p>
+<p>此 API 对于从远程服务器下载 AssetBundle 或加载本地 AssetBundle 非常有用。这是一个陈旧且不太理想的 UnityWebRequest API 版本。</p>
+<p>从远程位置加载 AssetBundle 将自动缓存 AssetBundle。如果 AssetBundle 被压缩，则将启动工作线程来解压缩捆绑包并将其写入缓存。一旦捆绑包被解压缩并缓存，它就会像 AssetBundle.LoadFromFile 一样加载。</p>
+<p>如何使用 <code>LoadFromCacheOrDownload</code> 的一个示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-C#" data-lang="C#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System.Collections</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="k">class</span> <span class="nc">LoadFromCacheOrDownloadExample</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">IEnumerator</span> <span class="n">Start</span> <span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">           <span class="k">while</span> <span class="p">(!</span><span class="n">Caching</span><span class="p">.</span><span class="n">ready</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">yield</span> <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="kt">var</span> <span class="n">www</span> <span class="p">=</span> <span class="n">WWW</span><span class="p">.</span><span class="n">LoadFromCacheOrDownload</span><span class="p">(</span><span class="s">&#34;file://&#34;</span> <span class="p">+</span> <span class="n">path</span><span class="p">,</span> <span class="m">5</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="n">path</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">yield</span> <span class="k">return</span> <span class="n">www</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(!</span><span class="kt">string</span><span class="p">.</span><span class="n">IsNullOrEmpty</span><span class="p">(</span><span class="n">www</span><span class="p">.</span><span class="n">error</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="n">www</span><span class="p">.</span><span class="n">error</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">yield</span> <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="n">AssetBundle</span> <span class="n">bundle</span> <span class="p">=</span> <span class="n">www</span><span class="p">.</span><span class="n">assetBundle</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>由于在 WWW 对象中缓存 AssetBundle 字节所需的内存开销，建议所有使用 WWW.LoadFromCacheOrDownload 的开发人员都应该确保自己的 AssetBundle 保持较小的大小 - 最多只有几兆字节。此外，还建议在有限内存平台（如移动设备）上运行的开发人员确保其代码一次只下载一个 AssetBundle，以此避免内存峰值。</p>
+<p>如果缓存文件夹没有任何空间来缓存其他文件，LoadFromCacheOrDownload 将以迭代方式从缓存中删除最近最少使用的 AssetBundle，直到有足够的空间来存储新的 AssetBundle。如果无法腾出空间（因为硬盘已满，或者缓存中的所有文件当前都处于使用状态），LoadFromCacheOrDownload() 将不会使用缓存，而将文件流式传输到内存中</p>
+<p>为了强制执行 LoadFromCacheOrDownload，需要更改版本参数（第二个参数）。仅当传递给函数的版本与当前缓存的 AssetBundle 的版本匹配，才会从缓存加载 AssetBundle。</p>
+<h2 id="unitywebrequest">UnityWebRequest<a hidden class="anchor" aria-hidden="true" href="#unitywebrequest">#</a></h2>
+<p><a href="../ScriptReference/Networking.UnityWebRequest.GetAssetBundle.html">UnityWebRequest</a></p>
+<p>UnityWebRequest 有一个特定 API 调用来处理 AssetBundle。首先，需要使用 <code>UnityWebRequest.GetAssetBundle</code> 来创建 Web 请求。返回请求后，请将请求对象传递给 <code>DownloadHandlerAssetBundle.GetContent(UnityWebRequest)</code>。<code>GetContent</code> 调用将返回 AssetBundle 对象。</p>
+<p>下载捆绑包后，还可以在 <a href="../ScriptReference/Networking.DownloadHandlerAssetBundle.html">DownloadHandlerAssetBundle</a> 类上使用 <code>assetBundle</code> 属性，从而以 <code>AssetBundle.LoadFromFile</code> 的效率加载 AssetBundle。</p>
+<p>以下示例说明了如何加载包含两个游戏对象的 AssetBundle 并实例化这些游戏对象。要开始这个过程，我们只需要调用 <code>StartCoroutine(InstantiateObject())</code>;</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-C#" data-lang="C#"><span class="line"><span class="cl"><span class="n">IEnumerator</span> <span class="n">InstantiateObject</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">UnityWebRequest</span> <span class="n">request</span> <span class="p">=</span> <span class="n">UnityWebRequestAssetBundle</span><span class="p">.</span><span class="n">GetAssetBundle</span><span class="p">(</span><span class="s">&#34;file://&#34;</span> <span class="p">+</span> <span class="n">path</span><span class="p">,</span> <span class="m">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">yield</span> <span class="k">return</span> <span class="n">request</span><span class="p">.</span><span class="n">SendWebRequest</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">        <span class="n">AssetBundle</span> <span class="n">bundle</span> <span class="p">=</span> <span class="n">DownloadHandlerAssetBundle</span><span class="p">.</span><span class="n">GetContent</span><span class="p">(</span><span class="n">request</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">GameObject</span> <span class="n">cube</span> <span class="p">=</span> <span class="n">bundle</span><span class="p">.</span><span class="n">LoadAsset</span><span class="p">&lt;</span><span class="n">GameObject</span><span class="p">&gt;(</span><span class="s">&#34;Cube&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">Instantiate</span><span class="p">(</span><span class="n">cube</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span></code></pre></div><p>使用 UnityWebRequest 的优点在于，它允许开发人员以更灵活的方式处理下载的数据，并可能消除不必要的内存使用。这是比 UnityEngine.WWW 类更新和更优的 API。</p>
+<h4 id="从-assetbundle-加载资源">从 AssetBundle 加载资源<a hidden class="anchor" aria-hidden="true" href="#从-assetbundle-加载资源">#</a></h4>
+<p>现在已经成功下载 AssetBundle，因此是时候最终加载一些资源了。</p>
+<p>通用代码片段：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-C#" data-lang="C#"><span class="line"><span class="cl"><span class="n">T</span> <span class="n">objectFromBundle</span> <span class="p">=</span> <span class="n">bundleObject</span><span class="p">.</span><span class="n">LoadAsset</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">assetName</span><span class="p">);</span>
+</span></span></code></pre></div><p>T 是尝试加载的资源类型。</p>
+<p>决定如何加载资源时有几个选项。我们有 <code>LoadAsset</code>、<code>LoadAllAssets</code> 及其各自的异步对应选项 <code>LoadAssetAsync</code> 和 <code>LoadAllAssetsAsync</code>。</p>
+<p>同步从 AssetBundle 加载资源的方法如下：</p>
+<p>加载单个游戏对象：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-C#" data-lang="C#"><span class="line"><span class="cl"><span class="n">GameObject</span> <span class="n">gameObject</span> <span class="p">=</span> <span class="n">loadedAssetBundle</span><span class="p">.</span><span class="n">LoadAsset</span><span class="p">&lt;</span><span class="n">GameObject</span><span class="p">&gt;(</span><span class="n">assetName</span><span class="p">);</span>
+</span></span></code></pre></div><p>加载所有资源：</p>
+<pre tabindex="0"><code>Unity.Object[] objectArray = loadedAssetBundle.LoadAllAssets();
+</code></pre><p>现在，在前面显示的方法返回要加载的对象类型或对象数组的情况下，异步方法返回 <a href="../ScriptReference/AssetBundleRequest.html">AssetBundleRequest</a>。在访问资源之前，需要等待此操作完成。加载资源：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-C#" data-lang="C#"><span class="line"><span class="cl"><span class="n">AssetBundleRequest</span> <span class="n">request</span> <span class="p">=</span> <span class="n">loadedAssetBundleObject</span><span class="p">.</span><span class="n">LoadAssetAsync</span><span class="p">&lt;</span><span class="n">GameObject</span><span class="p">&gt;(</span><span class="n">assetName</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="k">yield</span> <span class="k">return</span> <span class="n">request</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">loadedAsset</span> <span class="p">=</span> <span class="n">request</span><span class="p">.</span><span class="n">asset</span><span class="p">;</span>
+</span></span></code></pre></div><p>以及</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-C#" data-lang="C#"><span class="line"><span class="cl"><span class="n">AssetBundleRequest</span> <span class="n">request</span> <span class="p">=</span> <span class="n">loadedAssetBundle</span><span class="p">.</span><span class="n">LoadAllAssetsAsync</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="k">yield</span> <span class="k">return</span> <span class="n">request</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">loadedAssets</span> <span class="p">=</span> <span class="n">request</span><span class="p">.</span><span class="n">allAssets</span><span class="p">;</span>
+</span></span></code></pre></div><p>加载资源后，就可以开始了！可以像使用 Unity 中的任何对象一样使用加载的对象。</p>
+<h4 id="加载-assetbundle-清单">加载 AssetBundle 清单<a hidden class="anchor" aria-hidden="true" href="#加载-assetbundle-清单">#</a></h4>
+<p>加载 AssetBundle 清单可能非常有用。特别是在处理 AssetBundle 依赖关系时。</p>
+<p>要获得可用的 <a href="../ScriptReference/AssetBundleManifest.html">AssetBundleManifest</a> 对象，需要加载另外的 AssetBundle（与其所在的文件夹名称相同的那个）并从中加载 AssetBundleManifest 类型的对象。</p>
+<p>加载清单本身的操作方法与 AssetBundle 中的任何其他资源完全相同：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-C#" data-lang="C#"><span class="line"><span class="cl"><span class="n">AssetBundle</span> <span class="n">assetBundle</span> <span class="p">=</span> <span class="n">AssetBundle</span><span class="p">.</span><span class="n">LoadFromFile</span><span class="p">(</span><span class="n">manifestFilePath</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">AssetBundleManifest</span> <span class="n">manifest</span> <span class="p">=</span> <span class="n">assetBundle</span><span class="p">.</span><span class="n">LoadAsset</span><span class="p">&lt;</span><span class="n">AssetBundleManifest</span><span class="p">&gt;(</span><span class="s">&#34;AssetBundleManifest&#34;</span><span class="p">);</span>
+</span></span></code></pre></div><p>现在，可以通过上面示例中的清单对象访问 <code>AssetBundleManifest</code> API 调用。从这里，可以使用清单获取所构建的 AssetBundle 的相关信息。此信息包括 AssetBundle 的依赖项数据、哈希数据和变体数据。</p>
+<p>别忘了在前面的部分中，我们讨论过 AssetBundle 依赖项以及如果一个捆绑包对另一个捆绑包有依赖性，那么在从原始捆绑包加载任何资源之前，需要加载哪些捆绑包？清单对象可以动态地查找加载依赖项。假设我们想要为名为“assetBundle”的 AssetBundle 加载所有依赖项。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-C#" data-lang="C#"><span class="line"><span class="cl"><span class="n">AssetBundle</span> <span class="n">assetBundle</span> <span class="p">=</span> <span class="n">AssetBundle</span><span class="p">.</span><span class="n">LoadFromFile</span><span class="p">(</span><span class="n">manifestFilePath</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">AssetBundleManifest</span> <span class="n">manifest</span> <span class="p">=</span> <span class="n">assetBundle</span><span class="p">.</span><span class="n">LoadAsset</span><span class="p">&lt;</span><span class="n">AssetBundleManifest</span><span class="p">&gt;(</span><span class="s">&#34;AssetBundleManifest&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kt">string</span><span class="p">[]</span> <span class="n">dependencies</span> <span class="p">=</span> <span class="n">manifest</span><span class="p">.</span><span class="n">GetAllDependencies</span><span class="p">(</span><span class="s">&#34;assetBundle&#34;</span><span class="p">);</span> <span class="c1">//传递想要依赖项的捆绑包的名称。</span>
+</span></span><span class="line"><span class="cl"><span class="k">foreach</span><span class="p">(</span><span class="kt">string</span> <span class="n">dependency</span> <span class="k">in</span> <span class="n">dependencies</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">AssetBundle</span><span class="p">.</span><span class="n">LoadFromFile</span><span class="p">(</span><span class="n">Path</span><span class="p">.</span><span class="n">Combine</span><span class="p">(</span><span class="n">assetBundlePath</span><span class="p">,</span> <span class="n">dependency</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>现在已经加载 AssetBundle、AssetBundle 依赖项和资源，因此是时候讨论如何管理所有这些已加载的 AssetBundle 了。</p>
+<h2 id="管理已加载的-assetbundle">管理已加载的 AssetBundle<a hidden class="anchor" aria-hidden="true" href="#管理已加载的-assetbundle">#</a></h2>
+<p>从活动场景中删除对象时，Unity 不会自动卸载对象。资源清理在特定时间触发，也可以手动触发。</p>
+<p>了解何时加载和卸载 AssetBundle 非常重要。不正确地卸载 AssetBundle 会导致在内存中复制对象或其他不良情况，例如缺少纹理。</p>
+<p>关于 AssetBundle 管理最重要的事情就是何时调用</p>
+<p><a href="../ScriptReference/AssetBundle.Unload.html">AssetBundle.Unload(bool)</a>; 以及应该将 true 还是 false 传递给函数调用。Unload 是一个非静态函数，可用于卸载 AssetBundle。此 API 会卸载正在调用的 AssetBundle 的标头信息。该参数指示是否还要卸载通过此 AssetBundle 实例化的所有对象。</p>
+<p><code>AssetBundle.Unload(true)</code> 卸载从 AssetBundle 加载的所有游戏对象（及其依赖项）。这不包括复制的游戏对象（例如实例化的游戏对象），因为它们不再属于 AssetBundle。发生这种情况时，从该 AssetBundle 加载的纹理（并且仍然属于它）会从场景中的游戏对象消失，因此 Unity 将它们视为缺少纹理。</p>
+<p>假设材质 M 是从 AssetBundle AB 加载的，如下所示。</p>
+<p>如果调用 AB.Unload(true)，活动场景中的任何 M 实例也将被卸载并销毁。</p>
+<p>如果改作调用 AB.Unload(false)，那么将会中断 M 和 AB 当前实例的链接关系。</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242143748.png"></p>
+<p>如果稍后再次加载 AB 并且调用 AB.LoadAsset()，则 Unity 不会将现有 M 副本重新链接到新加载的材质。而是将加载 M 的两个副本。</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242143614.png"></p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211242143747.png"></p>
+<p>通常，使用 <code>AssetBundle.Unload(false)</code> 不会带来理想情况。大多数项目应该使用 <code>AssetBundle.Unload(true)</code> 来防止在内存中复制对象。</p>
+<p>大多数项目应该使用 <code>AssetBundle.Unload(true)</code> 并采用一种方法来确保对象不会重复。两种常用方法是：</p>
+<ul>
+<li>在应用程序生命周期中具有明确定义的卸载瞬态 AssetBundle 的时间点，例如在关卡之间或在加载屏幕期间。</li>
+<li>维护单个对象的引用计数，仅当未使用所有组成对象时才卸载 AssetBundle。这允许应用程序卸载和重新加载单个对象，而无需复制内存。</li>
+</ul>
+<p>如果应用程序必须使用 <code>AssetBundle.Unload(false)</code>，则只能以两种方式卸载单个对象：</p>
+<ul>
+<li>在场景和代码中消除对不需要的对象的所有引用。完成此操作后，调用 <a href="../ScriptReference/Resources.UnloadUnusedAssets.html">Resources.UnloadUnusedAssets</a>。</li>
+<li>以非附加方式加载场景。这样会销毁当前场景中的所有对象并自动调用 <a href="../ScriptReference/Resources.UnloadUnusedAssets.html">Resources.UnloadUnusedAssets</a>。</li>
+</ul>
+<h1 id="加载依赖资源">加载依赖资源<a hidden class="anchor" aria-hidden="true" href="#加载依赖资源">#</a></h1>
+<h2 id="通过-api-获取-assetbundle-依赖信息">通过 API 获取 AssetBundle 依赖信息<a hidden class="anchor" aria-hidden="true" href="#通过-api-获取-assetbundle-依赖信息">#</a></h2>
+<ul>
+<li>GetAllAssetBundles()
+<ul>
+<li>描述：获取所有的 AssetBundle 的名字</li>
+</ul>
+</li>
+<li>GetAllDependencies(bundleName)
+<ul>
+<li>描述：获取目标 AssetBundle 的所有依赖 AssetBundle 名字 (递归遍历)</li>
+</ul>
+</li>
+<li>GetDirectDependencies(bundleName)
+<ul>
+<li>获取目标 AssetBundle 的直接的依赖 AssetBundle 名字(只遍</li>
+</ul>
+</li>
+</ul>
+<p>代码如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-C#" data-lang="C#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">System.Linq</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nn">LYFramework.Tests</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="k">class</span> <span class="nc">AssetBundleManifestExample</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">void</span> <span class="n">Start</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="n">windowsBundlePath</span> <span class="p">=</span> <span class="n">AssetBundleUtil</span><span class="p">.</span><span class="n">FullPathForAssetBundleName</span><span class="p">(</span><span class="s">&#34;Windows&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="n">windowsBundle</span> <span class="p">=</span> <span class="n">AssetBundle</span><span class="p">.</span><span class="n">LoadFromFile</span><span class="p">(</span><span class="n">windowsBundlePath</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="kt">var</span> <span class="n">manifest</span> <span class="p">=</span> <span class="n">windowsBundle</span><span class="p">.</span><span class="n">LoadAsset</span><span class="p">&lt;</span><span class="n">AssetBundleManifest</span><span class="p">&gt;(</span><span class="s">&#34;AssetBundleManifest&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="n">manifest</span><span class="p">.</span><span class="n">GetAllAssetBundles</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">				<span class="p">.</span><span class="n">ToList</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">				<span class="p">.</span><span class="n">ForEach</span><span class="p">(</span><span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="n">manifest</span><span class="p">.</span><span class="n">GetAllDependencies</span><span class="p">(</span><span class="s">&#34;coin_get_prefab&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">				<span class="p">.</span><span class="n">ToList</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">				<span class="p">.</span><span class="n">ForEach</span><span class="p">(</span><span class="n">dependBundle</span> <span class="p">=&gt;</span> <span class="n">Debug</span><span class="p">.</span><span class="n">LogFormat</span><span class="p">(</span><span class="s">&#34;coin_get_prefab depends:{0}&#34;</span><span class="p">,</span> <span class="n">dependBundle</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="n">windowsBundle</span><span class="p">.</span><span class="n">Unload</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>输出的结果如下。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-C#" data-lang="C#"><span class="line"><span class="cl"><span class="n">coin_get</span>
+</span></span><span class="line"><span class="cl"><span class="n">coin_get_prefab</span>
+</span></span><span class="line"><span class="cl"><span class="n">coin_get_prefab</span> <span class="n">depends</span><span class="p">:</span><span class="n">coin_get</span>
+</span></span></code></pre></div>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/unity/">Unity</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E4%BA%8C%E5%8F%89%E6%A0%91/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>二叉树</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/%E8%AF%AD%E6%B3%95/c-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">
+    <span class="title">Next »</span>
+    <br>
+    <span>C#数据结构与算法</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-Asset资源 on x"
+            href="https://x.com/intent/tweet/?text=Unity-Asset%e8%b5%84%e6%ba%90&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E8%25B5%2584%25E6%25BA%2590%25E6%2596%2587%25E4%25BB%25B6%2f&amp;hashtags=Unity">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-Asset资源 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E8%25B5%2584%25E6%25BA%2590%25E6%2596%2587%25E4%25BB%25B6%2f&amp;title=Unity-Asset%e8%b5%84%e6%ba%90&amp;summary=Unity-Asset%e8%b5%84%e6%ba%90&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E8%25B5%2584%25E6%25BA%2590%25E6%2596%2587%25E4%25BB%25B6%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-Asset资源 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E8%25B5%2584%25E6%25BA%2590%25E6%2596%2587%25E4%25BB%25B6%2f&title=Unity-Asset%e8%b5%84%e6%ba%90">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-Asset资源 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E8%25B5%2584%25E6%25BA%2590%25E6%2596%2587%25E4%25BB%25B6%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-Asset资源 on whatsapp"
+            href="https://api.whatsapp.com/send?text=Unity-Asset%e8%b5%84%e6%ba%90%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E8%25B5%2584%25E6%25BA%2590%25E6%2596%2587%25E4%25BB%25B6%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-Asset资源 on telegram"
+            href="https://telegram.me/share/url?text=Unity-Asset%e8%b5%84%e6%ba%90&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E8%25B5%2584%25E6%25BA%2590%25E6%2596%2587%25E4%25BB%25B6%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-Asset资源 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=Unity-Asset%e8%b5%84%e6%ba%90&u=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E8%25B5%2584%25E6%25BA%2590%25E6%2596%2587%25E4%25BB%25B6%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">LiuYingbo Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

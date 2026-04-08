@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Unity-移动端打包记录（持续更新） | LiuYingbo Blog</title>
+<meta name="keywords" content="Unity">
+<meta name="description" content="Android
+Gradle版本问题
+本地打包的大部分错误都是因为这个问题，这是因为笔者接入的SDK自定义了gradle的插件版本，这个再unity本身其实已经定义过了，但是自己是可以通过修改build.gradle进行修改的。查看unity本身gradel的插件版本的路径是：Editor\Data\PlaybackEngines\AndroidPlayer\Tools\GradleTemplates\baseProjectTemplate.gradle,以2019.4.28版本为例，里面代码为：
+allprojects {
+    buildscript {
+        ***
+        dependencies {
+            ***
+            classpath &#39;com.android.tools.build:gradle:3.4.0&#39;
+            **BUILD_SCRIPT_DEPS**
+        }
+    }
+    ***
+}
+***
+如上图，可以看到插件版本为3.4.0，如果unity里本身修改了baseProjectTemplate.gradle就按照修改后的来，这个文件夹内所有的gradle和properties都是默认的，如果程序里修改就按照程序里的来。修改的方法在Editor–&gt;ProjectSettings–&gt;Player–&gt;Publishing Settings，如下图所示：
+
+如上图，其实就是对应编辑器文件夹下的gradle文件，如果打勾就会在pluging/Android文件夹下生成对应的文件，就可以直接修改，不再按照unity默认的来，就可以修改配置了。
+经过上面的介绍已经知道如何查看并修改unity的gradle插件版本，下面就是修改对应的gradle版本。首先打开Editor–&gt;Preference–&gt;External Tools就可以看到Android的打包环境配置。
+
+2020版本以后的Unity是默认路径下就自己配置好环境，选择默认就可以，但是依旧可能会存在环境不存在或者版本不对，所以可以自己配置，这样修改也方便。这里有需要特别关注的一点也是大部分打包失败的原因，就是gradle的版本和对应的插件版本是有对照关系的，必须对照上才能正常打包。对应关系如下图：
+
+只要配置好对应的关系就行了。
+APK&#43;obb分包无法运行问题
+因为Google商店对上传的apk有内存限制，要求是100M以内，这里推荐使用的是APk&#43;OBB进行分包，根据最新的要求是要求使用AAB包，这里先介绍APK&#43;OBB的分包遇到的问题。
+分开打包的方法是Editor–&gt;ProjectSettings–&gt;Player–&gt;Publishing Settings里，勾选上最下面的Split Application Binary。
+
+这个是可以代码控制的：
+PlayerSettings.Android.useAPKExpansionFiles = true;
+分包后如何在手机上运行呢，这里只需要安装分包后的APK，然后在手机上运行，发现第一次运行不成功，这是因为资源都在OBB中，所以无法正常运行，这里只需要吧自己的OBB改好名字放在对应的文件夹就行了。然后再运行就可以了。
+文件夹地址：手机目录\Android\obb&quot;APP的包名”
+OBB文件的名字: main.安卓内部版本号.APP包名.obb (举例：main.102.com.XXX.XXX.XXX.obb)
+华为手机出现水滴屏无法适配的问题
+笔者的项目要求手机在遇到水滴屏或者刘海屏的时候，上面显示黑条不进行渲染就可以，笔者查了一下unity的设置方法，发现只需要不勾选Editor–&gt;ProjectSettings–&gt;Resolution and Presentation里的Render outside safe area即可。
+
+但是笔者发现APP在某个测试的华为手机上依旧渲染了，最后发现是接入的SDK里设置了华为手机的屏幕渲染。在华为手机Android8.0的适配方案是在AndroidManfiest里面添加下面的话即可，笔者发现接入的SDK设置了这个，于是去掉就没有问题了。
+&lt;meta-data android:name=&#34;android.notch_support&#34; android:value=&#34;true&#34;/&gt; 
+这里列举一下小米手机的适配方案是：
+&lt;meta-data
+ android:name=&#34;notch.config&#34;
+ android:value=&#34;portrait|landscape&#34;/&gt;
+华为荣耀系列闪退
+2023-02-22 14:34:08.234 12494-12494 AndroidRuntime          pid-12494                            E  FATAL EXCEPTION: main
+                                                                                                    Process: com.xg.legendofliqi, PID: 12494
+                                                                                                    java.lang.Error: *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+                                                                                                    Version &#39;2021.3.1f1c1 (0cb3bd085a01)&#39;, Build type &#39;Release&#39;, Scripting Backend &#39;il2cpp&#39;, CPU &#39;arm64-v8a&#39;
+                                                                                                    Build fingerprint: &#39;HONOR/FNE-AN00/HNFNE:12/HONORFNE-AN00/6.1.0.178C00:user/release-keys&#39;
+                                                                                                    Revision: &#39;0&#39;
+                                                                                                    ABI: &#39;arm64&#39;
+                                                                                                    Timestamp: 2023-02-22 14:34:03&#43;0800
+                                                                                                    pid: 12494, tid: 12580, name: Thread-9  &gt;&gt;&gt; com.xg.legendofliqi &lt;&lt;&lt;
+                                                                                                    uid: 10052
+                                                                                                    signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x100000071
+                                                                                                        x0  0000000000000000  x1  0000000000000001  x2  00000075508123b8  x3  0000000000000001
+                                                                                                        x4  ffffffffffffffff  x5  00000075b0c07208  x6  0000000000000000  x7  0000000000000000
+                                                                                                        x8  0000000000000000  x9  0000000000010cc0  x10 0000000000000000  x11 0000000000000000
+                                                                                                        x12 0000000000000a80  x13 0000000000000000  x14 431bde82d7b634db  x15 0000000100000001
+                                                                                                        x16 00000076512d3bb8  x17 00000079a4bec168  x18 000000753f646000  x19 0000000000000000
+                                                                                                        x20 ffffffffffffffff  x21 000000777bdb99b0  x22 00000075b0bf2400  x23 00000075508123f8
+                                                                                                        x24 00000075b0bf2278  x25 0000007550812740  x26 00000075b0be3c10  x27 00000075508128d8
+                                                                                                        x28 000000761018e900  x29 0000007550812360
+                                                                                                        sp  0000007550812360  lr  0000007650856d54  pc  00000075513c0730
+
+                                                                                                    backtrace:
+                                                                                                          #00 pc 00000000000a9730  /vendor/lib64/hw/vulkan.adreno.so (qglinternal::vkWaitForFences(VkDevice_T*, unsigned int, VkFence_T* const*, unsigned int, unsigned long)&#43;184) (BuildId: 5839fbcc06912e00a12c12db16914158)
+                                                                                                          #01 pc 0000000000781d50  /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)
+                                                                                                          #02 pc 000000000075f864  /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)
+                                                                                                          #03 pc 0000000000781260  /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)
+                                                                                                          #04 pc 0000000000760a08  /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)
+                                                                                                          #05 pc 000000000076ec38  /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)
+                                                                                                          #06 pc 0000000000758714  /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)
+                                                                                                          #07 pc 0000000000750994  /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)
+                                                                                                          #08 pc 000000000075a9f4  /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)
+                                                                                                          #09 pc 00000000006a71d4  /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)
+                                                                                                          #10 pc 00000000007508fc  /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)
+                                                                                                          #11 pc 00000000006a8f00  /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)
+                                                                                                          #12 pc 00000000008a5e50  /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)
+                                                                                                          #13 pc 00000000008a7c18  /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)
+2023-02-22 14:34:08.234 12494-12494 AndroidRuntime          pid-12494                            E        #14 pc 000000000089f4a8  /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)
+                                                                                                          #15 pc 000000000033070c  /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)
+                                                                                                          #16 pc 00000000000b3ea0  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)&#43;264) (BuildId: 82e5b2ff86b193c94139353a92c4af29)
+                                                                                                          #17 pc 0000000000053880  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread&#43;64) (BuildId: 82e5b2ff86b193c94139353a92c4af29)
+
+                                                                                                    	at vulkan.qglinternal::vkWaitForFences(VkDevice_T*, unsigned int, VkFence_T* const*, unsigned int, unsigned long)(vkWaitForFences:184)
+                                                                                                    	at libunity.0x781d50(Native Method)
+                                                                                                    	at libunity.0x75f864(Native Method)
+                                                                                                    	at libunity.0x781260(Native Method)
+                                                                                                    	at libunity.0x760a08(Native Method)
+                                                                                                    	at libunity.0x76ec38(Native Method)
+                                                                                                    	at libunity.0x758714(Native Method)
+                                                                                                    	at libunity.0x750994(Native Method)
+                                                                                                    	at libunity.0x75a9f4(Native Method)
+                                                                                                    	at libunity.0x6a71d4(Native Method)
+                                                                                                    	at libunity.0x7508fc(Native Method)
+                                                                                                    	at libunity.0x6a8f00(Native Method)
+                                                                                                    	at libunity.0x8a5e50(Native Method)
+                                                                                                    	at libunity.0x8a7c18(Native Method)
+                                                                                                    	at libunity.0x89f4a8(Native Method)
+                                                                                                    	at libunity.0x33070c(Native Method)
+                                                                                                    	at libc.__pthread_start(void*)(__pthread_start:264)
+                                                                                                    	at libc.__start_thread(__start_thread:64)
+打包版本是Unity 2021.3.1f1c1,有使用最新版Unity打包但还是一样的空包一样会闪退">
+<meta name="author" content="LiuYingbo">
+<link rel="canonical" href="http://localhost:1313/posts/unity/unity-%E7%A7%BB%E5%8A%A8%E7%AB%AF%E6%89%93%E5%8C%85%E8%AE%B0%E5%BD%95%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.a29c24210eb31d9ce56f669c66a35c9c51b17376b7764e336a49af7dec914cf0.css" integrity="sha256-opwkIQ6zHZzlb2acZqNcnFGxc3a3dk4zakmvfeyRTPA=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/unity/unity-%E7%A7%BB%E5%8A%A8%E7%AB%AF%E6%89%93%E5%8C%85%E8%AE%B0%E5%BD%95%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="LiuYingbo Blog (Alt + H)">LiuYingbo Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/categories/" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives/" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">Home</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Unity-移动端打包记录（持续更新）
+    </h1>
+    <div class="post-meta"><span title='2023-03-05 20:34:23 +0800 CST'>March 5, 2023</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span>
+
+</div>
+  </header> 
+<figure class="entry-cover">
+        <img loading="eager" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303052044934.jpg" alt="">
+        
+</figure><div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#android" aria-label="Android">Android</a><ul>
+                        
+                <li>
+                    <a href="#gradle%e7%89%88%e6%9c%ac%e9%97%ae%e9%a2%98" aria-label="Gradle版本问题">Gradle版本问题</a></li>
+                <li>
+                    <a href="#apkobb%e5%88%86%e5%8c%85%e6%97%a0%e6%b3%95%e8%bf%90%e8%a1%8c%e9%97%ae%e9%a2%98" aria-label="APK&#43;obb分包无法运行问题">APK+obb分包无法运行问题</a></li>
+                <li>
+                    <a href="#%e5%8d%8e%e4%b8%ba%e6%89%8b%e6%9c%ba%e5%87%ba%e7%8e%b0%e6%b0%b4%e6%bb%b4%e5%b1%8f%e6%97%a0%e6%b3%95%e9%80%82%e9%85%8d%e7%9a%84%e9%97%ae%e9%a2%98" aria-label="华为手机出现水滴屏无法适配的问题">华为手机出现水滴屏无法适配的问题</a></li>
+                <li>
+                    <a href="#%e5%8d%8e%e4%b8%ba%e8%8d%a3%e8%80%80%e7%b3%bb%e5%88%97%e9%97%aa%e9%80%80" aria-label="华为荣耀系列闪退">华为荣耀系列闪退</a><ul>
+                        
+                <li>
+                    <a href="#%e4%bb%80%e4%b9%88%e6%98%afvulkan" aria-label="什么是Vulkan？">什么是Vulkan？</a></li>
+                <li>
+                    <a href="#%e8%a7%a3%e5%86%b3%e6%96%b9%e6%a1%88%e4%b8%80" aria-label="解决方案一">解决方案一</a></li>
+                <li>
+                    <a href="#%e8%a7%a3%e5%86%b3%e6%96%b9%e6%a1%88%e4%ba%8c" aria-label="解决方案二">解决方案二</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h1 id="android">Android<a hidden class="anchor" aria-hidden="true" href="#android">#</a></h1>
+<h2 id="gradle版本问题">Gradle版本问题<a hidden class="anchor" aria-hidden="true" href="#gradle版本问题">#</a></h2>
+<p>本地打包的大部分错误都是因为这个问题，这是因为笔者接入的SDK自定义了gradle的插件版本，这个再unity本身其实已经定义过了，但是自己是可以通过修改build.gradle进行修改的。查看unity本身gradel的插件版本的路径是：Editor\Data\PlaybackEngines\AndroidPlayer\Tools\GradleTemplates\baseProjectTemplate.gradle,以2019.4.28版本为例，里面代码为：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">allprojects</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">buildscript</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="o">***</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">dependencies</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="o">***</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">classpath</span><span class="w"> </span><span class="err">&#39;</span><span class="n">com</span><span class="p">.</span><span class="na">android</span><span class="p">.</span><span class="na">tools</span><span class="p">.</span><span class="na">build</span><span class="p">:</span><span class="n">gradle</span><span class="p">:</span><span class="n">3</span><span class="p">.</span><span class="na">4</span><span class="p">.</span><span class="na">0</span><span class="err">&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="o">**</span><span class="n">BUILD_SCRIPT_DEPS</span><span class="o">**</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="o">***</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">***</span><span class="w">
+</span></span></span></code></pre></div><p>如上图，可以看到插件版本为3.4.0，如果unity里本身修改了baseProjectTemplate.gradle就按照修改后的来，这个文件夹内所有的gradle和properties都是默认的，如果程序里修改就按照程序里的来。修改的方法在Editor–&gt;ProjectSettings–&gt;Player–&gt;Publishing Settings，如下图所示：</p>
+<p><img alt="image.png" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303052046711.png"></p>
+<p>如上图，其实就是对应编辑器文件夹下的gradle文件，如果打勾就会在pluging/Android文件夹下生成对应的文件，就可以直接修改，不再按照unity默认的来，就可以修改配置了。</p>
+<p>经过上面的介绍已经知道如何查看并修改unity的gradle插件版本，下面就是修改对应的gradle版本。首先打开Editor–&gt;Preference–&gt;External Tools就可以看到Android的打包环境配置。</p>
+<p><img alt="image.png" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303052046717.png"></p>
+<p>2020版本以后的Unity是默认路径下就自己配置好环境，选择默认就可以，但是依旧可能会存在环境不存在或者版本不对，所以可以自己配置，这样修改也方便。这里有需要特别关注的一点也是大部分打包失败的原因，就是gradle的版本和对应的插件版本是有对照关系的，必须对照上才能正常打包。对应关系如下图：</p>
+<p><img alt="image.png" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303052046727.png"></p>
+<p>只要配置好对应的关系就行了。</p>
+<h2 id="apkobb分包无法运行问题">APK+obb分包无法运行问题<a hidden class="anchor" aria-hidden="true" href="#apkobb分包无法运行问题">#</a></h2>
+<p>因为Google商店对上传的apk有内存限制，要求是100M以内，这里推荐使用的是APk+OBB进行分包，根据最新的要求是要求使用AAB包，这里先介绍APK+OBB的分包遇到的问题。</p>
+<p>分开打包的方法是Editor–&gt;ProjectSettings–&gt;Player–&gt;Publishing Settings里，勾选上最下面的Split Application Binary。</p>
+<p><img alt="image.png" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303052048439.png"></p>
+<p>这个是可以代码控制的：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="n">PlayerSettings</span><span class="p">.</span><span class="n">Android</span><span class="p">.</span><span class="n">useAPKExpansionFiles</span> <span class="p">=</span> <span class="kc">true</span><span class="p">;</span>
+</span></span></code></pre></div><p>分包后如何在手机上运行呢，这里只需要安装分包后的APK，然后在手机上运行，发现第一次运行不成功，这是因为资源都在OBB中，所以无法正常运行，这里只需要吧自己的OBB改好名字放在对应的文件夹就行了。然后再运行就可以了。</p>
+<p>文件夹地址：手机目录\Android\obb&quot;APP的包名”
+OBB文件的名字: main.安卓内部版本号.APP包名.obb (举例：main.102.com.XXX.XXX.XXX.obb)</p>
+<h2 id="华为手机出现水滴屏无法适配的问题">华为手机出现水滴屏无法适配的问题<a hidden class="anchor" aria-hidden="true" href="#华为手机出现水滴屏无法适配的问题">#</a></h2>
+<p>笔者的项目要求手机在遇到水滴屏或者刘海屏的时候，上面显示黑条不进行渲染就可以，笔者查了一下unity的设置方法，发现只需要不勾选Editor–&gt;ProjectSettings–&gt;Resolution and Presentation里的Render outside safe area即可。</p>
+<p><img alt="image.png" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303052052992.png"></p>
+<p>但是笔者发现APP在某个测试的华为手机上依旧渲染了，最后发现是接入的SDK里设置了华为手机的屏幕渲染。在华为手机Android8.0的适配方案是在AndroidManfiest里面添加下面的话即可，笔者发现接入的SDK设置了这个，于是去掉就没有问题了。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="n">meta</span><span class="p">-</span><span class="n">data</span> <span class="n">android</span><span class="p">:</span><span class="n">name</span><span class="p">=</span><span class="s">&#34;android.notch_support&#34;</span> <span class="n">android</span><span class="p">:</span><span class="k">value</span><span class="p">=</span><span class="s">&#34;true&#34;</span><span class="p">/&gt;</span> 
+</span></span></code></pre></div><p>这里列举一下小米手机的适配方案是：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="n">meta</span><span class="p">-</span><span class="n">data</span>
+</span></span><span class="line"><span class="cl"> <span class="n">android</span><span class="p">:</span><span class="n">name</span><span class="p">=</span><span class="s">&#34;notch.config&#34;</span>
+</span></span><span class="line"><span class="cl"> <span class="n">android</span><span class="p">:</span><span class="k">value</span><span class="p">=</span><span class="s">&#34;portrait|landscape&#34;</span><span class="p">/&gt;</span>
+</span></span></code></pre></div><h2 id="华为荣耀系列闪退">华为荣耀系列闪退<a hidden class="anchor" aria-hidden="true" href="#华为荣耀系列闪退">#</a></h2>
+<pre tabindex="0"><code>2023-02-22 14:34:08.234 12494-12494 AndroidRuntime          pid-12494                            E  FATAL EXCEPTION: main
+                                                                                                    Process: com.xg.legendofliqi, PID: 12494
+                                                                                                    java.lang.Error: *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+                                                                                                    Version &#39;2021.3.1f1c1 (0cb3bd085a01)&#39;, Build type &#39;Release&#39;, Scripting Backend &#39;il2cpp&#39;, CPU &#39;arm64-v8a&#39;
+                                                                                                    Build fingerprint: &#39;HONOR/FNE-AN00/HNFNE:12/HONORFNE-AN00/6.1.0.178C00:user/release-keys&#39;
+                                                                                                    Revision: &#39;0&#39;
+                                                                                                    ABI: &#39;arm64&#39;
+                                                                                                    Timestamp: 2023-02-22 14:34:03+0800
+                                                                                                    pid: 12494, tid: 12580, name: Thread-9  &gt;&gt;&gt; com.xg.legendofliqi &lt;&lt;&lt;
+                                                                                                    uid: 10052
+                                                                                                    signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x100000071
+                                                                                                        x0  0000000000000000  x1  0000000000000001  x2  00000075508123b8  x3  0000000000000001
+                                                                                                        x4  ffffffffffffffff  x5  00000075b0c07208  x6  0000000000000000  x7  0000000000000000
+                                                                                                        x8  0000000000000000  x9  0000000000010cc0  x10 0000000000000000  x11 0000000000000000
+                                                                                                        x12 0000000000000a80  x13 0000000000000000  x14 431bde82d7b634db  x15 0000000100000001
+                                                                                                        x16 00000076512d3bb8  x17 00000079a4bec168  x18 000000753f646000  x19 0000000000000000
+                                                                                                        x20 ffffffffffffffff  x21 000000777bdb99b0  x22 00000075b0bf2400  x23 00000075508123f8
+                                                                                                        x24 00000075b0bf2278  x25 0000007550812740  x26 00000075b0be3c10  x27 00000075508128d8
+                                                                                                        x28 000000761018e900  x29 0000007550812360
+                                                                                                        sp  0000007550812360  lr  0000007650856d54  pc  00000075513c0730
+
+                                                                                                    backtrace:
+                                                                                                          #00 pc 00000000000a9730  /vendor/lib64/hw/vulkan.adreno.so (qglinternal::vkWaitForFences(VkDevice_T*, unsigned int, VkFence_T* const*, unsigned int, unsigned long)+184) (BuildId: 5839fbcc06912e00a12c12db16914158)
+                                                                                                          #01 pc 0000000000781d50  /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)
+                                                                                                          #02 pc 000000000075f864  /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)
+                                                                                                          #03 pc 0000000000781260  /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)
+                                                                                                          #04 pc 0000000000760a08  /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)
+                                                                                                          #05 pc 000000000076ec38  /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)
+                                                                                                          #06 pc 0000000000758714  /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)
+                                                                                                          #07 pc 0000000000750994  /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)
+                                                                                                          #08 pc 000000000075a9f4  /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)
+                                                                                                          #09 pc 00000000006a71d4  /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)
+                                                                                                          #10 pc 00000000007508fc  /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)
+                                                                                                          #11 pc 00000000006a8f00  /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)
+                                                                                                          #12 pc 00000000008a5e50  /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)
+                                                                                                          #13 pc 00000000008a7c18  /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)
+2023-02-22 14:34:08.234 12494-12494 AndroidRuntime          pid-12494                            E        #14 pc 000000000089f4a8  /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)
+                                                                                                          #15 pc 000000000033070c  /data/app/~~WnZeyO9JhYbG9GbePcBSVg==/com.xg.legendofliqi-qTxoOJYDPp2KJv3Yr8KuPA==/lib/arm64/libunity.so (BuildId: 73ee1682c58347912d029a798789df982330b7d9)
+                                                                                                          #16 pc 00000000000b3ea0  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)+264) (BuildId: 82e5b2ff86b193c94139353a92c4af29)
+                                                                                                          #17 pc 0000000000053880  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+64) (BuildId: 82e5b2ff86b193c94139353a92c4af29)
+
+                                                                                                    	at vulkan.qglinternal::vkWaitForFences(VkDevice_T*, unsigned int, VkFence_T* const*, unsigned int, unsigned long)(vkWaitForFences:184)
+                                                                                                    	at libunity.0x781d50(Native Method)
+                                                                                                    	at libunity.0x75f864(Native Method)
+                                                                                                    	at libunity.0x781260(Native Method)
+                                                                                                    	at libunity.0x760a08(Native Method)
+                                                                                                    	at libunity.0x76ec38(Native Method)
+                                                                                                    	at libunity.0x758714(Native Method)
+                                                                                                    	at libunity.0x750994(Native Method)
+                                                                                                    	at libunity.0x75a9f4(Native Method)
+                                                                                                    	at libunity.0x6a71d4(Native Method)
+                                                                                                    	at libunity.0x7508fc(Native Method)
+                                                                                                    	at libunity.0x6a8f00(Native Method)
+                                                                                                    	at libunity.0x8a5e50(Native Method)
+                                                                                                    	at libunity.0x8a7c18(Native Method)
+                                                                                                    	at libunity.0x89f4a8(Native Method)
+                                                                                                    	at libunity.0x33070c(Native Method)
+                                                                                                    	at libc.__pthread_start(void*)(__pthread_start:264)
+                                                                                                    	at libc.__start_thread(__start_thread:64)
+</code></pre><p>打包版本是Unity 2021.3.1f1c1,有使用最新版Unity打包但还是一样的空包一样会闪退</p>
+<p>错误日志是这样的截图找不到了可以看到最关键的错误信息就是<code>vulkan.qglinternal::vkWaitForFences(VkDevice_T*, unsigned int, VkFence_T* const*, unsigned int, unsigned long)(vkWaitForFences:184)</code></p>
+<h3 id="什么是vulkan">什么是Vulkan？<a hidden class="anchor" aria-hidden="true" href="#什么是vulkan">#</a></h3>
+<p>是一个跨平台的2D和3D绘图应用程序接口
+在2015年游戏开发者大会（GDC）上发表
+是OpenGL的下一代版本，旨在提供更低的CPU开销与更直接的GPU控制</p>
+<p>Auto Graphics API:自动图形接口（建议选择自动）</p>
+<p>勾选：Unity会自动尝试使用对应图形API接口进行图形处理
+默认使用Vulkan，如果设备不支持Vulkan，Unity会退到GLES3.2、GLES3.1或GLES3.0</p>
+<p>不勾选：可以列表中自己对使用的图形API接口进行排序，设置使用优先级</p>
+<p>下方的副选项ES3.1、ES3.1+AEP、ES3.2是三个额外的用于配置最低OpenGL ES 3.X次要版本的
+注意：只有当GLES2不在列表中是，Unity才会讲额外的三个选项要求添加到Android应用清单中，在这种情况下，如果你的应用发布到GooglePlay应用商店，它将不会显示在不受支持的设备上</p>
+<p><img alt="image-20230305211119554" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303052111597.png"></p>
+<p>大概得原因就是因为Auto Graphics API勾选后，选了自动优先使用vulkan但是华为荣耀系列为何会报错我就不是太清楚了，有想深入了解的可以自行研究一下跟一下堆栈日志</p>
+<h3 id="解决方案一">解决方案一<a hidden class="anchor" aria-hidden="true" href="#解决方案一">#</a></h3>
+<p>第一种解决方案是将自动Graphics API勾选取消，然后变成下图这用再移除Vulkan，这样就解决了但是这个解决方式并不优雅，因为这样意味着我们所有的APK都使用了OpenGL3，vulkan可以简单理解为是OpenGl的升级版这样相当于是降级处理</p>
+<p><img alt="image-20230305211346589" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303052113622.png"></p>
+<h3 id="解决方案二">解决方案二<a hidden class="anchor" aria-hidden="true" href="#解决方案二">#</a></h3>
+<p>Android 设备上运行时选择您想要的图形 API。</p>
+<p>Unity提供了在UnityPlayerActivity中添加命令行参数的功能。您可以添加命令行参数。例如<code>-force-gles20, -force-gles30, -force-gles31, -force-gles31aep and -force-vulkan</code>强制使用选定的图形 API。</p>
+<p>您可以导出项目并在Android Studio中打开它，然后修改UnityPlayerActivity.java文件。有一个例子：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Java" data-lang="Java"><span class="line"><span class="cl"><span class="n">String</span><span class="w"> </span><span class="n">deviceName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">android</span><span class="p">.</span><span class="na">os</span><span class="p">.</span><span class="na">Build</span><span class="p">.</span><span class="na">MODEL</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// Setup activity layout</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@Override</span><span class="w"> </span><span class="kd">protected</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">onCreate</span><span class="p">(</span><span class="n">Bundle</span><span class="w"> </span><span class="n">savedInstanceState</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">requestWindowFeature</span><span class="p">(</span><span class="n">Window</span><span class="p">.</span><span class="na">FEATURE_NO_TITLE</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">super</span><span class="p">.</span><span class="na">onCreate</span><span class="p">(</span><span class="n">savedInstanceState</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="n">deviceName</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="s">&#34;FNE-AN00&#34;</span><span class="p">))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">getIntent</span><span class="p">().</span><span class="na">putExtra</span><span class="p">(</span><span class="s">&#34;unity&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;-force-gles30&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">mUnityPlayer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">UnityPlayer</span><span class="p">(</span><span class="k">this</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">setContentView</span><span class="p">(</span><span class="n">mUnityPlayer</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">mUnityPlayer</span><span class="p">.</span><span class="na">requestFocus</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p>在这里，我使用了我的华为荣耀测试机FNE-AN00为例。并使用 Vulkan 和 OpenGLES 图形 API 构建项目。我想在这个设备上选择比较老的Graphics API，所以我设置命令行参数使用OpenGLES graphics API。我们的游戏将使用 OpenGLES 3.0 在这个 FNE-AN00 设备上运行。另一方面，它在其他 Android 设备上运行时将使用 Vulkan。</p>
+<p>当然因为华为荣耀系列的机型很多，我是比较暴力的直接将所有华为机型都使用OpenGLES 3.0，更优雅的方式就是将有问题的机型做针对设置。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/unity/">Unity</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/unity/unity-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Unity-性能优化</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/%E8%AF%AD%E6%B3%95/c-linq/">
+    <span class="title">Next »</span>
+    <br>
+    <span>C# LINQ</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-移动端打包记录（持续更新） on x"
+            href="https://x.com/intent/tweet/?text=Unity-%e7%a7%bb%e5%8a%a8%e7%ab%af%e6%89%93%e5%8c%85%e8%ae%b0%e5%bd%95%ef%bc%88%e6%8c%81%e7%bb%ad%e6%9b%b4%e6%96%b0%ef%bc%89&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E7%25A7%25BB%25E5%258A%25A8%25E7%25AB%25AF%25E6%2589%2593%25E5%258C%2585%25E8%25AE%25B0%25E5%25BD%2595%25E6%258C%2581%25E7%25BB%25AD%25E6%259B%25B4%25E6%2596%25B0%2f&amp;hashtags=Unity">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-移动端打包记录（持续更新） on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E7%25A7%25BB%25E5%258A%25A8%25E7%25AB%25AF%25E6%2589%2593%25E5%258C%2585%25E8%25AE%25B0%25E5%25BD%2595%25E6%258C%2581%25E7%25BB%25AD%25E6%259B%25B4%25E6%2596%25B0%2f&amp;title=Unity-%e7%a7%bb%e5%8a%a8%e7%ab%af%e6%89%93%e5%8c%85%e8%ae%b0%e5%bd%95%ef%bc%88%e6%8c%81%e7%bb%ad%e6%9b%b4%e6%96%b0%ef%bc%89&amp;summary=Unity-%e7%a7%bb%e5%8a%a8%e7%ab%af%e6%89%93%e5%8c%85%e8%ae%b0%e5%bd%95%ef%bc%88%e6%8c%81%e7%bb%ad%e6%9b%b4%e6%96%b0%ef%bc%89&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E7%25A7%25BB%25E5%258A%25A8%25E7%25AB%25AF%25E6%2589%2593%25E5%258C%2585%25E8%25AE%25B0%25E5%25BD%2595%25E6%258C%2581%25E7%25BB%25AD%25E6%259B%25B4%25E6%2596%25B0%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-移动端打包记录（持续更新） on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E7%25A7%25BB%25E5%258A%25A8%25E7%25AB%25AF%25E6%2589%2593%25E5%258C%2585%25E8%25AE%25B0%25E5%25BD%2595%25E6%258C%2581%25E7%25BB%25AD%25E6%259B%25B4%25E6%2596%25B0%2f&title=Unity-%e7%a7%bb%e5%8a%a8%e7%ab%af%e6%89%93%e5%8c%85%e8%ae%b0%e5%bd%95%ef%bc%88%e6%8c%81%e7%bb%ad%e6%9b%b4%e6%96%b0%ef%bc%89">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-移动端打包记录（持续更新） on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E7%25A7%25BB%25E5%258A%25A8%25E7%25AB%25AF%25E6%2589%2593%25E5%258C%2585%25E8%25AE%25B0%25E5%25BD%2595%25E6%258C%2581%25E7%25BB%25AD%25E6%259B%25B4%25E6%2596%25B0%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-移动端打包记录（持续更新） on whatsapp"
+            href="https://api.whatsapp.com/send?text=Unity-%e7%a7%bb%e5%8a%a8%e7%ab%af%e6%89%93%e5%8c%85%e8%ae%b0%e5%bd%95%ef%bc%88%e6%8c%81%e7%bb%ad%e6%9b%b4%e6%96%b0%ef%bc%89%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E7%25A7%25BB%25E5%258A%25A8%25E7%25AB%25AF%25E6%2589%2593%25E5%258C%2585%25E8%25AE%25B0%25E5%25BD%2595%25E6%258C%2581%25E7%25BB%25AD%25E6%259B%25B4%25E6%2596%25B0%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-移动端打包记录（持续更新） on telegram"
+            href="https://telegram.me/share/url?text=Unity-%e7%a7%bb%e5%8a%a8%e7%ab%af%e6%89%93%e5%8c%85%e8%ae%b0%e5%bd%95%ef%bc%88%e6%8c%81%e7%bb%ad%e6%9b%b4%e6%96%b0%ef%bc%89&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E7%25A7%25BB%25E5%258A%25A8%25E7%25AB%25AF%25E6%2589%2593%25E5%258C%2585%25E8%25AE%25B0%25E5%25BD%2595%25E6%258C%2581%25E7%25BB%25AD%25E6%259B%25B4%25E6%2596%25B0%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-移动端打包记录（持续更新） on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=Unity-%e7%a7%bb%e5%8a%a8%e7%ab%af%e6%89%93%e5%8c%85%e8%ae%b0%e5%bd%95%ef%bc%88%e6%8c%81%e7%bb%ad%e6%9b%b4%e6%96%b0%ef%bc%89&u=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-%25E7%25A7%25BB%25E5%258A%25A8%25E7%25AB%25AF%25E6%2589%2593%25E5%258C%2585%25E8%25AE%25B0%25E5%25BD%2595%25E6%258C%2581%25E7%25BB%25AD%25E6%259B%25B4%25E6%2596%25B0%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">LiuYingbo Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

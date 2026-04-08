@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Unity-Shader | LiuYingbo Blog</title>
+<meta name="keywords" content="Unity, Shader">
+<meta name="description" content="Mesh
+MeshFilter 网格过滤器
+主要从众多的资源中挑选需要的Mesh，把它丢给MeshRender。
+MeshRenderer 网格渲染器
+主要是负责把MeshFilter丢过来的Mesh，绘制显示到我们的场景中，当然这项工作是非常复杂的。
+Material 材质球
+Material是MeshRenderer中非常重要的角色，它的配置决定了物体表面的外观将以怎样的质地呈现到我们眼前。如果天MeshRenderer不小心弄丢了Material，那这个物体就会变成让人烦躁的品红色。其实它跟大家经常看到的网页Error404差不多，RGB调成101就是这个颜色啦。
+如果说Material是MeshRenderer的灵魂，那Shader就是Material的灵魂，但凡Shader哪里不开心了，即使MeshRenderer没有弄丢Material，物体依旧会变成前面所说的101颜色。
+Mesh 网格
+Mesh指的就是模型的网格，它决定了物体的表面形状是怎样的，一个模型的表面大多是由多个彼此相连的三角面构成，当然也有其它类型。我们平时听到的建模，可以简单理解为就是在建网格，那为什么Unity中的网格大多都是三角形而不是四边形呢？正所谓一生二，二生三，三生万物。三角形可以说是最为基础的面了，可以简单理解为三角形具有更广泛的适用性，而Mesh则是构成这些三角面所需的信息集合。
+通过 Mesh data - Unity 手册 我们可以看到构成这些三角面所需的信息。
+Vertices 顶点数组 Vector3[]
+顾名思义它存储的是顶点的相关信息，所谓点成线，线成面，可以理解为这里面存储的是构成网格面全部的点
+Topology 拓扑类型
+它存储的就是一个类型信息，可以理解为它是图形表面排列结构的组成方式，Unity给我们提供了5种拓扑类型，三角面、四边形、线条、虚线、点阵，最常用的则是三角面。
+Indices 索引数组 int[]
+它是每个三角面顶点 的索引，可以理解为他存储了构网格三角面所用到的顶点索引。
+Vertex data 顶点数据
+
+它包含了顶点的位置、法线、切线、UV等属性
+Normal 法线 Vector3[]
+法线就是垂直于该顶点三角面的一条三维向量，它只有方向，没有大小。法线的方向就是顶点三角面朝外的方向。假设我们面前有一面镜子，它的正中心会有一条法线垂直于镜面指向我们，指向我们的面就是正面，相反就是背面
+Tangent 切线 Vector3[]
+它是垂直于法线的一条向量，而由于垂直于法线的向量有无数条，所以切线最终是由UV坐标来决定朝向的
+UV  纹理坐标 Vector2[]
+上面所说的UV坐标其实就是它，U增长的方向就是切线的方向，它和三维空间的X, Y, Z较为类似，它是一个二维的坐标系统，模型网格除了有三维空间的xyz坐标外，还有一个二维的UV坐标，在UV坐标中，U和V分别代表顶点在Texture水平和垂直方向上的采样坐标，这些坐标通常位于(0，0)和(1，1)之间，（0，0）代表最左下角，而（1，1）代表最右上角。这就跟平时装修房子贴墙纸一样，可以理解为它是Texture映射到模型表面的依据，模型顶点 会依据UV坐标对Texture进行采样。
+Index data 索引数据
+这个数据取决于拓扑类型，如果是三角面他储存的就是[0,1,2]，四边形储存的就是[0,1,2,3]，这个索引数值对应的就是顶点数组的下标。
+渲染
+渲染管线
+渲染管线通常来说就是在虚拟相机、三维物体、光源、照明模式、纹理等诸多条件都给定的情况下，生成或是绘制一幅二维图像的过程。而这个过程会有很多步骤，这些步骤就渲染阶段。
+一般这个过程会分为四个主要阶段：应用程序阶段、几何阶段、光栅化阶段、像素处理阶段。而每个阶段 又会分为很多个部分。
+
+应用程序阶段 （The Application Stage） CPU
+它最主要是负责数据的准备，也就是准备后面的阶段 所需的数据，像如模型，贴图，光照，相机位置等信息。
+-&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;">
+<meta name="author" content="LiuYingbo">
+<link rel="canonical" href="http://localhost:1313/posts/unity/unity-shader/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.a29c24210eb31d9ce56f669c66a35c9c51b17376b7764e336a49af7dec914cf0.css" integrity="sha256-opwkIQ6zHZzlb2acZqNcnFGxc3a3dk4zakmvfeyRTPA=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/unity/unity-shader/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="LiuYingbo Blog (Alt + H)">LiuYingbo Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/categories/" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives/" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">Home</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Unity-Shader
+    </h1>
+    <div class="post-meta"><span title='2022-03-06 22:25:02 +0800 CST'>March 6, 2022</span>&nbsp;·&nbsp;<span>11 min</span>&nbsp;·&nbsp;<span>LiuYingbo</span>
+
+</div>
+  </header> 
+<figure class="entry-cover">
+        <img loading="eager" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202211192022487.jpg" alt="">
+        
+</figure><div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#mesh" aria-label="Mesh">Mesh</a></li>
+                <li>
+                    <a href="#%e6%b8%b2%e6%9f%93" aria-label="渲染">渲染</a><ul>
+                        
+                <li>
+                    <a href="#%e6%b8%b2%e6%9f%93%e7%ae%a1%e7%ba%bf" aria-label="渲染管线">渲染管线</a></li></ul>
+                </li>
+                <li>
+                    <a href="#shader" aria-label="Shader">Shader</a><ul>
+                        
+                <li>
+                    <a href="#unity%e4%b8%ad%e7%9a%84shader%e7%b1%bb%e5%9e%8b" aria-label="Unity中的Shader类型">Unity中的Shader类型</a></li>
+                <li>
+                    <a href="#shaderlab" aria-label="ShaderLab">ShaderLab</a><ul>
+                        
+                <li>
+                    <a href="#shaderlab%e8%af%ad%e6%b3%95%e8%af%a6%e7%bb%86%e8%a7%a3%e6%9e%90" aria-label="ShaderLab语法详细解析">ShaderLab语法详细解析</a></li>
+                <li>
+                    <a href="#%e4%bd%bf%e7%94%a8%e7%bb%93%e6%9e%84%e4%bd%93%e7%ae%80%e5%8c%96shader%e4%bb%a3%e7%a0%81" aria-label="使用结构体简化Shader代码">使用结构体简化Shader代码</a><ul>
+                        
+                <li>
+                    <a href="#%e6%97%a0%e8%bf%94%e5%9b%9e%e5%80%bcinout" aria-label="无返回值（in,out）">无返回值（in,out）</a></li>
+                <li>
+                    <a href="#%e6%9c%89%e8%bf%94%e5%9b%9e%e5%80%bc" aria-label="有返回值">有返回值</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%bd%bf%e7%94%a8includeunitycgcginc%e7%ae%80%e5%8c%96shader" aria-label="使用Include&quot;UnityCG.cginc&quot;简化Shader">使用Include&quot;UnityCG.cginc&quot;简化Shader</a></li>
+                <li>
+                    <a href="#normalize" aria-label="normalize">normalize</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%85%89%e7%85%a7" aria-label="光照">光照</a><ul>
+                        
+                <li>
+                    <a href="#lambert%e6%a8%a1%e5%9e%8b" aria-label="Lambert模型">Lambert模型</a></li>
+                <li>
+                    <a href="#halflambert%e6%a8%a1%e5%9e%8b" aria-label="HalfLambert模型">HalfLambert模型</a></li>
+                <li>
+                    <a href="#phong%e5%85%89%e7%85%a7%e6%a8%a1%e5%9e%8b" aria-label="Phong光照模型">Phong光照模型</a></li>
+                <li>
+                    <a href="#blinn-phong" aria-label="Blinn-Phong">Blinn-Phong</a></li>
+                <li>
+                    <a href="#%e9%80%90%e5%83%8f%e7%b4%a0%e5%85%89%e7%85%a7" aria-label="逐像素光照">逐像素光照</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e9%98%b4%e5%bd%b1" aria-label="阴影">阴影</a><ul>
+                        
+                <li>
+                    <a href="#unity%e7%9a%84%e6%b8%b2%e6%9f%93%e8%b7%af%e5%be%84" aria-label="Unity的渲染路径">Unity的渲染路径</a></li>
+                <li>
+                    <a href="#%e5%bb%b6%e8%bf%9f%e7%9d%80%e8%89%b2%e6%b8%b2%e6%9f%93%e8%b7%af%e5%be%84" aria-label="延迟着色渲染路径">延迟着色渲染路径</a></li>
+                <li>
+                    <a href="#%e5%89%8d%e5%90%91%e6%b8%b2%e6%9f%93%e8%b7%af%e5%be%84" aria-label="前向渲染路径">前向渲染路径</a></li>
+                <li>
+                    <a href="#passflags%e6%a0%87%e7%ad%be" aria-label="PassFlags标签">PassFlags标签</a></li>
+                <li>
+                    <a href="#%e5%86%85%e7%bd%ae%e7%9a%84multi_compile" aria-label="内置的multi_compile">内置的multi_compile</a></li>
+                <li>
+                    <a href="#%e5%ae%9e%e7%8e%b0%e9%98%b4%e5%bd%b1%e6%95%88%e6%9e%9c" aria-label="实现阴影效果">实现阴影效果</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e9%80%8f%e6%98%8e%e6%95%88%e6%9e%9c" aria-label="透明效果">透明效果</a><ul>
+                        
+                <li>
+                    <a href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e6%b8%b2%e6%9f%93%e9%a1%ba%e5%ba%8f%e5%be%88%e9%87%8d%e8%a6%81" aria-label="为什么渲染顺序很重要">为什么渲染顺序很重要</a></li>
+                <li>
+                    <a href="#unity-shader%e7%9a%84%e6%b8%b2%e6%9f%93%e9%a1%ba%e5%ba%8f" aria-label="Unity Shader的渲染顺序">Unity Shader的渲染顺序</a></li>
+                <li>
+                    <a href="#%e9%80%8f%e6%98%8e%e5%ba%a6%e6%b5%8b%e8%af%95" aria-label="透明度测试">透明度测试</a></li>
+                <li>
+                    <a href="#%e9%80%8f%e6%98%8e%e5%ba%a6%e6%b7%b7%e5%90%88" aria-label="透明度混合">透明度混合</a></li>
+                <li>
+                    <a href="#%e5%bc%80%e5%90%af%e6%b7%b1%e5%ba%a6%e5%86%99%e5%85%a5%e7%9a%84%e5%8d%8a%e9%80%8f%e6%98%8e%e6%95%88%e6%9e%9c" aria-label="开启深度写入的半透明效果">开启深度写入的半透明效果</a></li>
+                <li>
+                    <a href="#shaderlab%e7%9a%84%e6%b7%b7%e5%90%88%e5%91%bd%e4%bb%a4" aria-label="ShaderLab的混合命令">ShaderLab的混合命令</a><ul>
+                        
+                <li>
+                    <a href="#%e6%b7%b7%e5%90%88%e7%ad%89%e5%bc%8f%e5%92%8c%e5%8f%82%e6%95%b0" aria-label="混合等式和参数">混合等式和参数</a></li>
+                <li>
+                    <a href="#%e6%b7%b7%e5%90%88%e6%93%8d%e4%bd%9c" aria-label="混合操作">混合操作</a></li>
+                <li>
+                    <a href="#%e5%b8%b8%e8%a7%81%e7%9a%84%e6%b7%b7%e5%90%88%e7%b1%bb%e5%9e%8b" aria-label="常见的混合类型">常见的混合类型</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%8f%8c%e9%9d%a2%e6%b8%b2%e6%9f%93%e7%9a%84%e9%80%8f%e6%98%8e%e6%95%88%e6%9e%9c" aria-label="双面渲染的透明效果">双面渲染的透明效果</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#pbr" aria-label="PBR">PBR</a><ul>
+                        
+                <li>
+                    <a href="#%e5%be%ae%e5%b9%b3%e9%9d%a2%e7%90%86%e8%ae%ba" aria-label="微平面理论">微平面理论</a></li>
+                <li>
+                    <a href="#%e8%83%bd%e9%87%8f%e5%ae%88%e6%81%92" aria-label="能量守恒">能量守恒</a></li>
+                <li>
+                    <a href="#%e8%8f%b2%e6%b6%85%e5%b0%94%e7%8e%b0%e8%b1%a1" aria-label="菲涅尔现象">菲涅尔现象</a></li>
+                <li>
+                    <a href="#%e7%9c%9f%e5%ae%9e%e6%84%9f%e5%85%89%e7%85%a7" aria-label="真实感光照">真实感光照</a></li>
+                <li>
+                    <a href="#brdf" aria-label="BRDF">BRDF</a></li>
+                <li>
+                    <a href="#standard-shader" aria-label="Standard Shader">Standard Shader</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h1 id="mesh">Mesh<a hidden class="anchor" aria-hidden="true" href="#mesh">#</a></h1>
+<p><strong>MeshFilter 网格过滤器</strong></p>
+<p>主要从众多的资源中挑选需要的<strong>Mesh</strong>，把它丢给<strong>MeshRender</strong>。</p>
+<p><strong>MeshRenderer 网格渲染器</strong></p>
+<p>主要是负责把<strong>MeshFilter</strong>丢过来的<strong>Mesh</strong>，绘制显示到我们的场景中，当然这项工作是非常复杂的。</p>
+<p><strong>Material 材质球</strong></p>
+<p><strong>Material</strong>是<strong>MeshRenderer</strong>中非常重要的角色，它的配置决定了物体表面的外观将以怎样的质地呈现到我们眼前。如果天<strong>MeshRenderer</strong>不小心弄丢了<strong>Material</strong>，那这个物体就会变成让人烦躁的品红色。其实它跟大家经常看到的网页Error404差不多，RGB调成101就是这个颜色啦。</p>
+<p>如果说<strong>Material</strong>是<strong>MeshRenderer</strong>的灵魂，那<strong>Shader</strong>就是<strong>Material</strong>的灵魂，但凡<strong>Shader</strong>哪里不开心了，即使<strong>MeshRenderer</strong>没有弄丢<strong>Material</strong>，物体依旧会变成前面所说的101颜色。</p>
+<p><strong>Mesh 网格</strong></p>
+<p><strong>Mesh</strong>指的就是模型的网格，它决定了物体的表面形状是怎样的，一个模型的表面大多是由多个彼此相连的三角面构成，当然也有其它类型。我们平时听到的建模，可以简单理解为就是在建网格，那为什么Unity中的网格大多都是三角形而不是四边形呢？正所谓一生二，二生三，三生万物。三角形可以说是最为基础的面了，可以简单理解为三角形具有更广泛的适用性，而Mesh则是构成这些三角面所需的信息集合。</p>
+<p>通过 <a href="https://docs.unity.cn/cn/2021.3/Manual/AnatomyofaMesh.html">Mesh data - Unity 手册</a> 我们可以看到构成这些三角面所需的信息。</p>
+<p><strong>Vertices</strong> <strong>顶点数组 Vector3[]</strong></p>
+<p>顾名思义它存储的是顶点的相关信息，所谓点成线，线成面，可以理解为这里面存储的是构成网格面全部的点</p>
+<p><strong>Topology 拓扑类型</strong></p>
+<p>它存储的就是一个类型信息，可以理解为它是图形表面排列结构的组成方式，Unity给我们提供了5种拓扑类型，三角面、四边形、线条、虚线、点阵，最常用的则是三角面。</p>
+<p><strong>Indices</strong> <strong>索引数组 int[]</strong></p>
+<p>它是每个三角面顶点 的索引，可以理解为他存储了构网格三角面所用到的顶点索引。</p>
+<p><strong>Vertex data</strong> <strong>顶点数据</strong></p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303171628215.png"></p>
+<p>它包含了顶点的位置、法线、切线、UV等属性</p>
+<p><strong>Normal 法线 Vector3[]</strong></p>
+<p>法线就是垂直于该顶点三角面的一条三维向量，它只有方向，没有大小。法线的方向就是顶点三角面朝外的方向。假设我们面前有一面镜子，它的正中心会有一条法线垂直于镜面指向我们，指向我们的面就是正面，相反就是背面</p>
+<p><strong>Tangent 切线 Vector3[]</strong></p>
+<p>它是垂直于法线的一条向量，而由于垂直于法线的向量有无数条，所以切线最终是由UV坐标来决定朝向的</p>
+<p><strong>UV  纹理坐标 Vector2[]</strong></p>
+<p>上面所说的UV坐标其实就是它，U增长的方向就是切线的方向，它和三维空间的X, Y, Z较为类似，它是一个二维的坐标系统，模型网格除了有三维空间的xyz坐标外，还有一个二维的UV坐标，在UV坐标中，U和V分别代表顶点在Texture水平和垂直方向上的采样坐标，这些坐标通常位于(0，0)和(1，1)之间，（0，0）代表最左下角，而（1，1）代表最右上角。这就跟平时装修房子贴墙纸一样，可以理解为它是Texture映射到模型表面的依据，模型顶点 会依据UV坐标对Texture进行采样。</p>
+<p><strong>Index data 索引数据</strong></p>
+<p>这个数据取决于拓扑类型，如果是三角面他储存的就是[0,1,2]，四边形储存的就是[0,1,2,3]，这个索引数值对应的就是顶点数组的下标。</p>
+<h1 id="渲染">渲染<a hidden class="anchor" aria-hidden="true" href="#渲染">#</a></h1>
+<h2 id="渲染管线">渲染管线<a hidden class="anchor" aria-hidden="true" href="#渲染管线">#</a></h2>
+<p>渲染管线通常来说就是在虚拟相机、三维物体、光源、照明模式、纹理等诸多条件都给定的情况下，生成或是绘制一幅二维图像的过程。而这个过程会有很多步骤，这些步骤就渲染阶段。</p>
+<p>一般这个过程会分为四个主要阶段：应用程序阶段、几何阶段、光栅化阶段、像素处理阶段。而每个阶段 又会分为很多个部分。</p>
+<p><img alt="image-20230317163626180" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303171636205.png"></p>
+<p><strong>应用程序阶段 （The Application Stage） CPU</strong></p>
+<p>它最主要是负责数据的准备，也就是准备后面的阶段 所需的数据，像如模型，贴图，光照，相机位置等信息。</p>
+<p>-&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;</p>
+<p><strong>几何阶段（The Geometry Stage） GPU</strong></p>
+<p>**顶点着色：**可编程部分，顾名思义，它会对逐个顶点相关的信息进行处理，生成图元，计算并传递给接下来的渲染流程。就像我们平时切菜一样，这个阶段就是为了控制食材的形态，</p>
+<p>它对应的则是这里的VertxShader，它的工作主要是计算顶点的位置、法线、纹理坐标，根据材质、纹理、以及光源属性进行顶点光照的计算，平时常见的顶点动画一般就是在这里实现的。</p>
+<p>[ **图元：**可以简单理解为它是渲染管线中所有点，线，面的统称 ]</p>
+<p><strong>几何着色：</strong> 可选可编程部分，并非所有GPU都支持 ，它可以把简单的图元拓展成更复杂的形式，通常我们认为，这两大着色器共同构成了 几何阶段的可编程部分。</p>
+<p><strong>裁剪 ：</strong> 固定功能硬件实现，对顶点几何两大着色器的输出结果进行处理，它会把完全处于视锥体交界外  以及屏幕窗口外的 几何体部分裁剪掉， 只留下用户能看到的部分，并且对生成的新顶点部分进行插值，输送给接下来的阶段。</p>
+<p>-&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;</p>
+<p><strong>光栅化阶段（Rasterization）</strong> <strong>GPU</strong></p>
+<p><strong>屏幕映射：<strong>经过裁剪之后，硬件会通过透视除法将物体从 裁剪空间 变换 为 标准化设备坐标也叫</strong>NDC</strong>，之后GPU会把得到的NDC空间坐标下的顶点，映射到屏幕空间坐标中，进行图元装配，这一步会计算微分、边方程和其他三角形数据，三角形的朝向剔除就是在这个阶段完成的。</p>
+<p>**NDC：**全称Normalized Device Coordinates，一般来说裁剪完成后，会通过透视除法，将物体从裁剪空间 变换为标准化设备坐标NDC，透视除法是将裁剪空间中，顶点的4个分量都除以w分量，从裁剪空间转换到NDC。它是一个长宽高取值范围为[-1,1]的立方体，之所以要转到NDC，是为了方面我们后面进行视口变换把它映射到屏幕空间，不过Unity已经帮我们都完成这些了。</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303171640103.png"></p>
+<p><strong>图元装配：</strong></p>
+<p>主要是计算微分（differentials）、边方程（edge equations）和其他三角形数据（顶点属性插值）</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303171640429.png"></p>
+<p><strong>光栅化：</strong></p>
+<p>它会在每个像素点上生成一个片元，如果开启了多重采样抗锯齿，就会对每个像素进行多次采样，产生多个片元，最终进行混合来达到抗锯齿的效果。</p>
+<p>[ <strong>片元</strong>：是光栅化之后产生的像素点，因为没有被画到屏幕上，不能被直接称为像素一个像素的最终结果可能是由多个片元来决定的，渲染管线为了细分，就单独创造了片元这个词来描述它，片元只是渲染管线的概念 ]</p>
+<p>[ <strong>像素</strong>：则是最后写到图像上的值 ]</p>
+<p>-&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;</p>
+<p><strong>像素处理阶段 （ Pixel Processing ）GPU</strong></p>
+<p>**像素 (片元) 着色器：**可编程部分，它的工作主要是根据顶点的插值属性，进行逐像素计算，因为它需要处理每一个像素，所以这也是最耗时的一个阶段。它的输入输出都是片元数据，输入的数据是 颜色 和纹理坐标，输出的则是计算后所得的每个像素的色彩值，像是逐像素光照、反射、阴影等等更为复杂的效果都是可以在这里实现的，这一步更像是再给我们的食材上色。</p>
+<p>**合并：**只可配置不可编程部分，在一系列的测试后会进行合并，所谓的测试则是判断一个像素点最终是否应该被显示在屏幕上，通过测试的颜色会和缓冲区的颜色叠加混合。</p>
+<p>-&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;</p>
+<p><strong>坐标空间</strong></p>
+<p><strong>模型空间</strong> 以物体本身为原点的坐标空间，<strong>世界空间</strong>以世界的(0,0)为原点的坐标空间，<strong>视图空间</strong> 以相机为原点的坐标空间，描述的物体在相机的哪个位置，<strong>裁剪空间</strong>  顶点坐标乘以MVP矩阵之后所在的空间，<strong>屏幕空间</strong> 窗口屏幕上的二维像素坐标空间。</p>
+<p><img alt="image-20230317164308152" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303171643181.png"></p>
+<h1 id="shader">Shader<a hidden class="anchor" aria-hidden="true" href="#shader">#</a></h1>
+<p><strong>Shader</strong>比较学术的百科回答就是用来实现图像渲染的，用来替代固定渲染管线的可编辑程序。其中Vertex Shader（顶点着色器）主要负责顶点的几何关系等的运算，Pixel Shader（像素着色器）主要负责片元颜色等的计算。</p>
+<h2 id="unity中的shader类型">Unity中的Shader类型<a hidden class="anchor" aria-hidden="true" href="#unity中的shader类型">#</a></h2>
+<p><strong>Standard Surface Shader</strong></p>
+<p>标准表面着色器，它是一种基于物理的着色系统，可以理解为 它是通过对物理现象的简单模拟，可以实现生活中各种物品的效果，比如石头、木材、玻璃、塑料和金属等等。</p>
+<p><strong>Unlit Shader</strong></p>
+<p>它是最简单的着色器，与 Standard Surface Shader 相比，它去除了冗长的光照公式以及阴影解算，因此得名 Unlit，翻译过来就是无光照，也正因如此，它只由最基础的 Vertex Shader 和 Fragment Shader 组成，最为基础易懂。</p>
+<p><strong>Image Effect Shader</strong></p>
+<p>它其实也是也是顶点片元着色器，不过它主要针对实现各种屏幕后处理效果，那后处理是什么呢？一般像是泛光、调色、景深、模糊等基于最终整个屏幕画面而进行再次处理的就是后处理，这里做个简单的了解即可。</p>
+<p><strong>Compute Shader</strong></p>
+<p>计算着色器，它是在GPU中运行的一段程序，独立于常规渲染管线之外的，它可以直接将GPU作为并行处理器加以利用，从而使GPU不仅具有3D渲染能力，还具有其他的运算能力。一般会在需要大量并行计算的时候使用。</p>
+<p><strong>Ray Tracing Shader</strong></p>
+<p>光线追踪着色器，光线追踪是指从摄像机出发的若干条光线，每条光线会和场景里的物体求交，根据交点位置获取表面的材质、纹理等信息，并结合光源信息计算光照。相对于传统的光栅化渲染，光线追踪可以轻松模拟各种光学效果，如反射、折射、散射、色散等。但由于在进行求交计算时需要知道整个场景的信息，它的计算成本也是非常高的。</p>
+<p><img alt="image-20230317164459408" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303171644436.png"></p>
+<h2 id="shaderlab">ShaderLab<a hidden class="anchor" aria-hidden="true" href="#shaderlab">#</a></h2>
+<p>Unity为我们封装的着色器语言，而目前主流的着色器语言有3种，基于OpenGL的<strong>GLSL</strong> / 基于DX的<strong>HLSL</strong>  /  NVIDIA公司的<strong>CG</strong>。</p>
+<p>GLSL与HLSL分别是基于OpenGL和Direct3D的接口，两者不能混用。而CG则是为了使图形硬件的编程变得和 C语言编程一样方便自由，它本身基于C语言。如果你之前使用过C系语言其中的任意一个，那CG的语法也是比较容易掌握的。但其实由于Microsoft和NVIDIA的相互协作，他们在标准硬件光照语言的语法和语义上达成了一致，所以HLSL和Cg其实可以看为是同一种语言。</p>
+<p>而<strong>ShaderLab</strong>则是Unity在HLSL和CG的基础之上封装的只属于Unity的着色器语言，它的灵活性更高，而且不再需要将 Shader 的配置 硬写在引擎代码中，本质是在底层着色语言的基础上，额外提供了声明信息，以数据驱动的方式使我们在渲染管线内自由发挥。</p>
+<h3 id="shaderlab语法详细解析"><strong>ShaderLab语法详细解析</strong><a hidden class="anchor" aria-hidden="true" href="#shaderlab语法详细解析">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-glsl" data-lang="glsl"><span class="line"><span class="cl"><span class="c1">// Shader 的路径名称  默认为文件名,也可以与文件名不同</span>
+</span></span><span class="line"><span class="cl"><span class="n">Shader</span> <span class="err">&#34;</span><span class="n">Unlit</span><span class="o">/</span><span class="n">MyShader</span><span class="err">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 属性 </span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// Material Inspector显示的所有参数都在需要在这里进行声明</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Properties</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 通常所有属性名都以下划线字符开头 _MainTex</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_MainTex</span> <span class="p">(</span><span class="err">&#34;</span><span class="n">Texture</span><span class="err">&#34;</span><span class="p">,</span> <span class="mi">2</span><span class="n">D</span><span class="p">)</span> <span class="o">=</span> <span class="err">&#34;</span><span class="n">white</span><span class="err">&#34;</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// 比较常见的属性类型</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// ————————————————————————————————————————————————</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_Integer</span> <span class="p">(</span><span class="err">&#34;整数</span><span class="p">(</span><span class="err">新版</span><span class="p">)</span><span class="err">&#34;</span><span class="p">,</span> <span class="n">Integer</span><span class="p">)</span> <span class="o">=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_Int</span> <span class="p">(</span><span class="err">&#34;整数</span><span class="p">(</span><span class="err">旧版</span><span class="p">)</span><span class="err">&#34;</span><span class="p">,</span> <span class="n">Int</span><span class="p">)</span> <span class="o">=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_Float</span> <span class="p">(</span><span class="err">&#34;浮点数&#34;</span><span class="p">,</span> <span class="n">Float</span><span class="p">)</span> <span class="o">=</span> <span class="mf">0.5</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_FloatRange</span> <span class="p">(</span><span class="err">&#34;浮点数滑动条&#34;</span><span class="p">,</span> <span class="n">Range</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">))</span> <span class="o">=</span> <span class="mf">0.5</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Unity包含以下内置纹理, 可以直接填充</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// “white”（RGBA：1,1,1,1）</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// “black”（RGBA：0,0,0,1）</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// “gray”（RGBA：0.5,0.5,0.5,1）</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// “bump”（RGBA：0.5,0.5,1,0.5）</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// “red”（RGBA：1,0,0,1）</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_Texture2D</span> <span class="p">(</span><span class="err">&#34;</span><span class="mi">2</span><span class="n">D纹理贴图</span><span class="err">&#34;</span><span class="p">,</span> <span class="mi">2</span><span class="n">D</span><span class="p">)</span> <span class="o">=</span> <span class="err">&#34;</span><span class="n">red</span><span class="err">&#34;</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 字符串留空或输入无效值，则它默认为 “gray”</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_DefaultTexture2D</span> <span class="p">(</span><span class="err">&#34;</span><span class="mi">2</span><span class="n">D纹理贴图</span><span class="err">&#34;</span><span class="p">,</span> <span class="mi">2</span><span class="n">D</span><span class="p">)</span> <span class="o">=</span> <span class="err">&#34;&#34;</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 默认值为 “gray”（RGBA：0.5,0.5,0.5,1）</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_Texture3D</span> <span class="p">(</span><span class="err">&#34;</span><span class="mi">3</span><span class="n">D纹理贴图</span><span class="err">&#34;</span><span class="p">,</span> <span class="mi">3</span><span class="n">D</span><span class="p">)</span> <span class="o">=</span> <span class="err">&#34;&#34;</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_Cubemap</span> <span class="p">(</span><span class="err">&#34;立方体贴图&#34;</span><span class="p">,</span> <span class="n">Cube</span><span class="p">)</span> <span class="o">=</span> <span class="err">&#34;&#34;</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Inspector会显示四个单独的浮点数字段</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_Vector</span> <span class="p">(</span><span class="err">&#34;</span><span class="n">Example</span> <span class="n">vector</span><span class="err">&#34;</span><span class="p">,</span> <span class="n">Vector</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Inspector会显示拾色器拾取色彩RGBA值</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_Color</span><span class="p">(</span><span class="err">&#34;色彩&#34;</span><span class="p">,</span> <span class="n">Color</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// ————————————————————————————————————————————————</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// 除此之外 属性声明还可以具有一个可选特性 用来告知Unity如何处理它们</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// HDR可以使色彩亮度的值超过1</span>
+</span></span><span class="line"><span class="cl">        <span class="p">[</span><span class="n">HDR</span><span class="p">]</span><span class="n">_HDRColor</span><span class="p">(</span><span class="err">&#34;</span><span class="n">HDR色彩</span><span class="err">&#34;</span><span class="p">,</span> <span class="n">Color</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Inspector隐藏此属性</span>
+</span></span><span class="line"><span class="cl">        <span class="p">[</span><span class="n">HideInInspector</span><span class="p">]</span><span class="n">_Hide</span><span class="p">(</span><span class="err">&#34;看不见我</span><span class="o">~</span><span class="err">&#34;</span><span class="p">,</span> <span class="n">Color</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Inspector隐藏此纹理属性的Scale Offset字段</span>
+</span></span><span class="line"><span class="cl">        <span class="p">[</span><span class="n">NoScaleOffset</span><span class="p">]</span><span class="n">_HideScaleOffset</span><span class="p">(</span><span class="err">&#34;隐藏</span><span class="n">ScaleOffset</span><span class="err">&#34;</span><span class="p">,</span> <span class="mi">2</span><span class="n">D</span><span class="p">)</span> <span class="o">=</span> <span class="err">&#34;&#34;</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 指示纹理属性为法线贴图，如果分配了不兼容的纹理，编辑器则会显示警告。</span>
+</span></span><span class="line"><span class="cl">        <span class="p">[</span><span class="n">Normal</span><span class="p">]</span><span class="n">_Normal</span><span class="p">(</span><span class="err">&#34;法线贴图&#34;</span><span class="p">,</span> <span class="mi">2</span><span class="n">D</span><span class="p">)</span> <span class="o">=</span> <span class="err">&#34;&#34;</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 子着色器 </span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 一个Shader至少有一个或者多个子着色器SubShader，这些子着色器互不干扰，且只有一个会运行</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 在加载shader时Unity会遍历所有SubShader列表，并最终选择用户机器支持的第一个</span>
+</span></span><span class="line"><span class="cl">    <span class="n">SubShader</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 可以通过Tags来向子着色器分配标签</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 只可以写在SubShader语块内,不可写在Pass内</span>
+</span></span><span class="line"><span class="cl">        <span class="cm">/* 以键值对的形式存在,可以出现多个键值对
+</span></span></span><span class="line"><span class="cl"><span class="cm">        Tags { 
+</span></span></span><span class="line"><span class="cl"><span class="cm">            &#34;TagName1&#34; = &#34;Value1&#34;
+</span></span></span><span class="line"><span class="cl"><span class="cm">            &#34;TagName2&#34; = &#34;Value2&#34;
+</span></span></span><span class="line"><span class="cl"><span class="cm">            &#34;TagName3&#34; = &#34;Value3&#34;
+</span></span></span><span class="line"><span class="cl"><span class="cm">            ...
+</span></span></span><span class="line"><span class="cl"><span class="cm">            }
+</span></span></span><span class="line"><span class="cl"><span class="cm">        */</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// RenderPipeline: 声明子着色器是否与通用渲染管线 (URP) 或高清渲染管线 (HDRP) 兼容</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 仅与 URP 兼容</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Tags { &#34;RenderPipeline&#34;=&#34;UniversalRenderPipeline&#34; }</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 仅与 HDRP 兼容</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Tags { &#34;RenderPipeline&#34;=&#34;HighDefinitionRenderPipeline&#34; }</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// RenderPipeline不声明或任何其他值表示与 URP 和 HDRP 不兼容</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// ————————————————————————————————————————————————</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// Queue: 声明渲染队列</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Tags { &#34;Queue&#34;=&#34;Background&#34; } // 最早被调用的渲染，用来渲染天空盒或者背景</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Tags { &#34;Queue&#34;=&#34;Geometry&#34; }   // 这是默认值，用来渲染非透明物体（普通情况下，场景中的绝大多数物体应该是非透明的）</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Tags { &#34;Queue&#34;=&#34;AlphaTest&#34; }  // 用来渲染经过Alpha Test的像素，单独为AlphaTest设定一个Queue是出于对效率的考虑</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Tags { &#34;Queue&#34;=&#34;Transparent&#34; }// 以从后往前的顺序渲染透明物体</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Tags { &#34;Queue&#34;=&#34;Overlay&#34; }    // 用来渲染叠加的效果，是渲染的最后阶段（比如镜头光晕等特效）</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// ————————————————————————————————————————————————</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// RenderType: 用来区别这个Shader要渲染的对象是属于什么类别的。</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 设置渲染类型 用一种称为着色器替换的技术在运行时交换子着色器,用来区别这个Shader要渲染的对象是属于什么类别的</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 这里表示非透明物体渲染</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Tags</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="err">&#34;</span><span class="n">RenderType</span><span class="err">&#34;</span><span class="o">=</span><span class="err">&#34;</span><span class="n">Opaque</span><span class="err">&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 更多详细内容可参考官网文档 https://docs.unity.cn/cn/2021.3/Manual/SL-SubShaderTags.html</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// LOD (Level of Detail)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">LOD</span> <span class="mi">100</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// 每个子着色器由多个通道组成，许多简单的着色器只使用一个通道，但想要一些更复杂的效果，着色器可能需要更多通道</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 一个Pass就是一次绘制，可以看成是一个Draw Call而Pass的意义在于多次渲染，</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 如果你有一个Pass，那么着色器只会被调用一次，如果你有多个Pass的话，</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 那么就相当于执行多次SubShader了，这就叫双通道或者多通道。</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// Draw Call：其实就是CPU调用图像编程接口的渲染命令，CPU每次调用DrawCall，都需要向GPU发送许多数据啊、渲染状态等等，</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 一旦CPU执行完应用阶段，GPU就会开始执行这次的渲染流程。而GPU渲染的速度比CPU提交命令的速度要快的多，</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 所以如果DrawCall数量过多的情况下，CPU需要进行大量的计算，进而就会导致CPU过载，影响游戏的运行效率。</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Pass</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">CGPROGRAM</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">// 声明顶点着色器</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">pragma</span> <span class="n">vertex</span> <span class="n">vert</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">// 声明像素着色器</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">pragma</span> <span class="n">fragment</span> <span class="n">frag</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">// 使雾生效</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">pragma</span> <span class="n">multi_compile_fog</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1">// 引用CG的核心代码库</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">include</span> <span class="err">&#34;</span><span class="n">UnityCG</span><span class="p">.</span><span class="n">cginc</span><span class="err">&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1">// 应用程序阶段结构体</span>
+</span></span><span class="line"><span class="cl">            <span class="k">struct</span> <span class="n">appdata</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">// 参考：https://docs.microsoft.com/zh-cn/windows/win32/direct3dhlsl/dx-graphics-hlsl-semantics</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">// POSITION 着色器语言的语义，用来限定着色器的输入输出值的类型</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">// 模型空间的顶点坐标</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float4</span> <span class="n">vertex</span> <span class="o">:</span> <span class="n">POSITION</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">// 模型的第一套UV坐标</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float2</span> <span class="n">uv</span> <span class="o">:</span> <span class="n">TEXCOORD0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">struct</span> <span class="n">v2f</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">// UV</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float2</span> <span class="n">uv</span> <span class="o">:</span> <span class="n">TEXCOORD0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">UNITY_FOG_COORDS</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">// SV_POSITION 当这个值需要作为输出值输出给系统用的时候 前面需要加SV_前缀</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">// 当然因为有向下兼容的机制 不加也没啥太大问题</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float4</span> <span class="n">vertex</span> <span class="o">:</span> <span class="n">SV_POSITION</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1">// 在Properties中声明的参数要在这里相对应的定义后才可以使用</span>
+</span></span><span class="line"><span class="cl">            <span class="k">sampler2D</span> <span class="n">_MainTex</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">float4</span> <span class="n">_MainTex_ST</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1">// 定义顶点着色器函数 函数名要与声明顶点着色器名称相同</span>
+</span></span><span class="line"><span class="cl">            <span class="n">v2f</span> <span class="n">vert</span><span class="p">(</span><span class="n">appdata</span> <span class="n">v</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">v2f</span> <span class="n">o</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">// 将顶点坐标从模型空间变换到裁剪空间</span>
+</span></span><span class="line"><span class="cl">                <span class="n">o</span><span class="p">.</span><span class="n">vertex</span> <span class="o">=</span> <span class="n">UnityObjectToClipPos</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">vertex</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">// Transforms 2D UV by scale/bias property</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">// #define TRANSFORM_TEX(tex,name) (tex.xy * name##_ST.xy + name##_ST.zw)</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">// 等价于v.uv.xy * _MainTex_ST.xy + _MainTex_ST.zw;</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">// 简单来说，TRANSFORM_TEX主要作用是拿顶点的uv去和材质球的tiling和offset作运算，</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">// 确保材质球里的缩放和偏移设置是正确的</span>
+</span></span><span class="line"><span class="cl">                <span class="n">o</span><span class="p">.</span><span class="n">uv</span> <span class="o">=</span> <span class="n">TRANSFORM_TEX</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">uv</span><span class="p">,</span> <span class="n">_MainTex</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">UNITY_TRANSFER_FOG</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">o</span><span class="p">.</span><span class="n">vertex</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="n">o</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1">// SV_Target可以视为COLOR ，虽说他也是作为输出值输出给系统的</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">// 但它其实是告诉系统把输出的颜色值存储到RenderTarget中</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">// 所以这里我们用SV_Target</span>
+</span></span><span class="line"><span class="cl">            <span class="n">fixed4</span> <span class="n">frag</span><span class="p">(</span><span class="n">v2f</span> <span class="n">i</span><span class="p">)</span> <span class="o">:</span> <span class="n">SV_Target</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">// 采样2D纹理贴图</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fixed4</span> <span class="n">col</span> <span class="o">=</span> <span class="n">tex2D</span><span class="p">(</span><span class="n">_MainTex</span><span class="p">,</span> <span class="n">i</span><span class="p">.</span><span class="n">uv</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">// 应用雾</span>
+</span></span><span class="line"><span class="cl">                <span class="n">UNITY_APPLY_FOG</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">fogCoord</span><span class="p">,</span> <span class="n">col</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">// 返回经过处理后的最终色彩</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="n">col</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="n">ENDCG</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="使用结构体简化shader代码">使用结构体简化Shader代码<a hidden class="anchor" aria-hidden="true" href="#使用结构体简化shader代码">#</a></h3>
+<h4 id="无返回值inout">无返回值（in,out）<a hidden class="anchor" aria-hidden="true" href="#无返回值inout">#</a></h4>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-glsl" data-lang="glsl"><span class="line"><span class="cl"><span class="n">Shader</span><span class="err">&#34;</span><span class="n">Custom</span><span class="o">/</span><span class="n">Struct</span><span class="err">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Properties</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">//通过材质面板的颜色和纹理来修改fragment</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_MainColor</span><span class="p">(</span><span class="err">&#34;</span><span class="n">MainColor</span><span class="err">&#34;</span><span class="p">,</span><span class="n">Color</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_MainTex</span><span class="p">(</span><span class="err">&#34;</span><span class="n">MainTex</span><span class="err">&#34;</span><span class="p">,</span><span class="mi">2</span><span class="n">D</span><span class="p">)</span> <span class="o">=</span> <span class="err">&#34;</span><span class="n">white</span><span class="err">&#34;</span><span class="p">{}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">SubShader</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Pass</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">CGPROGRAM</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">//在CG中调用属性变量</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">pragma</span> <span class="n">vertex</span> <span class="n">vert</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">pragma</span> <span class="n">fragment</span> <span class="n">frag</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">include</span> <span class="err">&#34;</span><span class="n">UnityCG</span><span class="p">.</span><span class="n">cginc</span><span class="err">&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1">//定义顶点着色器的输入结构体</span>
+</span></span><span class="line"><span class="cl">            <span class="k">struct</span> <span class="n">appdata</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float4</span> <span class="n">vertex</span> <span class="o">:</span> <span class="n">POSITION</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float2</span> <span class="n">uv</span> <span class="o">:</span> <span class="n">TEXCOORD0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">};</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">//定义顶点着色器的输出结构体</span>
+</span></span><span class="line"><span class="cl">            <span class="k">struct</span> <span class="n">v2f</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float4</span> <span class="n">position</span> <span class="o">:</span> <span class="n">SV_POSITION</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float2</span> <span class="n">texcoord</span> <span class="o">:</span> <span class="n">TEXCOORD0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">};</span>
+</span></span><span class="line"><span class="cl">            <span class="n">fixed4</span> <span class="n">_MainColor</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">sampler2D</span> <span class="n">_MainTex</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">float4</span> <span class="n">_MainTex_ST</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">void</span> <span class="n">vert</span> <span class="p">(</span><span class="k">in</span> <span class="n">appdata</span> <span class="n">v</span><span class="p">,</span> <span class="k">out</span> <span class="n">v2f</span> <span class="n">o</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">o</span><span class="p">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">UnityObjectToClipPos</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">vertex</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">o</span><span class="p">.</span><span class="n">texcoord</span> <span class="o">=</span> <span class="n">v</span><span class="p">.</span><span class="n">uv</span> <span class="o">*</span> <span class="n">_MainTex_ST</span><span class="p">.</span><span class="n">xy</span> <span class="o">+</span> <span class="n">_MainTex_ST</span><span class="p">.</span><span class="n">zw</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">void</span> <span class="n">frag</span><span class="p">(</span><span class="k">in</span> <span class="n">v2f</span> <span class="n">i</span> <span class="p">,</span><span class="k">out</span> <span class="n">fixed4</span> <span class="n">color</span> <span class="o">:</span> <span class="n">SV_TARGET</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">color</span> <span class="o">=</span> <span class="n">tex2D</span><span class="p">(</span><span class="n">_MainTex</span><span class="p">,</span><span class="n">i</span><span class="p">.</span><span class="n">texcoord</span><span class="p">)</span> <span class="o">*</span> <span class="n">_MainColor</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="n">ENDCG</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Fallback</span> <span class="err">&#34;</span><span class="n">Diffuse</span><span class="err">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h4 id="有返回值">有返回值<a hidden class="anchor" aria-hidden="true" href="#有返回值">#</a></h4>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-glsl" data-lang="glsl"><span class="line"><span class="cl">  <span class="n">Pass</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">CGPROGRAM</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">//在CG中调用属性变量</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">pragma</span> <span class="n">vertex</span> <span class="n">vert</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">pragma</span> <span class="n">fragment</span> <span class="n">frag</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">include</span> <span class="err">&#34;</span><span class="n">UnityCG</span><span class="p">.</span><span class="n">cginc</span><span class="err">&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1">//定义顶点着色器的输入结构体</span>
+</span></span><span class="line"><span class="cl">            <span class="k">struct</span> <span class="n">appdata</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float4</span> <span class="n">vertex</span> <span class="o">:</span> <span class="n">POSITION</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float2</span> <span class="n">uv</span> <span class="o">:</span> <span class="n">TEXCOORD0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">};</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">//定义顶点着色器的输出结构体</span>
+</span></span><span class="line"><span class="cl">            <span class="k">struct</span> <span class="n">v2f</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float4</span> <span class="n">position</span> <span class="o">:</span> <span class="n">SV_POSITION</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float2</span> <span class="n">texcoord</span> <span class="o">:</span> <span class="n">TEXCOORD0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">};</span>
+</span></span><span class="line"><span class="cl">            <span class="n">fixed4</span> <span class="n">_MainColor</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">sampler2D</span> <span class="n">_MainTex</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">float4</span> <span class="n">_MainTex_ST</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">v2f</span> <span class="n">vert</span> <span class="p">(</span><span class="n">appdata</span> <span class="n">v</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">v2f</span> <span class="n">o</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">o</span><span class="p">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">UnityObjectToClipPos</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">vertex</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">o</span><span class="p">.</span><span class="n">texcoord</span> <span class="o">=</span> <span class="n">v</span><span class="p">.</span><span class="n">uv</span> <span class="o">*</span> <span class="n">_MainTex_ST</span><span class="p">.</span><span class="n">xy</span> <span class="o">+</span> <span class="n">_MainTex_ST</span><span class="p">.</span><span class="n">zw</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="n">o</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">fixed4</span> <span class="n">frag</span><span class="p">(</span><span class="n">v2f</span> <span class="n">i</span><span class="p">)</span> <span class="o">:</span> <span class="n">SV_TARGET</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="n">tex2D</span><span class="p">(</span><span class="n">_MainTex</span><span class="p">,</span><span class="n">i</span><span class="p">.</span><span class="n">texcoord</span><span class="p">)</span> <span class="o">*</span> <span class="n">_MainColor</span><span class="p">;</span>               
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="n">ENDCG</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span></code></pre></div><h3 id="使用includeunitycgcginc简化shader">使用Include&quot;UnityCG.cginc&quot;简化Shader<a hidden class="anchor" aria-hidden="true" href="#使用includeunitycgcginc简化shader">#</a></h3>
+<p>使用预制结构体appdata_img（vertex和texcoord）和v2f_img（pos和uv）,以及纹理坐标计算宏TRANSFORM_TEX()。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-glsl" data-lang="glsl"><span class="line"><span class="cl"><span class="n">Shader</span> <span class="err">&#34;</span><span class="n">Custom</span><span class="o">/</span><span class="n">IncludeShader</span><span class="err">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Properties</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_MainTex</span> <span class="p">(</span><span class="err">&#34;</span><span class="n">Texture</span><span class="err">&#34;</span><span class="p">,</span> <span class="mi">2</span><span class="n">D</span><span class="p">)</span> <span class="o">=</span> <span class="err">&#34;</span><span class="n">white</span><span class="err">&#34;</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_MainColor</span> <span class="p">(</span><span class="err">&#34;</span><span class="n">MainColor</span><span class="err">&#34;</span><span class="p">,</span><span class="n">Color</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">SubShader</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Pass</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">CGPROGRAM</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">pragma</span> <span class="n">vertex</span> <span class="n">vert</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">pragma</span> <span class="n">fragment</span> <span class="n">frag</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">include</span> <span class="err">&#34;</span><span class="n">UnityCG</span><span class="p">.</span><span class="n">cginc</span><span class="err">&#34;</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">            <span class="k">sampler2D</span> <span class="n">_MainTex</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">float4</span> <span class="n">_MainTex_ST</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">fixed4</span> <span class="n">_MainColor</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">v2f_img</span> <span class="n">vert</span> <span class="p">(</span><span class="n">appdata_img</span> <span class="n">v</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">v2f_img</span> <span class="n">o</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">o</span><span class="p">.</span><span class="n">pos</span> <span class="o">=</span> <span class="n">UnityObjectToClipPos</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">vertex</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">o</span><span class="p">.</span><span class="n">uv</span> <span class="o">=</span> <span class="n">TRANSFORM_TEX</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">texcoord</span><span class="p">,</span> <span class="n">_MainTex</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="n">o</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">fixed4</span> <span class="n">frag</span> <span class="p">(</span><span class="n">v2f_img</span> <span class="n">i</span><span class="p">)</span> <span class="o">:</span> <span class="n">SV_TARGET</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="n">tex2D</span><span class="p">(</span><span class="n">_MainTex</span><span class="p">,</span> <span class="n">i</span><span class="p">.</span><span class="n">uv</span><span class="p">)</span> <span class="o">*</span> <span class="n">_MainColor</span><span class="p">;</span>   
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="n">ENDCG</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="normalize">normalize<a hidden class="anchor" aria-hidden="true" href="#normalize">#</a></h3>
+<p>返回输入向量的归一化，输出向量将与输入向量具有相同的方向，但长度为 1。</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303172248157.png"></p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303172250147.png"></p>
+<h2 id="光照">光照<a hidden class="anchor" aria-hidden="true" href="#光照">#</a></h2>
+<p>Unlit 默认是不受光材质，纹理什么颜色它就直接显示出来了，但通常来说，光照是三维世界不可或缺的部分，现实世界中，当光照射到物体表面时, 物体对光会发生反射、透射、吸收、折射等被物体反射的光进入视觉系统，使看见物体的表面有明暗之分，为了模拟这一现象，科研家建立了一些数学模型来替代复杂的物理模型，统称为光照模型。</p>
+<p><img alt="image-20230317172053669" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303171720724.png"></p>
+<p>比较常见的光照模型有漫反射的 Half Lambert 模型 ，以及镜面反射的 Blinn-Phong 模型。 Half Lambert 能够较好地表现粗糙表面上的光照现象，像如石灰墙，纸张等等，但是在渲染金属材质制成的物体时，则会显得呆板，表现不出光泽。主要原因是其没有考虑到镜面反射效果，所以 Blinn-Phong 对其进行了很好的补充。</p>
+<p><img alt="image-20230317172443528" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303171724563.png"></p>
+<h3 id="lambert模型">Lambert模型<a hidden class="anchor" aria-hidden="true" href="#lambert模型">#</a></h3>
+<p>Lambert光照模型计算公式为：</p>
+<p><img alt="alt" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303171746970.png"></p>
+<p>使用入射光颜色和漫反射颜色相乘再乘以saturate裁剪后的光线方向（从入射点到光源方向）和法线方向夹角大小（点乘cos值）。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-glsl" data-lang="glsl"><span class="line"><span class="cl"><span class="n">Shader</span> <span class="err">&#34;</span><span class="n">Custom</span><span class="o">/</span><span class="n">Lambert</span><span class="err">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Properties</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_MainColor</span><span class="p">(</span><span class="err">&#34;</span><span class="n">MainColor</span><span class="err">&#34;</span><span class="p">,</span><span class="n">Color</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">SubShader</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Pass</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">CGPROGRAM</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">pragma</span> <span class="n">vertex</span> <span class="n">vert</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">pragma</span> <span class="n">fragment</span> <span class="n">frag</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">include</span> <span class="err">&#34;</span><span class="n">UnityCG</span><span class="p">.</span><span class="n">cginc</span><span class="err">&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">include</span> <span class="err">&#34;</span><span class="n">UnityLightingCommon</span><span class="p">.</span><span class="n">cginc</span><span class="err">&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">struct</span> <span class="n">v2f</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float4</span> <span class="n">pos</span> <span class="o">:</span> <span class="n">SV_POSITION</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fixed4</span> <span class="n">dif</span> <span class="o">:</span> <span class="n">COLOR0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">fixed4</span> <span class="n">_MainColor</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">v2f</span> <span class="n">vert</span> <span class="p">(</span><span class="n">appdata_base</span> <span class="n">v</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">v2f</span> <span class="n">o</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">o</span><span class="p">.</span><span class="n">pos</span> <span class="o">=</span> <span class="n">UnityObjectToClipPos</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">vertex</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">//法线向量 由模型空间变换到世界空间并标准化</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float3</span> <span class="n">n</span> <span class="o">=</span> <span class="n">UnityObjectToWorldNormal</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">normal</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">n</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">n</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">//灯光法向向量</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fixed3</span> <span class="n">l</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">_WorldSpaceLightPos0</span><span class="p">.</span><span class="n">xyz</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                
+</span></span><span class="line"><span class="cl">                <span class="c1">//按照公式计算漫反射</span>
+</span></span><span class="line"><span class="cl">                <span class="k">fixed</span> <span class="n">ndotl</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">l</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">o</span><span class="p">.</span><span class="n">dif</span> <span class="o">=</span> <span class="n">_LightColor0</span> <span class="o">*</span> <span class="n">_MainColor</span> <span class="o">*</span> <span class="n">saturate</span><span class="p">(</span><span class="n">ndotl</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="n">o</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">fixed4</span> <span class="n">frag</span> <span class="p">(</span><span class="n">v2f</span> <span class="n">i</span><span class="p">)</span> <span class="o">:</span> <span class="n">SV_Target</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="n">i</span><span class="p">.</span><span class="n">dif</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="n">ENDCG</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="halflambert模型">HalfLambert模型<a hidden class="anchor" aria-hidden="true" href="#halflambert模型">#</a></h3>
+<p><img alt="alt" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303171748305.png"></p>
+<p>修改公式将夹角值映射到[0.5,1]避免背面全黑。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-glsl" data-lang="glsl"><span class="line"><span class="cl">            <span class="n">v2f</span> <span class="n">vert</span> <span class="p">(</span><span class="n">appdata_base</span> <span class="n">v</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">v2f</span> <span class="n">o</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">o</span><span class="p">.</span><span class="n">pos</span> <span class="o">=</span> <span class="n">UnityObjectToClipPos</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">vertex</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">//法线向量 由模型空间变换到世界空间并标准化</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float3</span> <span class="n">n</span> <span class="o">=</span> <span class="n">UnityObjectToWorldNormal</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">normal</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">n</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">n</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">//灯光法向向量</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fixed3</span> <span class="n">l</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">_WorldSpaceLightPos0</span><span class="p">.</span><span class="n">xyz</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                
+</span></span><span class="line"><span class="cl">                <span class="c1">//按照公式计算漫反射</span>
+</span></span><span class="line"><span class="cl">                <span class="k">fixed</span> <span class="n">ndotl</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">l</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">o</span><span class="p">.</span><span class="n">dif</span> <span class="o">=</span> <span class="n">_LightColor0</span> <span class="o">*</span> <span class="n">_MainColor</span> <span class="o">*</span> <span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">ndotl</span><span class="o">+</span><span class="mf">0.5</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="n">o</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span></code></pre></div><h3 id="phong光照模型">Phong光照模型<a hidden class="anchor" aria-hidden="true" href="#phong光照模型">#</a></h3>
+<p>Phong光照理论：物体表面反射光由三部分组成：环境光，漫反射，镜面反射（高光）。</p>
+<p><img alt="alt" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303171750792.png"></p>
+<p>漫反射的计算即Lambert光照模型，镜面反射的计算如下。</p>
+<p><img alt="alt" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303171750731.png"></p>
+<p>与Lambert公式类似，不同之处在于，这里和法线点乘的向量有入射光方向变成了视线方向（人直接看到的地方才高亮），并加以光泽度约束（实际约束了高光部分的范围，越小高光区域越大）。</p>
+<p>环境光ambient、漫反射diffuse、高光specular三个光照计算都是用颜色乘法计算的，但是最后返回的颜色值，确实把三个光照颜色相加，这是为什么呢？以下是我的理解：</p>
+<p><strong>加法是没有关系的颜色之间的叠加，而乘法是模拟光的照射过程</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-glsl" data-lang="glsl"><span class="line"><span class="cl"><span class="n">Shader</span> <span class="err">&#34;</span><span class="n">Custom</span><span class="o">/</span><span class="n">Phong</span><span class="err">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Properties</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_MainColor</span><span class="p">(</span><span class="err">&#34;</span><span class="n">MainColor</span><span class="err">&#34;</span><span class="p">,</span><span class="n">Color</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_Shininess</span><span class="p">(</span><span class="err">&#34;</span><span class="n">Shininess</span><span class="err">&#34;</span><span class="p">,</span><span class="n">Range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">100</span><span class="p">))</span> <span class="o">=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_SpecularColor</span><span class="p">(</span><span class="err">&#34;</span><span class="n">Specular</span> <span class="n">Color</span><span class="err">&#34;</span><span class="p">,</span><span class="n">Color</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="mo">0</span><span class="p">,</span> <span class="mo">0</span><span class="p">,</span> <span class="mo">0</span><span class="p">,</span> <span class="mo">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">SubShader</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Pass</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">CGPROGRAM</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">pragma</span> <span class="n">vertex</span> <span class="n">vert</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">pragma</span> <span class="n">fragment</span> <span class="n">frag</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">include</span> <span class="err">&#34;</span><span class="n">UnityCG</span><span class="p">.</span><span class="n">cginc</span><span class="err">&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">include</span> <span class="err">&#34;</span><span class="n">UnityLightingCommon</span><span class="p">.</span><span class="n">cginc</span><span class="err">&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">struct</span> <span class="n">v2f</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float4</span> <span class="n">pos</span> <span class="o">:</span> <span class="n">SV_POSITION</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fixed4</span> <span class="n">color</span> <span class="o">:</span> <span class="n">COLOR0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">fixed4</span> <span class="n">_MainColor</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">fixed4</span> <span class="n">_SpecularColor</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">half</span> <span class="n">_Shininess</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">v2f</span> <span class="n">vert</span> <span class="p">(</span><span class="n">appdata_base</span> <span class="n">v</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">v2f</span> <span class="n">o</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">o</span><span class="p">.</span><span class="n">pos</span> <span class="o">=</span> <span class="n">UnityObjectToClipPos</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">vertex</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">//法线向量 由模型空间变换到世界空间并标准化</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float3</span> <span class="n">n</span> <span class="o">=</span> <span class="n">UnityObjectToWorldNormal</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">normal</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">n</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">n</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">//灯光法向向量</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fixed3</span> <span class="n">l</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">_WorldSpaceLightPos0</span><span class="p">.</span><span class="n">xyz</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                
+</span></span><span class="line"><span class="cl">                <span class="c1">//视线方向向量</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fixed3</span> <span class="n">view</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">WorldSpaceViewDir</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">vertex</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">//漫反射</span>
+</span></span><span class="line"><span class="cl">                <span class="k">fixed</span> <span class="n">ndotl</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">l</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fixed4</span> <span class="n">dif</span> <span class="o">=</span> <span class="n">_LightColor0</span> <span class="o">*</span> <span class="n">_MainColor</span> <span class="o">*</span> <span class="n">saturate</span><span class="p">(</span><span class="n">ndotl</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">//镜面反射 光线方向取负，输入Reflect函数为光源到顶点的方向</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float3</span> <span class="n">ref</span> <span class="o">=</span> <span class="n">reflect</span><span class="p">(</span><span class="o">-</span><span class="n">l</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">ref</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">ref</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="k">fixed</span> <span class="n">rdotv</span> <span class="o">=</span> <span class="n">saturate</span><span class="p">(</span><span class="n">dot</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span><span class="n">view</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fixed4</span> <span class="n">spec</span> <span class="o">=</span> <span class="n">_LightColor0</span> <span class="o">*</span> <span class="n">_SpecularColor</span> <span class="o">*</span> <span class="n">pow</span><span class="p">(</span><span class="n">rdotv</span><span class="p">,</span> <span class="n">_Shininess</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">//环境光 + 漫反射 +镜面反射</span>
+</span></span><span class="line"><span class="cl">                <span class="n">o</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">unity_AmbientSky</span> <span class="o">+</span> <span class="n">dif</span> <span class="o">+</span> <span class="n">spec</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="n">o</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">fixed4</span> <span class="n">frag</span> <span class="p">(</span><span class="n">v2f</span> <span class="n">i</span><span class="p">)</span> <span class="o">:</span> <span class="n">SV_Target</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="n">i</span><span class="p">.</span><span class="n">color</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="n">ENDCG</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="blinn-phong">Blinn-Phong<a hidden class="anchor" aria-hidden="true" href="#blinn-phong">#</a></h3>
+<p>为减少计算量，将Phong光照模型中的v替换成半角向量h（视角方向和灯光方向角平分方向），视觉效果差距不大，但当观察者和灯光离物体很远时镜面反射近似为常数。</p>
+<p>半角向量计算公式：</p>
+<p><img alt="alt" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303171751741.png"></p>
+<p>Blinn-Phong 镜面反射计算公式：</p>
+<p><img alt="alt" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303171751523.png"></p>
+<p>修改镜面反射部分代码。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-glsl" data-lang="glsl"><span class="line"><span class="cl"> <span class="n">fixed4</span> <span class="n">frag</span> <span class="p">(</span><span class="n">v2f</span> <span class="n">i</span><span class="p">)</span> <span class="o">:</span> <span class="n">SV_Target</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                 <span class="c1">//法线向量 由模型空间变换到世界空间并标准化</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float3</span> <span class="n">n</span> <span class="o">=</span> <span class="n">UnityObjectToWorldNormal</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">normal</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">n</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">n</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">//灯光法向向量</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fixed3</span> <span class="n">l</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">_WorldSpaceLightPos0</span><span class="p">.</span><span class="n">xyz</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                
+</span></span><span class="line"><span class="cl">                <span class="c1">//视线方向向量</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fixed3</span> <span class="n">view</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">WorldSpaceViewDir</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">vertex</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">//漫反射</span>
+</span></span><span class="line"><span class="cl">                <span class="k">fixed</span> <span class="n">ndotl</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">l</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fixed4</span> <span class="n">dif</span> <span class="o">=</span> <span class="n">_LightColor0</span> <span class="o">*</span> <span class="n">_MainColor</span> <span class="o">*</span> <span class="n">saturate</span><span class="p">(</span><span class="n">ndotl</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">//镜面反射 光线方向取负，输入Reflect函数为光源到顶点的方向</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float3</span> <span class="n">h</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">l</span> <span class="o">+</span> <span class="n">view</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="k">fixed</span> <span class="n">ndoth</span> <span class="o">=</span> <span class="n">saturate</span><span class="p">(</span><span class="n">dot</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">n</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fixed4</span> <span class="n">spec</span> <span class="o">=</span> <span class="n">_LightColor0</span> <span class="o">*</span> <span class="n">_SpecularColor</span> <span class="o">*</span> <span class="n">pow</span><span class="p">(</span><span class="n">ndoth</span><span class="p">,</span> <span class="n">_Shininess</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">//环境光 + 漫反射 +镜面反射</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="n">unity_AmbientSky</span> <span class="o">+</span> <span class="n">dif</span> <span class="o">+</span> <span class="n">spec</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span></code></pre></div><h3 id="逐像素光照">逐像素光照<a hidden class="anchor" aria-hidden="true" href="#逐像素光照">#</a></h3>
+<p>对于顶点数量较少的Sphere类型，可以很明显的看到光照范围边缘并不光滑，可以通过增加曲面细分等级或者改由片段着色器逐像素计算光照。光照计算交由frag进行，顶点着色器只负责传递发现和顶点（pos是裁切空间的顶点，vertex是模型空间的顶点用于计算方向向量），在frag里面texcoord语义可以用于存任意的float4类型，不局限于UV。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-glsl" data-lang="glsl"><span class="line"><span class="cl"><span class="n">Shader</span> <span class="err">&#34;</span><span class="n">Custom</span><span class="o">/</span><span class="n">Phong_Pixel</span><span class="err">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Properties</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_MainColor</span><span class="p">(</span><span class="err">&#34;</span><span class="n">MainColor</span><span class="err">&#34;</span><span class="p">,</span><span class="n">Color</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_Shininess</span><span class="p">(</span><span class="err">&#34;</span><span class="n">Shininess</span><span class="err">&#34;</span><span class="p">,</span><span class="n">Range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">100</span><span class="p">))</span> <span class="o">=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_SpecularColor</span><span class="p">(</span><span class="err">&#34;</span><span class="n">Specular</span> <span class="n">Color</span><span class="err">&#34;</span><span class="p">,</span><span class="n">Color</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="mo">0</span><span class="p">,</span> <span class="mo">0</span><span class="p">,</span> <span class="mo">0</span><span class="p">,</span> <span class="mo">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">SubShader</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Pass</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">CGPROGRAM</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">pragma</span> <span class="n">vertex</span> <span class="n">vert</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">pragma</span> <span class="n">fragment</span> <span class="n">frag</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">include</span> <span class="err">&#34;</span><span class="n">UnityCG</span><span class="p">.</span><span class="n">cginc</span><span class="err">&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">include</span> <span class="err">&#34;</span><span class="n">UnityLightingCommon</span><span class="p">.</span><span class="n">cginc</span><span class="err">&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">struct</span> <span class="n">v2f</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float4</span> <span class="n">pos</span> <span class="o">:</span> <span class="n">SV_POSITION</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float3</span> <span class="n">normal</span> <span class="o">:</span> <span class="n">TEXCOORD0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float4</span> <span class="n">vertex</span> <span class="o">:</span> <span class="n">TEXCOORD1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">fixed4</span> <span class="n">_MainColor</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">fixed4</span> <span class="n">_SpecularColor</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">half</span> <span class="n">_Shininess</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">v2f</span> <span class="n">vert</span> <span class="p">(</span><span class="n">appdata_base</span> <span class="n">v</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">v2f</span> <span class="n">o</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">o</span><span class="p">.</span><span class="n">pos</span> <span class="o">=</span> <span class="n">UnityObjectToClipPos</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">vertex</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">o</span><span class="p">.</span><span class="n">normal</span> <span class="o">=</span> <span class="n">v</span><span class="p">.</span><span class="n">normal</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">o</span><span class="p">.</span><span class="n">vertex</span> <span class="o">=</span> <span class="n">v</span><span class="p">.</span><span class="n">vertex</span><span class="p">;</span>              
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="n">o</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">fixed4</span> <span class="n">frag</span> <span class="p">(</span><span class="n">v2f</span> <span class="n">i</span><span class="p">)</span> <span class="o">:</span> <span class="n">SV_Target</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                 <span class="c1">//法线向量 由模型空间变换到世界空间并标准化</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float3</span> <span class="n">n</span> <span class="o">=</span> <span class="n">UnityObjectToWorldNormal</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">normal</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">n</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">n</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">//灯光法向向量</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fixed3</span> <span class="n">l</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">_WorldSpaceLightPos0</span><span class="p">.</span><span class="n">xyz</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                
+</span></span><span class="line"><span class="cl">                <span class="c1">//视线方向向量</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fixed3</span> <span class="n">view</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">WorldSpaceViewDir</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">vertex</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">//漫反射</span>
+</span></span><span class="line"><span class="cl">                <span class="k">fixed</span> <span class="n">ndotl</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">l</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fixed4</span> <span class="n">dif</span> <span class="o">=</span> <span class="n">_LightColor0</span> <span class="o">*</span> <span class="n">_MainColor</span> <span class="o">*</span> <span class="n">saturate</span><span class="p">(</span><span class="n">ndotl</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">//镜面反射 光线方向取负，输入Reflect函数为光源到顶点的方向</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float3</span> <span class="n">ref</span> <span class="o">=</span> <span class="n">reflect</span><span class="p">(</span><span class="o">-</span><span class="n">l</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">ref</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">ref</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="k">fixed</span> <span class="n">rdotv</span> <span class="o">=</span> <span class="n">saturate</span><span class="p">(</span><span class="n">dot</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span><span class="n">view</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fixed4</span> <span class="n">spec</span> <span class="o">=</span> <span class="n">_LightColor0</span> <span class="o">*</span> <span class="n">_SpecularColor</span> <span class="o">*</span> <span class="n">pow</span><span class="p">(</span><span class="n">rdotv</span><span class="p">,</span> <span class="n">_Shininess</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">//环境光 + 漫反射 +镜面反射</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="n">unity_AmbientSky</span> <span class="o">+</span> <span class="n">dif</span> <span class="o">+</span> <span class="n">spec</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="n">ENDCG</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><img src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303171757748.png" alt="alt" style="zoom: 200%;" />
+<h2 id="阴影">阴影<a hidden class="anchor" aria-hidden="true" href="#阴影">#</a></h2>
+<h3 id="unity的渲染路径">Unity的渲染路径<a hidden class="anchor" aria-hidden="true" href="#unity的渲染路径">#</a></h3>
+<p>在Unity中，渲染路径（Rendering Path）决定了<strong>光照</strong>是如何应用到Unity Shader中的。如果要和光源打交道，就需要为每个pass指定使用的渲染路径。这样，才能让Unity为我们提供正确的数据信息。</p>
+<p>在pass中，通过设置LightMode标签来指定使用的渲染路径。</p>
+<blockquote>
+<p>Tags { &ldquo;LightMode&rdquo; = &ldquo;ForwardBase&rdquo; }</p>
+</blockquote>
+<p>下表给出Pass的LightMode标签支持的主要渲染路径设置：</p>
+<table>
+  <thead>
+      <tr>
+          <th>标签名</th>
+          <th>描述</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Always</td>
+          <td>不管使用哪种渲染路径，该Pass总会被渲染，但不会计算任何光照</td>
+      </tr>
+      <tr>
+          <td>ForwardBase</td>
+          <td>用于前向渲染。该Pass会计算环境光，最重要的平行光、逐顶点/SH光源和Lightmaps</td>
+      </tr>
+      <tr>
+          <td>ForwardAdd</td>
+          <td>用于前向渲染。该Pass会计算额外的逐像素光源，每个Pass对应一个光源</td>
+      </tr>
+      <tr>
+          <td>Deffered</td>
+          <td>用于延迟渲染。该Pass会渲染G缓冲（G-buffer）</td>
+      </tr>
+      <tr>
+          <td>ShadowCaster</td>
+          <td>把物体的深度信息渲染到阴影映射纹理（shadowmap）或一张深度纹理中</td>
+      </tr>
+  </tbody>
+</table>
+<p>官方LightMode介绍见链接：<a href="https://link.zhihu.com/?target=https%3A//docs.unity3d.com/2019.4/Documentation/Manual/shader-predefined-pass-tags-built-in.html">ShaderLab: Predefined Pass tags in the Built-in Render Pipeline</a></p>
+<p>为Pass指定渲染路径标签可以使Unity提供正确的（对于shader编写者来说）内置光照变量。</p>
+<h3 id="延迟着色渲染路径">延迟着色渲染路径<a hidden class="anchor" aria-hidden="true" href="#延迟着色渲染路径">#</a></h3>
+<p>先裁切再计算光照，因此光照在屏幕空间计算，所有灯光都是逐像素计算，计算量与场景复杂度无关，避免计算深度测试未通过的遮挡部分，提升性能，但不支持抗锯齿，半透明，正交相机且对硬件有要求。</p>
+<h3 id="前向渲染路径">前向渲染路径<a hidden class="anchor" aria-hidden="true" href="#前向渲染路径">#</a></h3>
+<p>先计算光照再裁切，支持所有Unity图形功能，一部分最亮的灯光（离物体近）用逐像素光照渲染，然后最多4个灯光用逐顶点光照渲染，剩余用SH光照渲染，不同灯光组之间会重叠熏染，基础Pass包括一个逐像素平行光和所有逐顶点/SH的灯光，每多一个逐像素灯光会额外产生一个Pass，可以设置每个灯光的渲染模式Important来决定用顶点/像素光照渲染。</p>
+<h3 id="passflags标签">PassFlags标签<a hidden class="anchor" aria-hidden="true" href="#passflags标签">#</a></h3>
+<p>用于更改渲染流水线传递数据给Pass的方式，目前仅可使用的值为OnlyDirectional，使得前向渲染时，SH和逐顶点灯光不能传数据。</p>
+<h3 id="内置的multi_compile">内置的multi_compile<a hidden class="anchor" aria-hidden="true" href="#内置的multi_compile">#</a></h3>
+<p>默认情况前向渲染只支持一个投射阴影的平行光，可以通过multi_compile_fwdbase/fwdadd/fwaddshadows添加多重编译指令编译出不同的Shader变体来处理不同类型的灯光、阴影和灯光贴图。</p>
+<h3 id="实现阴影效果">实现阴影效果<a hidden class="anchor" aria-hidden="true" href="#实现阴影效果">#</a></h3>
+<p>（使用Lambert光照模型） 第一个Pass用于渲染平行光、逐顶点、SH的灯光，为平行光产生阴影投射。第二个Pass用于渲染其他逐像素的灯光并为其产生阴影投射。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-glsl" data-lang="glsl"><span class="line"><span class="cl"><span class="n">Shader</span> <span class="err">&#34;</span><span class="n">Custom</span><span class="o">/</span><span class="n">Shadow</span><span class="err">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Properties</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_MainColor</span> <span class="p">(</span><span class="err">&#34;</span><span class="n">Main</span> <span class="n">Color</span><span class="err">&#34;</span><span class="p">,</span> <span class="n">Color</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">SubShader</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">//平行光投影（还包括逐顶点或SH的灯光渲染）</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Pass</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>   
+</span></span><span class="line"><span class="cl">            <span class="n">Tags</span><span class="p">{</span><span class="err">&#34;</span><span class="n">LightMode</span><span class="err">&#34;</span> <span class="o">=</span> <span class="err">&#34;</span><span class="n">ForwardBase</span><span class="err">&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="n">CGPROGRAM</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">pragma</span> <span class="n">vertex</span> <span class="n">vert</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">pragma</span> <span class="n">fragment</span> <span class="n">frag</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">pragma</span> <span class="n">multi_compile_fwdbase</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">include</span> <span class="err">&#34;</span><span class="n">UnityCG</span><span class="p">.</span><span class="n">cginc</span><span class="err">&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">include</span> <span class="err">&#34;</span><span class="n">Lighting</span><span class="p">.</span><span class="n">cginc</span><span class="err">&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">include</span> <span class="err">&#34;</span><span class="n">AutoLight</span><span class="p">.</span><span class="n">cginc</span><span class="err">&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">struct</span> <span class="n">v2f</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>   
+</span></span><span class="line"><span class="cl">                <span class="n">float4</span> <span class="n">pos</span> <span class="o">:</span> <span class="n">SV_POSITION</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float3</span> <span class="n">normal</span> <span class="o">:</span> <span class="n">TEXCOORD0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float4</span> <span class="n">vertex</span> <span class="o">:</span> <span class="n">TEXCOORD1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">SHADOW_COORDS</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="c1">//使用预定义宏保存阴影坐标</span>
+</span></span><span class="line"><span class="cl">            <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">fixed4</span> <span class="n">_MainColor</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">v2f</span> <span class="n">vert</span> <span class="p">(</span><span class="n">appdata_base</span> <span class="n">v</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">v2f</span> <span class="n">o</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">o</span><span class="p">.</span><span class="n">pos</span> <span class="o">=</span> <span class="n">UnityObjectToClipPos</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">vertex</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">o</span><span class="p">.</span><span class="n">normal</span> <span class="o">=</span> <span class="n">v</span><span class="p">.</span><span class="n">normal</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">o</span><span class="p">.</span><span class="n">vertex</span> <span class="o">=</span> <span class="n">v</span><span class="p">.</span><span class="n">vertex</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">TRANSFER_SHADOW</span><span class="p">(</span><span class="n">o</span><span class="p">)</span> <span class="c1">//将阴影纹理坐标装入结构体</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="n">o</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">fixed4</span> <span class="n">frag</span> <span class="p">(</span><span class="n">v2f</span> <span class="n">i</span><span class="p">)</span> <span class="o">:</span> <span class="n">SV_Target</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>   
+</span></span><span class="line"><span class="cl">                <span class="c1">//世界空间法向量、光照方向、顶点坐标</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float3</span> <span class="n">n</span> <span class="o">=</span> <span class="n">UnityObjectToWorldNormal</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">normal</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">n</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">n</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float3</span> <span class="n">l</span> <span class="o">=</span> <span class="n">WorldSpaceLightDir</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">vertex</span><span class="p">);</span> <span class="c1">//使用WorldSpaceLightDir计算光照方向而不用WorldSpaceLightPos（只计算平行光）</span>
+</span></span><span class="line"><span class="cl">                <span class="n">l</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float4</span> <span class="n">worldPos</span> <span class="o">=</span> <span class="n">mul</span><span class="p">(</span><span class="n">unity_ObjectToWorld</span><span class="p">,</span><span class="n">i</span><span class="p">.</span><span class="n">vertex</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">//Lambert光照</span>
+</span></span><span class="line"><span class="cl">                <span class="k">fixed</span> <span class="n">ndotl</span> <span class="o">=</span> <span class="n">saturate</span><span class="p">(</span><span class="n">dot</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">l</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fixed4</span> <span class="n">color</span> <span class="o">=</span> <span class="n">_LightColor0</span> <span class="o">*</span> <span class="n">_MainColor</span> <span class="o">*</span> <span class="n">ndotl</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">//点光源的光照</span>
+</span></span><span class="line"><span class="cl">                <span class="n">color</span><span class="p">.</span><span class="n">rgb</span> <span class="o">+=</span> <span class="n">Shade4PointLights</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">                <span class="n">unity_4LightPosX0</span><span class="p">,</span><span class="n">unity_4LightPosY0</span><span class="p">,</span><span class="n">unity_4LightPosZ0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="n">unity_LightColor</span><span class="p">[</span><span class="mo">0</span><span class="p">].</span><span class="n">rgb</span><span class="p">,</span> <span class="n">unity_LightColor</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">rgb</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="n">unity_LightColor</span><span class="p">[</span><span class="mi">2</span><span class="p">].</span><span class="n">rgb</span><span class="p">,</span> <span class="n">unity_LightColor</span><span class="p">[</span><span class="mi">3</span><span class="p">].</span><span class="n">rgb</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="n">unity_4LightAtten0</span><span class="p">,</span> <span class="n">worldPos</span><span class="p">.</span><span class="n">rgb</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">_MainColor</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                
+</span></span><span class="line"><span class="cl">                <span class="c1">//环境光照</span>
+</span></span><span class="line"><span class="cl">                <span class="n">color</span> <span class="o">+=</span> <span class="n">unity_AmbientSky</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">//计算阴影系数</span>
+</span></span><span class="line"><span class="cl">                <span class="n">UNITY_LIGHT_ATTENUATION</span><span class="p">(</span><span class="n">shadowmask</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">worldPos</span><span class="p">.</span><span class="n">rgb</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">//阴影合成</span>
+</span></span><span class="line"><span class="cl">                <span class="n">color</span><span class="p">.</span><span class="n">rgb</span> <span class="o">*=</span> <span class="n">shadowmask</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="n">color</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="n">ENDCG</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 其他逐像素灯光投影</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Pass</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">Tags</span><span class="p">{</span><span class="err">&#34;</span><span class="n">LightMode</span><span class="err">&#34;</span> <span class="o">=</span> <span class="err">&#34;</span><span class="n">ForwardAdd</span><span class="err">&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">//使用相加混合，与上个Pass融合</span>
+</span></span><span class="line"><span class="cl">            <span class="n">Blend</span> <span class="n">One</span> <span class="n">One</span> 
+</span></span><span class="line"><span class="cl">            <span class="n">CGPROGRAM</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">pragma</span> <span class="n">vertex</span> <span class="n">vert</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">pragma</span> <span class="n">fragment</span> <span class="n">frag</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">pragma</span> <span class="n">multi_compile_fwdadd_fullshadows</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">include</span> <span class="err">&#34;</span><span class="n">UnityCG</span><span class="p">.</span><span class="n">cginc</span><span class="err">&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">include</span> <span class="err">&#34;</span><span class="n">Lighting</span><span class="p">.</span><span class="n">cginc</span><span class="err">&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">include</span> <span class="err">&#34;</span><span class="n">AutoLight</span><span class="p">.</span><span class="n">cginc</span><span class="err">&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">struct</span> <span class="n">v2f</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>   
+</span></span><span class="line"><span class="cl">                
+</span></span><span class="line"><span class="cl">                <span class="n">float4</span> <span class="n">pos</span> <span class="o">:</span> <span class="n">SV_POSITION</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float3</span> <span class="n">normal</span> <span class="o">:</span> <span class="n">TEXCOORD0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float4</span> <span class="n">vertex</span> <span class="o">:</span> <span class="n">TEXCOORD1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">SHADOW_COORDS</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="c1">//使用预定义宏保存阴影坐标</span>
+</span></span><span class="line"><span class="cl">            <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">fixed4</span> <span class="n">_MainColor</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">v2f</span> <span class="n">vert</span> <span class="p">(</span><span class="n">appdata_base</span> <span class="n">v</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">v2f</span> <span class="n">o</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">o</span><span class="p">.</span><span class="n">pos</span> <span class="o">=</span> <span class="n">UnityObjectToClipPos</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">vertex</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">o</span><span class="p">.</span><span class="n">normal</span> <span class="o">=</span> <span class="n">v</span><span class="p">.</span><span class="n">normal</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">o</span><span class="p">.</span><span class="n">vertex</span> <span class="o">=</span> <span class="n">v</span><span class="p">.</span><span class="n">vertex</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">TRANSFER_SHADOW</span><span class="p">(</span><span class="n">o</span><span class="p">)</span> <span class="c1">//将阴影纹理坐标装入结构体</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="n">o</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">fixed4</span> <span class="n">frag</span> <span class="p">(</span><span class="n">v2f</span> <span class="n">i</span><span class="p">)</span> <span class="o">:</span> <span class="n">SV_Target</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>   
+</span></span><span class="line"><span class="cl">                <span class="c1">//世界空间法向量、光照方向、顶点坐标</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float3</span> <span class="n">n</span> <span class="o">=</span> <span class="n">UnityObjectToWorldNormal</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">normal</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">n</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">n</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float3</span> <span class="n">l</span> <span class="o">=</span> <span class="n">WorldSpaceLightDir</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">vertex</span><span class="p">);</span> <span class="c1">//使用WorldSpaceLightDir计算光照方向而不用WorldSpaceLightPos（只计算平行光）</span>
+</span></span><span class="line"><span class="cl">                <span class="n">l</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float4</span> <span class="n">worldPos</span> <span class="o">=</span> <span class="n">mul</span><span class="p">(</span><span class="n">unity_ObjectToWorld</span><span class="p">,</span><span class="n">i</span><span class="p">.</span><span class="n">vertex</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">//Lambert光照</span>
+</span></span><span class="line"><span class="cl">                <span class="k">fixed</span> <span class="n">ndotl</span> <span class="o">=</span> <span class="n">saturate</span><span class="p">(</span><span class="n">dot</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">l</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fixed4</span> <span class="n">color</span> <span class="o">=</span> <span class="n">_LightColor0</span> <span class="o">*</span> <span class="n">_MainColor</span> <span class="o">*</span> <span class="n">ndotl</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">//点光源的光照</span>
+</span></span><span class="line"><span class="cl">                <span class="n">color</span><span class="p">.</span><span class="n">rgb</span> <span class="o">+=</span> <span class="n">Shade4PointLights</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">unity_4LightPosX0</span><span class="p">,</span><span class="n">unity_4LightPosY0</span><span class="p">,</span><span class="n">unity_4LightPosZ0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">unity_LightColor</span><span class="p">[</span><span class="mo">0</span><span class="p">].</span><span class="n">rgb</span><span class="p">,</span> <span class="n">unity_LightColor</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">rgb</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">unity_LightColor</span><span class="p">[</span><span class="mi">2</span><span class="p">].</span><span class="n">rgb</span><span class="p">,</span> <span class="n">unity_LightColor</span><span class="p">[</span><span class="mi">3</span><span class="p">].</span><span class="n">rgb</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">unity_4LightAtten0</span><span class="p">,</span> <span class="n">worldPos</span><span class="p">.</span><span class="n">rgb</span><span class="p">,</span><span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">_MainColor</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                
+</span></span><span class="line"><span class="cl">                <span class="c1">//环境光照不再计算 上个Pass已做</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">//color += unity_AmbientSky;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">//计算阴影系数</span>
+</span></span><span class="line"><span class="cl">                <span class="n">UNITY_LIGHT_ATTENUATION</span><span class="p">(</span><span class="n">shadowmask</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">worldPos</span><span class="p">.</span><span class="n">rgb</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">//阴影合成</span>
+</span></span><span class="line"><span class="cl">                <span class="n">color</span><span class="p">.</span><span class="n">rgb</span> <span class="o">*=</span> <span class="n">shadowmask</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="n">color</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">ENDCG</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">FallBack</span> <span class="err">&#34;</span><span class="n">Diffuse</span><span class="err">&#34;</span> <span class="c1">//使用Difuuse中的阴影投射Pass</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><img alt="image-20230317230457449" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303172304490.png"></p>
+<h2 id="透明效果">透明效果<a hidden class="anchor" aria-hidden="true" href="#透明效果">#</a></h2>
+<p>透明是游戏中经常要用的一种效果，在实时渲染中要实现透明效果，通常会在渲染模型时控制它的透明通道(Alpha Channel)。当开启透明混合后，当一个物体被渲染到屏幕上时，每个片元除了颜色值和深度值外，他还有另外一个属性——<code>透明度</code>。当透明度为1时。表示该像素是完全不透明的，而当其为0时，则表示改像素完全不会显示。
+在Unity中，我们通常使用<code>透明度测试</code>（这种方法其实无法得到真正的的半透明效果）和<code>透明度混合</code>实现透明效果。
+对于不透明物体，不考虑他们渲染顺序也能得到正确的排序效果，这是由于强大深度缓冲（depth buffer也被称为z-buffer）。
+在实时渲染中，深度缓冲是用于解决可见性问题的，核心思想：根据深度缓冲中的值来判断该片元距离摄像机的距离，当渲染一个片元时，需要把它的深度值和已经存在与深度缓冲中的值进行比较（如果开启了深度测试），<code>如果它的值距离摄像机更远，则不需要渲染到屏幕（有物体挡住了它），否则这个片元将会覆盖掉此时颜色缓冲中的像素值，并把它的深度值更新到深度缓冲中（如果开启深度写入）。</code>
+但是如果要实现透明效果，当使用透明度混合时，我们关闭了深度写入（ZWrite）。
+简单来说，透明度测试和透明度混合的基本原理如下。
+<strong>透明度测试</strong>
+只要一个片元的透明度不满足条件，那么它对应的片元就会被舍弃，并且不会再做任何处理，也不会影响颜色缓冲。<code>透明度测试不需要关闭深度写入。</code>只会产生两个结果，要么完全透明看不到，要么完全不透明。
+<strong>透明度混合</strong>
+使用当前片元的透明度作为混合因子，与已经存储在颜色缓冲中的颜色值进行混合，得到新的颜色。但是<code>透明度混合需要关闭深度写入。这是因为，如果不关闭深度写入，一个半透明表面背后的表面本来是可以透过它被我们看到的，但是由于深度测试时判断结果是该半透明表面距离摄像机更近，导致后面的表面将会被剔除，我们也无法通过半透明表面看到后面的物体了。</code>
+透明度混合只关闭了深度写入，没有关闭深度测试，即<code>当使用透明度混合渲染一个片元时，还是会比较它的深度值与当前深度缓冲中的深度值，如果它的深度值距离摄像机更远，就不会进行混合操作</code>。所以，当一个不透明物体出现在一个透明物体前面，而我们先渲染了不透明物体，他仍然可以正常遮挡住透明物体。
+<code>总结：对于透明度混合来说，深度缓冲是只读的。</code></p>
+<h3 id="为什么渲染顺序很重要">为什么渲染顺序很重要<a hidden class="anchor" aria-hidden="true" href="#为什么渲染顺序很重要">#</a></h3>
+<p>因为透明度关闭了深度写入，如果不保证渲染顺序的话，会导致错误的渲染结果。
+比如半透明A（离摄像机近），不透明B（离摄相机远），如果先渲染A，不会在深度缓冲区写入数据，但会写入颜色缓冲区。再渲染B，会在深度缓冲区写入深度值，然后写入颜色缓冲区，即覆盖A的颜色，看起来物体B在A前面了。
+再比如半透明A（离摄像机近），半透明B（离摄像机远），如果先渲染A，不会在深度缓冲区写入数据，但会写入颜色缓冲区。再渲染B，不会在深度缓冲区写入深度值，会与颜色缓冲区中的A进行颜色混合，看起来物体B在A前面了。
+因此，渲染引擎一般会对物体进行排序，再渲染，常用方法是：
+先渲染所有不透明物体，并开启他们深度测试和深度写入。
+把半透明物体按他们距离摄像机远近进行排序，然后按照从后往前的顺序渲染这些半透明物体，并开启他们的深度测试，关闭深度写入。
+但是如果仅此而已，还是不够的，因为会有一些特殊情况。</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303182314829.png!webp"></p>
+<p>而我们是根据他们离摄像机远近来排序的，而距离摄像机远近依靠的是深度值（像素级，即每个像素都有一个深度值)，但我们现在是对单个物体级进行排序，所以要么A全在B前面，要么A全在B后面。</p>
+<h3 id="unity-shader的渲染顺序">Unity Shader的渲染顺序<a hidden class="anchor" aria-hidden="true" href="#unity-shader的渲染顺序">#</a></h3>
+<p>Unity为了解决渲染顺序的问题，提供了渲染队列（render queue）这一解决方案、我们可以使用SubShader的Queue标签来决定我们模型将归于哪个渲染队列。</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303182308604.png!webp"></p>
+<h3 id="透明度测试">透明度测试<a hidden class="anchor" aria-hidden="true" href="#透明度测试">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-glsl" data-lang="glsl"><span class="line"><span class="cl"><span class="n">Shader</span> <span class="err">&#34;</span><span class="n">Custom</span><span class="o">/</span><span class="n">AlphaTest</span><span class="err">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Properties</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_Color</span><span class="p">(</span><span class="err">&#34;</span><span class="n">Main</span> <span class="n">Tint</span><span class="err">&#34;</span><span class="p">,</span><span class="n">Color</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_MainTex</span> <span class="p">(</span><span class="err">&#34;</span><span class="n">Texture</span><span class="err">&#34;</span><span class="p">,</span> <span class="mi">2</span><span class="n">D</span><span class="p">)</span> <span class="o">=</span> <span class="err">&#34;</span><span class="n">white</span><span class="err">&#34;</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">//决定我们调用clip进行透明度测试时使用的判断条件。</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">//它的范围是[0,1]这是因为纹理像素的透明度就是在此范围内。</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_Cutoff</span><span class="p">(</span><span class="err">&#34;</span><span class="n">Alpha</span> <span class="n">Cutoff</span><span class="err">&#34;</span><span class="p">,</span><span class="n">Range</span><span class="p">(</span><span class="mo">0</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span> <span class="o">=</span> <span class="mf">0.5</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">SubShader</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">//Queue定义归属渲染队列</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">//IgnoreProjector为true表示这个Shader不会受到投影器影响</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">//RenderType可以让Unity把这个Shader归入到提前定义的组</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Tags</span> <span class="p">{</span> <span class="err">&#34;</span><span class="n">Queue</span><span class="err">&#34;</span> <span class="o">=</span> <span class="err">&#34;</span><span class="n">AlphaTest</span><span class="err">&#34;</span> <span class="err">&#34;</span><span class="n">IgnoreProjector</span><span class="err">&#34;</span> <span class="o">=</span> <span class="err">&#34;</span><span class="n">True</span><span class="err">&#34;</span> <span class="err">&#34;</span><span class="n">RenderType</span><span class="err">&#34;</span> <span class="o">=</span> <span class="err">&#34;</span><span class="n">TransparentCutout</span><span class="err">&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1">//关闭剔除，可以看到背面</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Cull</span> <span class="n">Off</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">        <span class="n">Pass</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">//定义光照模式</span>
+</span></span><span class="line"><span class="cl">            <span class="n">Tags</span> <span class="p">{</span> <span class="err">&#34;</span><span class="n">LightMode</span><span class="err">&#34;</span> <span class="o">=</span> <span class="err">&#34;</span><span class="n">ForwardBase</span><span class="err">&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="n">CGPROGRAM</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">pragma</span> <span class="n">vertex</span> <span class="n">vert</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">pragma</span> <span class="n">fragment</span> <span class="n">frag</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">include</span> <span class="err">&#34;</span><span class="n">Lighting</span><span class="p">.</span><span class="n">cginc</span><span class="err">&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">fixed4</span> <span class="n">_Color</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">sampler2D</span> <span class="n">_MainTex</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">float4</span> <span class="n">_MainTex_ST</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">fixed</span> <span class="n">_Cutoff</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">struct</span> <span class="n">a2v</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float4</span> <span class="n">vertex</span> <span class="o">:</span> <span class="n">POSITION</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float3</span> <span class="n">normal</span> <span class="o">:</span> <span class="n">NORMAL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float4</span> <span class="n">texcoord</span> <span class="o">:</span> <span class="n">TEXCOORD0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">struct</span> <span class="n">v2f</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float4</span> <span class="n">pos</span> <span class="o">:</span> <span class="n">SV_POSITION</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float3</span> <span class="n">worldNormal</span> <span class="o">:</span> <span class="n">TEXCOORD0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float3</span> <span class="n">worldPos</span> <span class="o">:</span> <span class="n">TEXCOORD1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float2</span> <span class="n">uv</span> <span class="o">:</span> <span class="n">TEXCOORD2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">v2f</span> <span class="n">vert</span> <span class="p">(</span><span class="n">a2v</span> <span class="n">v</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">v2f</span> <span class="n">o</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">//把顶点位置从模型空间转换到裁剪空间中</span>
+</span></span><span class="line"><span class="cl">                <span class="n">o</span><span class="p">.</span><span class="n">pos</span> <span class="o">=</span> <span class="n">UnityObjectToClipPos</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">vertex</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">//计算出世界空间法线方向</span>
+</span></span><span class="line"><span class="cl">                <span class="n">o</span><span class="p">.</span><span class="n">worldNormal</span> <span class="o">=</span> <span class="n">UnityObjectToWorldNormal</span> <span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">normal</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">//计算出世界空间顶点位置</span>
+</span></span><span class="line"><span class="cl">                <span class="n">o</span><span class="p">.</span><span class="n">worldPos</span> <span class="o">=</span> <span class="n">mul</span><span class="p">(</span><span class="n">unity_ObjectToWorld</span><span class="p">,</span><span class="n">v</span><span class="p">.</span><span class="n">vertex</span><span class="p">).</span><span class="n">xyz</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">//计算经过平铺和偏移后的纹理坐标</span>
+</span></span><span class="line"><span class="cl">                <span class="n">o</span><span class="p">.</span><span class="n">uv</span> <span class="o">=</span> <span class="n">TRANSFORM_TEX</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">texcoord</span><span class="p">,</span> <span class="n">_MainTex</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="n">o</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">fixed4</span> <span class="n">frag</span> <span class="p">(</span><span class="n">v2f</span> <span class="n">i</span><span class="p">)</span> <span class="o">:</span> <span class="n">SV_Target</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fixed3</span> <span class="n">worldNormal</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">worldNormal</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fixed3</span> <span class="n">worldLightDir</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">UnityWorldSpaceLightDir</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">worldPos</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">//对纹理进行采样</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fixed4</span> <span class="n">texColor</span> <span class="o">=</span> <span class="n">tex2D</span><span class="p">(</span><span class="n">_MainTex</span><span class="p">,</span><span class="n">i</span><span class="p">.</span><span class="n">uv</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">//会判断texColor.a - _Cutoff是否为负，如果是就会舍弃该片元的输出</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">//当texColor.a小于材质参数_Cutoff时，该片元就会产生完全透明的效果</span>
+</span></span><span class="line"><span class="cl">                <span class="n">clip</span><span class="p">(</span><span class="n">texColor</span><span class="p">.</span><span class="n">a</span> <span class="o">-</span> <span class="n">_Cutoff</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">//得到环境光</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fixed3</span> <span class="n">albedo</span> <span class="o">=</span> <span class="n">texColor</span><span class="p">.</span><span class="n">rgb</span> <span class="o">*</span> <span class="n">_Color</span><span class="p">.</span><span class="n">rgb</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">//计算高光反射</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fixed3</span> <span class="n">ambient</span> <span class="o">=</span> <span class="n">UNITY_LIGHTMODEL_AMBIENT</span><span class="p">.</span><span class="n">xyz</span> <span class="o">*</span> <span class="n">albedo</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">//计算漫反射</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fixed3</span> <span class="n">diffuse</span> <span class="o">=</span> <span class="n">_LightColor0</span><span class="p">.</span><span class="n">rgb</span> <span class="o">*</span> <span class="n">albedo</span><span class="o">*</span><span class="n">max</span><span class="p">(</span><span class="mo">0</span><span class="p">,</span><span class="n">dot</span><span class="p">(</span><span class="n">worldNormal</span><span class="p">,</span><span class="n">worldLightDir</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">                
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="n">fixed4</span><span class="p">(</span><span class="n">ambient</span> <span class="o">+</span> <span class="n">diffuse</span><span class="p">,</span><span class="mf">1.0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="n">ENDCG</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Fallback</span> <span class="err">&#34;</span><span class="n">Transparent</span><span class="o">/</span><span class="n">Cutout</span><span class="o">/</span><span class="n">VertexLit</span><span class="err">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303182308713.png!webp"></p>
+<h3 id="透明度混合">透明度混合<a hidden class="anchor" aria-hidden="true" href="#透明度混合">#</a></h3>
+<p>为了进行混合，我们需要使用Unity提供的混合命令——Blend。Blend是Unity提供的设置混合模式的命令。想要实现半透明效果就需要把当前自身的颜色和已经存在于颜色缓冲中的颜色值进行混合。混合时使用的函数就是由该指令决定的。</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303182308808.png!webp"></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-glsl" data-lang="glsl"><span class="line"><span class="cl"><span class="n">Shader</span> <span class="err">&#34;</span><span class="n">Custom</span><span class="o">/</span><span class="n">AlphaBlend</span><span class="err">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Properties</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_Color</span> <span class="p">(</span><span class="err">&#34;</span><span class="n">Color</span> <span class="n">Tint</span><span class="err">&#34;</span><span class="p">,</span> <span class="n">Color</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_MainTex</span> <span class="p">(</span><span class="err">&#34;</span><span class="n">Main</span> <span class="n">Tex</span><span class="err">&#34;</span><span class="p">,</span> <span class="mi">2</span><span class="n">D</span><span class="p">)</span> <span class="o">=</span> <span class="err">&#34;</span><span class="n">white</span><span class="err">&#34;</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">//_AlphaScale用于在透明纹理的基础上控制整体的透明度</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_AlphaScale</span> <span class="p">(</span><span class="err">&#34;</span><span class="n">Alpha</span> <span class="n">Scale</span><span class="err">&#34;</span><span class="p">,</span> <span class="n">Range</span><span class="p">(</span><span class="mo">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> <span class="o">=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">SubShader</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">//Queue定义归属渲染队列，因为是透明度混合，所以是Transparent队列</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">//IgnoreProjector为true表示这个Shader不会受到投影器影响</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">//RenderType可以让Unity把这个Shader归入到提前定义的组</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Tags</span> <span class="p">{</span><span class="err">&#34;</span><span class="n">Queue</span><span class="err">&#34;</span><span class="o">=</span><span class="err">&#34;</span><span class="n">Transparent</span><span class="err">&#34;</span> <span class="err">&#34;</span><span class="n">IgnoreProjector</span><span class="err">&#34;</span><span class="o">=</span><span class="err">&#34;</span><span class="n">True</span><span class="err">&#34;</span> <span class="err">&#34;</span><span class="n">RenderType</span><span class="err">&#34;</span><span class="o">=</span><span class="err">&#34;</span><span class="n">Transparent</span><span class="err">&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1">//关闭剔除，可以看到背面</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Cull</span> <span class="n">Off</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">        <span class="n">Pass</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">//定义光照模式</span>
+</span></span><span class="line"><span class="cl">            <span class="n">Tags</span> <span class="p">{</span> <span class="err">&#34;</span><span class="n">LightMode</span><span class="err">&#34;</span> <span class="o">=</span> <span class="err">&#34;</span><span class="n">ForwardBase</span><span class="err">&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">//关闭深度写入</span>
+</span></span><span class="line"><span class="cl">            <span class="n">ZWrite</span> <span class="n">Off</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">//将该片元着色器产生的颜色混合因子设置为SrcAlpha</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">//将已经存在与颜色缓冲中的颜色混合因子设置为OneMinusSrcAlpha</span>
+</span></span><span class="line"><span class="cl">            <span class="n">Blend</span> <span class="n">SrcAlpha</span> <span class="n">OneMinusSrcAlpha</span>
+</span></span><span class="line"><span class="cl">            <span class="n">CGPROGRAM</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">pragma</span> <span class="n">vertex</span> <span class="n">vert</span>
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">pragma</span> <span class="n">fragment</span> <span class="n">frag</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="err">#</span><span class="n">include</span> <span class="err">&#34;</span><span class="n">Lighting</span><span class="p">.</span><span class="n">cginc</span><span class="err">&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">fixed4</span> <span class="n">_Color</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">sampler2D</span> <span class="n">_MainTex</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">float4</span> <span class="n">_MainTex_ST</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">fixed</span> <span class="n">_AlphaScale</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">struct</span> <span class="n">a2v</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float4</span> <span class="n">vertex</span> <span class="o">:</span> <span class="n">POSITION</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float3</span> <span class="n">normal</span> <span class="o">:</span> <span class="n">NORMAL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float4</span> <span class="n">texcoord</span> <span class="o">:</span> <span class="n">TEXCOORD0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">struct</span> <span class="n">v2f</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float4</span> <span class="n">pos</span> <span class="o">:</span> <span class="n">SV_POSITION</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float3</span> <span class="n">worldNormal</span> <span class="o">:</span> <span class="n">TEXCOORD0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float3</span> <span class="n">worldPos</span> <span class="o">:</span> <span class="n">TEXCOORD1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">float2</span> <span class="n">uv</span> <span class="o">:</span> <span class="n">TEXCOORD2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">v2f</span> <span class="n">vert</span> <span class="p">(</span><span class="n">a2v</span> <span class="n">v</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">v2f</span> <span class="n">o</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">//把顶点位置从模型空间转换到裁剪空间中</span>
+</span></span><span class="line"><span class="cl">                <span class="n">o</span><span class="p">.</span><span class="n">pos</span> <span class="o">=</span> <span class="n">UnityObjectToClipPos</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">vertex</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">//计算出世界空间法线方向</span>
+</span></span><span class="line"><span class="cl">                <span class="n">o</span><span class="p">.</span><span class="n">worldNormal</span> <span class="o">=</span> <span class="n">UnityObjectToWorldNormal</span> <span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">normal</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">//计算出世界空间顶点位置</span>
+</span></span><span class="line"><span class="cl">                <span class="n">o</span><span class="p">.</span><span class="n">worldPos</span> <span class="o">=</span> <span class="n">mul</span><span class="p">(</span><span class="n">unity_ObjectToWorld</span><span class="p">,</span><span class="n">v</span><span class="p">.</span><span class="n">vertex</span><span class="p">).</span><span class="n">xyz</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">//计算经过平铺和偏移后的纹理坐标</span>
+</span></span><span class="line"><span class="cl">                <span class="n">o</span><span class="p">.</span><span class="n">uv</span> <span class="o">=</span> <span class="n">TRANSFORM_TEX</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">texcoord</span><span class="p">,</span> <span class="n">_MainTex</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="n">o</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">fixed4</span> <span class="n">frag</span> <span class="p">(</span><span class="n">v2f</span> <span class="n">i</span><span class="p">)</span> <span class="o">:</span> <span class="n">SV_Target</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fixed3</span> <span class="n">worldNormal</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">worldNormal</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fixed3</span> <span class="n">worldLightDir</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">UnityWorldSpaceLightDir</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">worldPos</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">//对纹理进行采样</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fixed4</span> <span class="n">texColor</span> <span class="o">=</span> <span class="n">tex2D</span><span class="p">(</span><span class="n">_MainTex</span><span class="p">,</span><span class="n">i</span><span class="p">.</span><span class="n">uv</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">//得到环境光</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fixed3</span> <span class="n">albedo</span> <span class="o">=</span> <span class="n">texColor</span><span class="p">.</span><span class="n">rgb</span> <span class="o">*</span> <span class="n">_Color</span><span class="p">.</span><span class="n">rgb</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">//计算高光反射</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fixed3</span> <span class="n">ambient</span> <span class="o">=</span> <span class="n">UNITY_LIGHTMODEL_AMBIENT</span><span class="p">.</span><span class="n">xyz</span> <span class="o">*</span> <span class="n">albedo</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">//计算漫反射</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fixed3</span> <span class="n">diffuse</span> <span class="o">=</span> <span class="n">_LightColor0</span><span class="p">.</span><span class="n">rgb</span> <span class="o">*</span> <span class="n">albedo</span><span class="o">*</span><span class="n">max</span><span class="p">(</span><span class="mo">0</span><span class="p">,</span><span class="n">dot</span><span class="p">(</span><span class="n">worldNormal</span><span class="p">,</span><span class="n">worldLightDir</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">//设置片元着色器返回值的透明通道</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="n">fixed4</span><span class="p">(</span><span class="n">ambient</span> <span class="o">+</span> <span class="n">diffuse</span><span class="p">,</span><span class="n">texColor</span><span class="p">.</span><span class="n">a</span><span class="o">*</span><span class="n">_AlphaScale</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="n">ENDCG</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Fallback</span> <span class="err">&#34;</span><span class="n">Transparent</span><span class="o">/</span><span class="n">VertexLit</span><span class="err">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303182308888.png!webp"></p>
+<p>但是会有一种情况，得到错误的渲染结果</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303182308973.png!webp"></p>
+<h3 id="开启深度写入的半透明效果">开启深度写入的半透明效果<a hidden class="anchor" aria-hidden="true" href="#开启深度写入的半透明效果">#</a></h3>
+<p>为了解决上述问题，我们通常使用两个Pass进行渲染，第一个Pass开启深度写入，但不输出颜色，它的目的仅仅是为了把模型的深度值写入深度缓冲中，第二个Pass进行正常的透明度混合，由于上一个Pass已经得到了逐像素的正确的深度信息，该Pass就可以按照像素级别的深度排序结果进行透明渲染。但是<code>这样会消耗一定的额外性能</code>。</p>
+<h3 id="shaderlab的混合命令">ShaderLab的混合命令<a hidden class="anchor" aria-hidden="true" href="#shaderlab的混合命令">#</a></h3>
+<p>混合的实现原理：当片元着色器产生一个颜色时，可以选择与颜色缓存中的颜色进行混合，然后重新写入颜色缓冲。（注意，我们平时谈论混合中的颜色都是RGBA四个通道的）。
+在Unity中，当我们使用Blend（Blend Off命令除外）时，除了设置混合状态外，也开启了混合，但是<code>在其他图形API中我们是需要手动开启的</code>。</p>
+<h4 id="混合等式和参数">混合等式和参数<a hidden class="anchor" aria-hidden="true" href="#混合等式和参数">#</a></h4>
+<p>混合是一个逐片元操作，而且他是不可编程的，但却是高度可配置的。</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303182308221.png!webp"></p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303182308248.png!webp"></p>
+<h4 id="混合操作">混合操作<a hidden class="anchor" aria-hidden="true" href="#混合操作">#</a></h4>
+<p>当把原颜色和目标颜色与他们对应的混合因子相乘后，我们都是把他们的结果加起来作为输出颜色的。我们也可以使用别的混合操作：</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303182308272.png!webp"></p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303182308425.png!webp"></p>
+<p>混合操作命令通常是与混合因子命令一起工作的。但需要注意的是，当使用Min或Max混合操作时，混合因子实际上是不起任何作用的，他们仅仅会判断原始的源颜色和目的颜色之间的比较结果。</p>
+<h4 id="常见的混合类型">常见的混合类型<a hidden class="anchor" aria-hidden="true" href="#常见的混合类型">#</a></h4>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303182308504.png!webp"></p>
+<h3 id="双面渲染的透明效果">双面渲染的透明效果<a hidden class="anchor" aria-hidden="true" href="#双面渲染的透明效果">#</a></h3>
+<p>和透明度测试相比。想让透明度混合实现双面渲染会更加复杂一点，这是因为关闭了深度写入。如果我们仍然直接关闭剔除功能，那么我们就无法保证同一个物体的正面和背面图元的渲染顺序。<code>就有可能得到错误的半透明效果。</code>
+为此我们把双面渲染工作分成两个Pass——第一个Pass只渲染背面，第二个Pass只渲染正面，我们可以保证背面总是在正面被渲染前渲染，从而保证正确的深度渲染关系。</p>
+<h1 id="pbr">PBR<a hidden class="anchor" aria-hidden="true" href="#pbr">#</a></h1>
+<p><strong>PBR</strong>是 <strong>Physically Based Rendering</strong>的简称，也就是图形渲染中的真实感渲染，简单理解就是基于物理的渲染技术，但它只是对现实世界物理的一种近似，并非完全的物理渲染，与之前学习的NPR属于完全不同的两种渲染理念，PBR是以基于<strong>微平面理论</strong>，<strong>能量守恒</strong>，以及物理的<strong>BRDF</strong>为核心的渲染理念。</p>
+<h2 id="微平面理论">微平面理论<a hidden class="anchor" aria-hidden="true" href="#微平面理论">#</a></h2>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303171807512.png"></p>
+<p>简单来说就是物体表面持续放大至微观尺度后，任何平面都是由 无数微小的无序随机朝向的镜面组成。</p>
+<p>平面越是粗糙，这个平面上的微平面的排列就越混乱，平面越是光滑，光线大体上会更趋向于同一个方向反射，形成更小更锐利的反射。</p>
+<p>其实在微观尺度下，没有任何平面是完全光滑的。但由于这些微平面已经微小到无法逐像素继续进行区分，因此会假设一个粗糙度参数，然后用统计学的方法来估算微平面的粗糙程度，通过这个粗糙度计算出某个向量的方向，与微平面平均取向的一致性。</p>
+<p>一般粗糙度越高的显示出来的镜面反射的轮廓要更大一些，相反则会更小更锐利。在实际的PBR 中，这种物体表面的不规则性一般会用粗糙度贴图或者高光度贴图来表示~</p>
+<h2 id="能量守恒">能量守恒<a hidden class="anchor" aria-hidden="true" href="#能量守恒">#</a></h2>
+<p>说白了就是反射光的能量永远不能超过入射光的能量，为了遵守能量守恒定律，通常我们会对漫反射光和镜面反射光之间做出明确的区分。</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303171808677.png"></p>
+<p>在PBR中，镜面光指的就是光线射入物体表面时所反射的那部分能量，而漫反射光则是指光线进入物体后再均匀的发散出来的那部分能量。当光线碰撞到一个表面的时候，一部分能量被反射，另一部分能量进入物体内部。</p>
+<p>不过不同的材质表面它的反射细节也会有所不同，通常会分为金属和非金属材质，其中金属表面由于有自由电子，所以进入表面的能量会被完全吸收。而非金属表面由于没有自由电子，进入表面的能量有一部分会被均匀的释放出来，所以金属度低，但是完全光滑的物体，不会呈现金属那样的镜面效果，而是带有自身的颜色晕染。</p>
+<h2 id="菲涅尔现象">菲涅尔现象<a hidden class="anchor" aria-hidden="true" href="#菲涅尔现象">#</a></h2>
+<p>一般来说漫反射光和镜面反射光之间都是受菲涅尔参数所控制，通过菲涅尔我们可以根据观察的角度得到被反射的能量所占的百分比。利用这个反射比率和能量守恒原则，可以直接得出光线进入物体的部分以及光线剩余的能量。</p>
+<p>菲涅尔表示的是看到的光线的反射率与视角相关的现象，视线垂直于表面时反射较弱，而当视线与表面夹角越小时，反射越明显。</p>
+<p>这就好比我们平时拿吸管插奶茶杯一样，物体的表面就可以看作是奶茶杯的那层膜，光线的光子可以看作是吸管，当你越是斜着插的时候 吸管就越容易被弹开 ， 很难插进去，而当你越是竖着插的时候，吸管也就越容易进去。这也就是所谓的菲涅尔现象。</p>
+<p>而光线的能量进入物体之后会有不同的释放形式</p>
+<ul>
+<li>对于金属表面来说，能量进去后，会全部吸收掉。</li>
+<li>而对于非金属表面来说，能量进去后，只会吸收一部分，余下的部分则会被释放。</li>
+<li>对于玉石这类 次表面 散射的 材质来说，能量进去后，会吸收一部分，而余下的能量会从正面出来一部分，从侧面也漏出来一部分。</li>
+<li>对于玻璃这类透明的材质来说，能量进去后，吸收的部分很少，正面出来也很少，基本都会从另一面出来。</li>
+</ul>
+<h2 id="真实感光照">真实感光照<a hidden class="anchor" aria-hidden="true" href="#真实感光照">#</a></h2>
+<p>PBR的光照不止是直接光，如果只是直接光，那PBR渲染出来的画面，其实和以前并没有多少明显的进步。通常我们会通过叠加计算直接光和间接光得到最终的光照结果，这个结果被称为全局光照，也就是常听到的GI。</p>
+<p>说白点就是通过模拟光线的传播路径，将物体反射的间接光纳入计算，从而提高画面的真实感。直接光就是光线从光源直接照射到物体表面上的光，而间接光则是光线经过多次弹射到物体表面上的光。不过因为我们无法完全模拟现实中如此复杂的物理环境，像如阳光的大气折射与场景弹射次数和质量等，所以通常会加入环境光去做近似模拟。</p>
+<p>这也是PBR中比较重要的光照部分 - IBL 也就是基于图像的光照。它会把周围的环境颜色完整的保存到一张贴图上，PBR材质会把这个贴图当作光源来进行采样，通过一系列的公式计算得到最终的环境光。如果是金属材质，并且粗糙度比较低，他就能够近乎完整的映射出周围的环境的镜像倒影。不过IBL不处理多次反射，它只是单纯的把环境贴图当成了光源的预积分，这里不做过多赘述，有个大致概念即可。</p>
+<h2 id="brdf">BRDF<a hidden class="anchor" aria-hidden="true" href="#brdf">#</a></h2>
+<p>学术一点的叫法就是双向反射分布函数，通过入射光方向，反射光方向，平面法线以及微平面粗糙程度作为函数的输入参数，求出最终反射光的强度。</p>
+<p>其实我们之前做的Blinn-Phone也可以看作是一个BRDF，但由于Blinn-Phong并没有遵循能量守恒的定律，所以它不被认为是基于物理的渲染。</p>
+<p>在早期 PBR模型包含了众多复杂的物理属性，学习成本高、不易于理解，后来在SIGGRAPH 2012，迪士尼提出了Disney BRDF <a href="https://media.disneyanimation.com/uploads/production/publication_asset/48/asset/s2012_pbs_disney_brdf_notes_v3.pdf">s2012_pbs_disney_brdf_notes_v3.pdf (disneyanimation.com)</a> ，它把众多复杂的物理属性简化成更少更为直观的属性，以极高的易用性、便捷性正式进入了大众的视野，逐渐在业界内被广泛应用，可以说是PBR史上的里程碑。</p>
+<p>Unity基于Disney BRDF的启发在GDC 2014 推出了Physically Based Shading in Unity <a href="https://aras-p.info/texts/files/201403-GDC_UnityPhysicallyBasedShading_notes.pdf">201403-GDC_UnityPhysicallyBasedShading.key (aras-p.info)</a> ，将传统的渲染工作流升级为基于物理的渲染工作流，美术同学只需要调节Unity内置的Standard Shader，就可以实现绝大多数常见的材质。</p>
+<p><img alt="img" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303171814378.png"></p>
+<p>那最终Disney BRDF得到了1个颜色参数以及10个标量参数，颜色参数就是 <strong>BaseColor</strong> 表面颜色，通常由纹理贴图提供</p>
+<p><strong>Subsurface</strong>：使用 次表面近似 控制 漫反射的形状</p>
+<p><strong>Metallic</strong>：金属与非金属两种不同模型之间的线性混合。金属模型没有漫反射的成分</p>
+<p><strong>Specular</strong>：一般用来控制镜面反射的强度</p>
+<p><strong>SpecularTint</strong>：镜面反射的颜色啦，不过这个相对过时，通常很少有对美术控制的让步，一般会用于对基础色的入射镜面反射，进行颜色的控制。</p>
+<p><strong>Roughness</strong>：用来控制表面的粗糙度啦</p>
+<p><strong>Anisotropic</strong>：各向异性的强度，主要用于头发啊金属之类的材质</p>
+<p><strong>Sheen &amp; SheenTint</strong>：控制的是光泽的强度和颜色，一般会用于布料</p>
+<p><strong>Clearcoat &amp; ClearcoatGloss:</strong> 则是清漆强度和光泽度，平时用到的很少，知道有这么个东西就好啦</p>
+<h2 id="standard-shader">Standard Shader<a hidden class="anchor" aria-hidden="true" href="#standard-shader">#</a></h2>
+<p><img alt="image-20230317181247011" loading="lazy" src="https://blog-1308267163.cos.ap-shanghai.myqcloud.com/imgs/202303171812041.png"></p>
+<p><strong>RenderingMode</strong>：控制的是物体的渲染模式，简单理解就是设定物体是透明的渲染模式还是不透明的渲染模式</p>
+<p><strong>Albedo</strong>：其实就是材质的基础固有色，你可以给它一张纹理贴图也可以选择单色，当你选择纹理贴图的时候这个调色板则为纹理之上的叠加色</p>
+<p><strong>Metallic &amp; Smoothness</strong>：这里则是用来控制材质的金属度和光滑度，金属度只是决定了物体最终渲染的结果是以高光为主，还是漫反射为主。而光滑度则是决定了物体的高光部分是否清晰。通常来说不使用贴图的话材质只能具有单一的金属度，这并不理想，毕竟同一个物体表面 可能会具有不同的表面特性，那这里如果你选择了金属度贴图，这里的滑动条会直接隐藏掉，通过贴图所存储的 金属度信息来进行采样计算。光滑度的概念其实和我们之前所提的的粗糙度大同小异，反过来了而已。</p>
+<p><strong>Source</strong>：可以理解为就是选择光滑贴图，它的数据可以来源于金属贴图，也可以是色彩贴图，这就根据美术来定啦~</p>
+<p><strong>NormalMap</strong>：法线贴图，它属于凹凸贴图的一种，通常用来给模型增加一些微小的凸起、凹槽和划痕等细节，在逐像素计算光照时，每个像素都会根据该点的法向量来计算最终该点的光照结果，可以通过法线贴图，改变这个点法线方向，影响它的光照结果，进而影响模型表面凹凸感。</p>
+<p><strong>HeightMap</strong>：视差贴图，又可以称之为高度贴图，是法线贴图的改进版，属于一个经常被忽略的高级功能。大家都知道法线，可以将一个平面做成凹凸不平的效果，但是当视角方向水平于该平面的时候，理论上凸起的部分会遮挡住后面的部分，而法线贴图却没有这个效果，但是高度贴图，就可以。那原理呢，就是根据该点的高度以及该点指向摄像机的向量，计算出一个UV偏移，来影响之后的采样。</p>
+<p><strong>Occlusion</strong>：环境光遮蔽贴图，通常又会叫AO贴图，在PBR中计算光照的时候，一般直接通过采样IBL来得到环境光，这个环境光是该点上一个半球上的积分。但是因为自身的之间会有凹凸，在凹陷的地方，环境光会被周围给遮挡，所以看起来并不是那么亮，通过AO贴图我们可以让调整环境光的大小，从而达到更真实的效果。</p>
+<p><strong>Emission</strong>：材质的自发光属性，通常用于控制从表面发出的光的颜色和强度，用的比较多的地方像如霓虹灯、LED屏幕等等。</p>
+<p><strong>Tiling &amp; Offset</strong>：控制的则是以上所有贴图的Tiling Offset</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/unity/">Unity</a></li>
+      <li><a href="http://localhost:1313/tags/shader/">Shader</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/unity/unity-%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Unity-底层原理</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/unity/unity-%E7%AE%80%E6%98%93%E5%AF%B9%E8%B1%A1%E6%B1%A0/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Unity-简易对象池</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-Shader on x"
+            href="https://x.com/intent/tweet/?text=Unity-Shader&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-shader%2f&amp;hashtags=Unity%2cShader">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-Shader on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-shader%2f&amp;title=Unity-Shader&amp;summary=Unity-Shader&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-shader%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-Shader on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-shader%2f&title=Unity-Shader">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-Shader on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-shader%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-Shader on whatsapp"
+            href="https://api.whatsapp.com/send?text=Unity-Shader%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-shader%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-Shader on telegram"
+            href="https://telegram.me/share/url?text=Unity-Shader&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-shader%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Unity-Shader on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=Unity-Shader&u=http%3a%2f%2flocalhost%3a1313%2fposts%2funity%2funity-shader%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">LiuYingbo Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>
